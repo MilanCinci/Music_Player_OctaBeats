@@ -1,0 +1,258 @@
+﻿using Hudebni_Prehravac_OctaBeats.Commands;
+using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Services.Audio;
+using Hudebni_Prehravac_OctaBeats.Services.Historie;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Threading;
+
+namespace Hudebni_Prehravac_OctaBeats.ViewModels
+{
+    /// <summary>
+    /// ViewModel pro obsluhu metod přehrávače
+    /// </summary>
+    public class PrehravacViewModel : BaseViewModel
+    {
+        private readonly IAudioService _audioService;
+        private readonly IHistorieService _historieService;
+        private bool uzivatelPosouvaSlider;
+
+        /// <summary>
+        /// Seznam skladeb v daném playlistu
+        /// </summary>
+        public ObservableCollection<Song> Playlist { get; } = new ObservableCollection<Song>();
+
+        /// <summary>
+        /// Aktuální index skladby, která se právě přehrává
+        /// </summary>
+        private int aktualniIndex = -1;
+
+        private Song? aktualniSkladba;
+        public Song? AktualniSkladba
+        {
+            get => aktualniSkladba;
+            set
+            {
+                aktualniSkladba = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double aktualniCas;
+        public double AktualniCas
+        {
+            get => aktualniCas;
+            set
+            {
+                if (Math.Abs(aktualniCas - value) > 0.1)
+                {
+                    aktualniCas = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(AktualniCasText));
+
+                    // Pokud uživatel pohybuje sliderem, změníse se pozice v AudioService
+                    if (uzivatelPosouvaSlider)
+                    {
+                        _audioService.Seek(TimeSpan.FromSeconds(value));
+                    }
+                }
+            }
+        }
+
+        private double celkovaDelka;
+        public double CelkovaDelka
+        {
+            get => celkovaDelka;
+            set
+            {
+                celkovaDelka = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CelkovaDelkaText));
+            }
+        }
+
+
+        /// <summary>
+        /// Aktuální čas přehrávání ve formátu mm:ss
+        /// </summary>
+        public string AktualniCasText => TimeSpan.FromSeconds(AktualniCas).ToString(@"mm\:ss");
+
+        /// <summary>
+        /// Celková délka skladby ve formátu mm:ss
+        /// </summary>
+        public string CelkovaDelkaText => TimeSpan.FromSeconds(CelkovaDelka).ToString(@"mm\:ss");
+
+        /* Příkazy pro obsluhu jednotlivých metod */
+        public ICommand PlayCommand { get; }
+        public ICommand PauseCommand { get; }
+        public ICommand StopCommand { get; }
+        public ICommand NextCommand { get; }
+        public ICommand PreviousCommand { get; }
+
+        /// <summary>
+        /// Časovač pro časovou osu
+        /// </summary>
+        private readonly DispatcherTimer _casovac;
+
+        /// <summary>
+        /// Parametrický konstruktor pro inicializaci
+        /// </summary>
+        /// <param name="audioService">Servis pro obsluhu metod audia</param>
+        /// <param name="historieService">Servis pro obsluhu metod historie přehrávání</param>
+        public PrehravacViewModel(IAudioService audioService, IHistorieService historieService)
+        {
+            _audioService = audioService;
+            _historieService = historieService;
+
+            _audioService.UkonceniSkladby += OnUkonceniSkladby;
+
+            PlayCommand = new RelayCommand(_ => Play());
+            PauseCommand = new RelayCommand(_ => _audioService.Pause());
+            StopCommand = new RelayCommand(_ => _audioService.Stop());
+            NextCommand = new RelayCommand(_ => Next());
+            PreviousCommand = new RelayCommand(_ => Previous());
+
+            _casovac = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+
+            _casovac.Tick += (s, e) =>
+            {
+                if (!uzivatelPosouvaSlider)
+                {
+                    double novyCas = _audioService.AktualniCas.TotalSeconds;
+                    double novaDelka = _audioService.CelkovyCas.TotalSeconds;
+
+                    AktualniCas = novyCas;
+                    CelkovaDelka = novaDelka;
+                }
+            };
+
+            _casovac.Start();
+        }
+
+        /// <summary>
+        /// Metoda slouží k posunu posuvníku v závislosti na čase
+        /// </summary>
+        /// <param name="sekundy">Čas (v sekundách), o kolik se má skladba posunout</param>
+        public void Seek(double sekundy)
+        {
+            _audioService.Seek(TimeSpan.FromSeconds(sekundy));
+        }
+
+        /// <summary>
+        /// Metoda slouží k přehrávání vybraného playlistu
+        /// </summary>
+        /// <param name="skladby">Skladby v playlistu</param>
+        /// <param name="vybrana">Vybrana skladba</param>
+        public void SetPlaylist(IEnumerable<Song> skladby, Song vybrana)
+        {
+            Playlist.Clear();
+            foreach (var s in skladby)
+            {
+                Playlist.Add(s);
+            }
+
+            aktualniIndex = Playlist.IndexOf(vybrana);
+            AktualniSkladba = vybrana;
+            Play();
+        }
+
+        /// <summary>
+        /// Metoda slouží ke spuštění aktuální skladby
+        /// </summary>
+        private void Play()
+        {
+            if (AktualniSkladba == null)
+            {
+                return;
+            }
+
+            _audioService.Play(AktualniSkladba.CestaKSouboru);
+
+            CelkovaDelka = _audioService.CelkovyCas.TotalSeconds;
+            AktualniCas = _audioService.AktualniCas.TotalSeconds;
+
+            OnPropertyChanged(nameof(CelkovaDelkaText));
+            OnPropertyChanged(nameof(AktualniCasText));
+
+            _historieService.Add(AktualniSkladba);
+        }
+
+        /// <summary>
+        /// Metoda slouží k přepnutí se na další skladbu
+        /// </summary>
+        private void Next()
+        {
+            if (Playlist.Count == 0) 
+            {          
+                return;
+            }
+
+            aktualniIndex++;
+
+            if (aktualniIndex >= Playlist.Count)
+            {
+                aktualniIndex = 0;
+            }
+
+            AktualniSkladba = Playlist[aktualniIndex];
+            Play();
+        }
+
+        /// <summary>
+        /// Metoda slouží k přepnutí se na předchozí skladbu 
+        /// </summary>
+        private void Previous()
+        {
+            if (Playlist.Count == 0)
+            {
+                return;
+            }
+
+            aktualniIndex--;
+
+            if (aktualniIndex < 0)
+            {
+                aktualniIndex = Playlist.Count - 1;
+            }
+
+            AktualniSkladba = Playlist[aktualniIndex];
+            Play();
+        }
+
+        /// <summary>
+        /// Metoda slouží k automatickému přehrání další skladby
+        /// </summary>
+        private void OnUkonceniSkladby()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                Next();
+            });
+        }
+
+        /// <summary>
+        /// Metoda slouží k signalizaci, že uživatel začal posouvat Sliderem
+        /// </summary>
+        public void ZacatekPosunu()
+        {
+            uzivatelPosouvaSlider = true;
+        }
+
+        /// <summary>
+        /// Metoda slouží k signalizaci, že uživatel přestal posouvat Sliderem
+        /// </summary>
+        public void KonecPosunu()
+        {
+            uzivatelPosouvaSlider = false;
+        }
+    }
+}

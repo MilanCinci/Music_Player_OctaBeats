@@ -1,0 +1,15 @@
+﻿<Application x:Class="Hudebni_Prehravac_OctaBeats.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Hudebni_Prehravac_OctaBeats"
+             xmlns:lokCon="clr-namespace:Hudebni_Prehravac_OctaBeats.Models.Conventers"
+             xmlns:lokSer="clr-namespace:Hudebni_Prehravac_OctaBeats.Services.Lokalizace"
+             StartupUri="Views/HlavniOkno.xaml">
+    <Application.Resources>
+        
+        <lokSer:LokalizaceService x:Key="LokalizaceService"/>
+        
+        <lokCon:LokalizaceConverter x:Key="LokalizaceConv" LokalizaceService="{StaticResource LokalizaceService}"/>
+        
+    </Application.Resources>
+</Application>
