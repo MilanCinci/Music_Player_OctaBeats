@@ -63,16 +63,18 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="knihovna">Skladby v knihovně</param>
         /// <param name="playlistSkladby">Skladby v playlistu</param>
         /// <param name="playlist">Vybraný playlist k editaci</param>
-        public PlaylistEditorDialogViewModel(IEnumerable<Song> knihovna, ObservableCollection<Song> playlistSkladby, PlayList playlist)
+        public PlaylistEditorDialogViewModel(IEnumerable<Song> knihovna, IEnumerable<Song> stavajiciSkladby, PlayList playlist)
         {
             KnihovnaSkladby = new ObservableCollection<Song>(knihovna);
-            PlaylistSkladby = playlistSkladby;
+
+            // KLÍČOVÁ ZMĚNA: Vytvoříme novou kolekci se stejnými prvky, 
+            // nepracujeme s tou původní z MainViewModelu.
+            PlaylistSkladby = new ObservableCollection<Song>(stavajiciSkladby);
 
             NazevPlaylistu = playlist.Nazev;
 
             PridatCommand = new RelayCommand(_ =>
             {
-                // Kontrola, aby se nepřidávali stejné skladby
                 if (VybranaKnihovnaSkladba != null && !PlaylistSkladby.Any(s => s.CestaKSouboru == VybranaKnihovnaSkladba.CestaKSouboru))
                 {
                     PlaylistSkladby.Add(VybranaKnihovnaSkladba);
@@ -87,6 +89,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 }
             });
 
+            // Potvrzení vrátí true - data budeme přebírat v MainViewModelu
             PotvrditCommand = new RelayCommand(_ => ZavritDialog?.Invoke(true));
             ZrusitCommand = new RelayCommand(_ => ZavritDialog?.Invoke(false));
         }

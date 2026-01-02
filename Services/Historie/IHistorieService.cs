@@ -28,6 +28,6 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <summary>
         /// Metoda slouží k uložení historie přehrávání
         /// </summary>
-        void Save();
+        void Save(List<HistoriePrehravani> data);
     }
 }

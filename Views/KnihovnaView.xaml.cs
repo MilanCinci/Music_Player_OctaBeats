@@ -26,5 +26,18 @@ namespace Hudebni_Prehravac_OctaBeats.Views
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// Metoda slouží k zamezení vybrání položky, když se kliká jinam
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">eventArgs</param>
+        private void ListBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is ScrollViewer || e.OriginalSource is Grid)
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

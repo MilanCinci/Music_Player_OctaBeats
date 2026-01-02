@@ -106,23 +106,24 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 if (potvrdit)
                 {
                     playlist.Nazev = vm.NazevPlaylistu;
+
+                    playlist.Skladby.Clear();
                     playlist.CestyKSkladbam.Clear();
 
-                    foreach (Song song in playlist.Skladby)
+                    foreach (Song song in vm.PlaylistSkladby)
                     {
+                        playlist.Skladby.Add(song);
                         playlist.CestyKSkladbam.Add(song.CestaKSouboru);
                     }
 
                     _playlistService.Save(PlaylistVM.Playlisty);
-
                     PlaylistVM.RefreshPlaylisty();
 
-                    // Pokud byl tento playlist právě vybraný v knihovně, musíme ho aktualizovat i tam
                     if (KnihovnaVM.VybranyPlaylist == playlist)
                     {
-                        // Resetování vybraného playlistu vyvolá metodu PrepnoutZdrojSkladeb
                         KnihovnaVM.VybranyPlaylist = null;
                         KnihovnaVM.VybranyPlaylist = playlist;
+                        PrehravacVM.SetPlaylist(KnihovnaVM.VybranyPlaylist.Skladby, null);
                     }
                 }
 

@@ -25,7 +25,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// Metoda slouží ke spuštění přehrávání vybrané skladby
         /// </summary>
         /// <param name="filePath">Cesta k souboru skladby</param>
-        public void Play(string filePath);
+        public Task Play(string filePath);
 
         /// <summary>
         /// Metoda slouží k zastavení přehrávání vybrané skladby

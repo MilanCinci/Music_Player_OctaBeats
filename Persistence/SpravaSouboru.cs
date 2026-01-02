@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace Hudebni_Prehravac_OctaBeats.Persistence
 {
@@ -53,15 +54,51 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
         /// <typeparam name="T">Generický datový typ T</typeparam>
         /// <param name="cesta">Cesta k souboru</param>
         /// <returns>Vrací načtená data, pokud soubor neexistuje vrátí prázdný objekt definovaného datového typu</returns>
-        public static T? NahrajZeSouboru<T>(string cesta) where T : new()
+        public static T NahrajZeSouboru<T>(string cesta) where T : new()
         {
-            if (!File.Exists(cesta)) 
+            if (!File.Exists(cesta))
             {
                 return new T();
             }
 
-            var json = File.ReadAllText(cesta);
-            return JsonSerializer.Deserialize<T>(json);
+            try
+            {
+                var json = File.ReadAllText(cesta);
+                return JsonSerializer.Deserialize<T>(json) ?? new T();
+            }
+
+            catch (JsonException ex)
+            {
+                LogError(ex, "Čtení z JSON souboru");
+                return new T();
+            }
+
+            catch(IOException ex)
+            {
+                LogError(ex, "Čtení z JSON souboru");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k logování chyb do error logu
+        /// </summary>
+        /// <param name="ex">Název chyby, která nastala</param>
+        /// <param name="kontext">Kontext chyby, kdy vznikla</param>
+        public static void LogError(Exception ex, string doplnek = "", [CallerMemberName] string nazevMetody = "")
+        {
+            try
+            {
+                string cestaLogu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OctaBeats", "error_log.txt");
+                string zprava = $"[{DateTime.Now}] Metoda: {nazevMetody} | Info: {doplnek}\nChyba: {ex.Message}";
+
+                File.AppendAllText(cestaLogu, zprava);
+            }
+
+            catch 
+            {
+                
+            }
         }
     }
 }

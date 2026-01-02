@@ -13,6 +13,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         private bool isPaused;
         private bool manualStop;
         private string? currentFilePath;
+        private readonly object _audioLock = new object();
 
         /// <summary>
         /// Aktuální čas přehrávání skladby
@@ -33,35 +34,52 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// Metoda slouží ke spuštění přehrávání vybrané skladby
         /// </summary>
         /// <param name="filePath">Cesta k souboru skladby</param>
-        public void Play(string filePath)
+        public async Task Play(string filePath)
         {
-            // Pokud jsme jenom pozastavení, tak stačí pokračovat dál
-            if (reader != null && isPaused && currentFilePath == filePath)
+            try
             {
-                output?.Play();
+                // Pokud jsme jenom pozastavení, tak stačí pokračovat dál
+                if (reader != null && isPaused && currentFilePath == filePath)
+                {
+                    output?.Play();
+                    isPaused = false;
+                    return;
+                }
+
+                // Spustíme inicializaci na pozadí
+                await Task.Run(() =>
+                {
+                    // Zámek zajistí, že se druhé vlákno nespustí, 
+                    // dokud první nedokončí Stop() a Init()
+                    lock (_audioLock)
+                    {
+                        StopInternal(); // Voláme interní metodu bez dalšího zámku
+
+                        manualStop = false;
+                        currentFilePath = filePath;
+                        reader = new AudioFileReader(filePath);
+                        output = new WaveOutEvent();
+                        output.Init(reader);
+
+                        output.PlaybackStopped += (s, e) =>
+                        {
+                            // Kontrola, zda skladba skutečně dojela do konce a nebylo to vyvoláno tlačítkem Stop/Next/Previous
+                            if (!manualStop && reader != null && reader.CurrentTime >= reader.TotalTime.Subtract(TimeSpan.FromMilliseconds(100)))
+                            {
+                                UkonceniSkladby?.Invoke();
+                            }
+                        };
+
+                        output.Play();
+                    }
+                });
                 isPaused = false;
-                return;
             }
 
-            Stop();
-
-            manualStop = false;
-            currentFilePath = filePath;
-            reader = new AudioFileReader(filePath);
-            output = new WaveOutEvent();
-            output.Init(reader);
-
-            output.PlaybackStopped += (s, e) =>
+            catch (Exception)
             {
-                // Kontrola, zda skladba skutečně dojela do konce a nebylo to vyvoláno tlačítkem Stop/Next/Previous
-                if (!manualStop && reader != null && reader.CurrentTime >= reader.TotalTime.Subtract(TimeSpan.FromMilliseconds(100)))
-                {
-                    UkonceniSkladby?.Invoke();
-                }
-            };
-
-            output.Play();
-            isPaused = false;
+                throw new Exception();
+            }
         }
 
         /// <summary>
@@ -69,10 +87,19 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// </summary>
         public void Pause()
         {
-            if (output != null)
+            try
             {
-                output.Pause();
-                isPaused = true;
+                if (output != null)
+                {
+                    output.Pause();
+                    isPaused = true;
+                }
+            }
+
+            catch (Exception)
+            {
+
+                throw new Exception();
             }
         }
 
@@ -81,16 +108,28 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// </summary>
         public void Stop()
         {
-            manualStop = true;
+            try
+            {
+                lock (_audioLock)
+                {
+                    StopInternal();
+                }
+            }
 
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
+        private void StopInternal()
+        {
+            manualStop = true;
             output?.Stop();
             output?.Dispose();
             reader?.Dispose();
-
             output = null;
             reader = null;
-            isPaused = false;
-            currentFilePath = null;
         }
 
         /// <summary>
@@ -99,9 +138,17 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// <param name="position">Čas, kam se posunout</param>
         public void Seek(TimeSpan position)
         {
-            if (reader != null)
+            try
             {
-                reader.CurrentTime = position;
+                if (reader != null)
+                {
+                    reader.CurrentTime = position;
+                }
+            }
+
+            catch (Exception)
+            {
+                throw new Exception();
             }
         }
     }

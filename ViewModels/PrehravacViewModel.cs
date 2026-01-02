@@ -1,5 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Persistence;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using System;
@@ -56,7 +57,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(AktualniCasText));
 
-                    // Pokud uživatel pohybuje sliderem, změníse se pozice v AudioService
+                    // Pokud uživatel pohybuje sliderem, změní se pozice v AudioService
                     if (uzivatelPosouvaSlider)
                     {
                         _audioService.Seek(TimeSpan.FromSeconds(value));
@@ -148,42 +149,62 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Metoda slouží k přehrávání vybraného playlistu
+        /// Metoda slouží k nastavení a přehrávání vybraného playlistu
         /// </summary>
         /// <param name="skladby">Skladby v playlistu</param>
-        /// <param name="vybrana">Vybrana skladba</param>
-        public void SetPlaylist(IEnumerable<Song> skladby, Song vybrana)
+        /// <param name="vybrana">Vybraná skladba</param>
+        public void SetPlaylist(IEnumerable<Song> skladby, Song? vybrana)
         {
-            Playlist.Clear();
-            foreach (var s in skladby)
-            {
-                Playlist.Add(s);
+            try
+            {              
+                Playlist.Clear();
+                foreach (var s in skladby)
+                {
+                    Playlist.Add(s);
+                }
+
+                if (vybrana == null)
+                {
+                    aktualniSkladba = null;
+                    _audioService.Stop();
+                    return;
+                }
+
+                aktualniIndex = Playlist.IndexOf(vybrana);
+                AktualniSkladba = vybrana;
+                Play();
             }
 
-            aktualniIndex = Playlist.IndexOf(vybrana);
-            AktualniSkladba = vybrana;
-            Play();
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, $"Chyba při nastavování playlistu ve třídě {nameof(PrehravacViewModel)}");
+            }
         }
 
         /// <summary>
         /// Metoda slouží ke spuštění aktuální skladby
         /// </summary>
-        private void Play()
+        private async void Play()
         {
             if (AktualniSkladba == null)
             {
                 return;
             }
 
-            _audioService.Play(AktualniSkladba.CestaKSouboru);
+            try
+            {
+                await _audioService.Play(AktualniSkladba.CestaKSouboru);
 
-            CelkovaDelka = _audioService.CelkovyCas.TotalSeconds;
-            AktualniCas = _audioService.AktualniCas.TotalSeconds;
+                CelkovaDelka = _audioService.CelkovyCas.TotalSeconds;
+                AktualniCas = _audioService.AktualniCas.TotalSeconds;
 
-            OnPropertyChanged(nameof(CelkovaDelkaText));
-            OnPropertyChanged(nameof(AktualniCasText));
+                await Task.Run(() => _historieService.Add(AktualniSkladba));
+            }
 
-            _historieService.Add(AktualniSkladba);
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, $"Chyba při spuštění skladby ve třídě {nameof(PrehravacViewModel)}");
+            }
         }
 
         /// <summary>
@@ -191,20 +212,28 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void Next()
         {
-            if (Playlist.Count == 0) 
-            {          
-                return;
-            }
-
-            aktualniIndex++;
-
-            if (aktualniIndex >= Playlist.Count)
+            try
             {
-                aktualniIndex = 0;
+                if (Playlist.Count == 0)
+                {
+                    return;
+                }
+
+                aktualniIndex++;
+
+                if (aktualniIndex >= Playlist.Count)
+                {
+                    aktualniIndex = 0;
+                }
+
+                AktualniSkladba = Playlist[aktualniIndex];
+                Play();
             }
 
-            AktualniSkladba = Playlist[aktualniIndex];
-            Play();
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, $"Chyba při přepínání na další skladbu ve třídě { nameof(PrehravacViewModel)}");
+            }
         }
 
         /// <summary>
@@ -212,20 +241,28 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void Previous()
         {
-            if (Playlist.Count == 0)
+            try
             {
-                return;
+                if (Playlist.Count == 0)
+                {
+                    return;
+                }
+
+                aktualniIndex--;
+
+                if (aktualniIndex < 0)
+                {
+                    aktualniIndex = Playlist.Count - 1;
+                }
+
+                AktualniSkladba = Playlist[aktualniIndex];
+                Play();
             }
 
-            aktualniIndex--;
-
-            if (aktualniIndex < 0)
+            catch (Exception ex)
             {
-                aktualniIndex = Playlist.Count - 1;
+                SpravaSouboru.LogError(ex, $"Chyba při přepínání na předchozí skladbu ve třídě {nameof(PrehravacViewModel)}");
             }
-
-            AktualniSkladba = Playlist[aktualniIndex];
-            Play();
         }
 
         /// <summary>
@@ -233,9 +270,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void OnUkonceniSkladby()
         {
-            App.Current.Dispatcher.Invoke(() =>
+            App.Current.Dispatcher.BeginInvoke(() =>
             {
-                Next();
+                if (Playlist.Count > 1)
+                {
+                    Next();
+                }
             });
         }
 

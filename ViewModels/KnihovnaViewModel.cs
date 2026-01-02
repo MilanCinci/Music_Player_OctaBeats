@@ -26,6 +26,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public ObservableCollection<Song>? VyfiltrovaneSkladby { get; set; }
 
+        // Přidejte proměnnou pro sledování času posledního výběru
+        private DateTime posledniVyber = DateTime.MinValue;
+
         private string? vyhledavanyText; 
         public string? VyhledavanyText 
         { 
@@ -74,11 +77,20 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             get => vybranaSkladba;
             set
             {
+                if (vybranaSkladba == value) return;
                 vybranaSkladba = value;
                 OnPropertyChanged();
+
                 if (value != null)
                 {
-                    SkladbaVybrana?.Invoke(value);
+                    // Skladba se spustí jen pokud od posledního výběru uběhlo aspoň 200ms
+                    // Předchází se tím výjimce, kdyby se rychle přepínali skladby
+                    DateTime nyni = DateTime.Now;
+                    if ((nyni - posledniVyber).TotalMilliseconds > 200)
+                    {
+                        posledniVyber = nyni;
+                        SkladbaVybrana?.Invoke(value);
+                    }
                 }
             }
         }
@@ -152,7 +164,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             // Procházení všech skladeb v knihovně
             foreach (var s in Skladby)
             {
-                if (string.IsNullOrWhiteSpace(VyhledavanyText))
+                if (String.IsNullOrWhiteSpace(VyhledavanyText))
                 {
                     VyfiltrovaneSkladby.Add(s);
                     continue;

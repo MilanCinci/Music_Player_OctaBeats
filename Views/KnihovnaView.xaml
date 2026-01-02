@@ -55,7 +55,7 @@
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding VyfiltrovaneSkladby}"
                  SelectedItem="{Binding VybranaSkladba}"
-                 HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                 HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown">
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
