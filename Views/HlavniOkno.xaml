@@ -8,9 +8,9 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="26"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="120"/>
+            <RowDefinition Height="192"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -54,7 +54,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Skladby" FontSize="18" Margin="10,5,10,15" FontWeight="Bold"/>
+                <TextBlock Text="Skladby" FontSize="20" Margin="10,5,10,15" FontWeight="Bold"/>
 
                 <views:KnihovnaView Grid.Row="1" DataContext="{Binding KnihovnaVM}" />
             </Grid>
@@ -71,7 +71,10 @@
         </Border>
 
         <Border Grid.Row="2" Grid.ColumnSpan="5"
-                Background="#FFAE4141" Padding="10">
+        Background="#181818" 
+        BorderBrush="#282828" 
+        BorderThickness="0,1,0,0" 
+        Padding="15,10">
             <views:PrehravacView DataContext="{Binding PrehravacVM}"/>
         </Border>
 

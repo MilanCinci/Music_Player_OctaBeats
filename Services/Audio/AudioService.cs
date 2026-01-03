@@ -16,6 +16,21 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         private readonly object _audioLock = new object();
 
         /// <summary>
+        /// Aktuální hlasitost skladby
+        /// </summary>
+        public float Hlasitost
+        {
+            get => reader?.Volume ?? 0.7f;
+            set
+            {
+                if (reader != null)
+                {
+                    reader.Volume = value;
+                }
+            }
+        }
+
+        /// <summary>
         /// Aktuální čas přehrávání skladby
         /// </summary>
         public TimeSpan AktualniCas => reader?.CurrentTime ?? TimeSpan.Zero;
@@ -46,14 +61,12 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                     return;
                 }
 
-                // Spustíme inicializaci na pozadí
+                // Spuštění inicializace na pozadí
                 await Task.Run(() =>
                 {
-                    // Zámek zajistí, že se druhé vlákno nespustí, 
-                    // dokud první nedokončí Stop() a Init()
                     lock (_audioLock)
                     {
-                        StopInternal(); // Voláme interní metodu bez dalšího zámku
+                        StopInternal();
 
                         manualStop = false;
                         currentFilePath = filePath;
@@ -98,7 +111,6 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
 
             catch (Exception)
             {
-
                 throw new Exception();
             }
         }

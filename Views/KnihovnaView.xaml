@@ -9,6 +9,7 @@
 
     <UserControl.Resources>
         <conv:NullToBoolConverter x:Key="NullToBoolConverter"/>
+        <conv:ByteToImageConverter x:Key="ByteToImageConverter"/>
     </UserControl.Resources>
 
     <Grid>
@@ -59,21 +60,26 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                    <Grid Margin="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="{Binding Nazev}"
-                                   FontWeight="Bold"
-                                   TextTrimming="CharacterEllipsis"/>
+                        <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,14,0" CornerRadius="4">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding PrebalAlba, Converter={StaticResource ByteToImageConverter}, 
+                                    TargetNullValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png', 
+                                    FallbackValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png'}"
+                                Stretch="UniformToFill"/>
+                            </Border.Background>
+                        </Border>
 
-                        <TextBlock Grid.Row="1"
-                                   Text="{Binding Interpret}"
-                                   FontSize="11"
-                                   Foreground="Gray"
-                                   TextTrimming="CharacterEllipsis"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Nazev}" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock Text="{Binding Interpret}" Foreground="Gray" FontSize="11"/>
+                            <TextBlock Text="{Binding Album}" Foreground="Gray" FontSize="11" FontStyle="Italic"/>
+                        </StackPanel>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

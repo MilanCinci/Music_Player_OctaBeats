@@ -9,12 +9,17 @@ namespace Hudebni_Prehravac_OctaBeats.Models
     /// <summary>
     /// Třída sloužící k obecnému nastavení audia
     /// </summary>
-    public class NastaveniAudia
+    public class NastaveniAudio
     {
         /// <summary>
         /// Konstanta pro definování výchozí hlasitosti 70%
         /// </summary>
-        private const float VychoziHlasitost = 0.7f; 
+        private const float VychoziHlasitost = 0.7f;
+
+        /// <summary>
+        /// Cesta k souboru s nastavením audia
+        /// </summary>
+        public static string CestaKSouboru = Environment.ExpandEnvironmentVariables(@"%AppData%\OctaBeats\DataFiles\nastaveniAudio.json");
 
         /// <summary>
         /// Nastavení hlasitosti skladby 
@@ -24,13 +29,13 @@ namespace Hudebni_Prehravac_OctaBeats.Models
         /// <summary>
         /// Bezparametrický konstruktor pro inicializaci
         /// </summary>
-        public NastaveniAudia() { }
+        public NastaveniAudio() { }
 
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
         /// <param name="hlasitost">Aktuální hlasitost skladby</param>
-        public NastaveniAudia(float hlasitost) 
+        public NastaveniAudio(float hlasitost) 
         {
             Hlasitost = hlasitost;
         }

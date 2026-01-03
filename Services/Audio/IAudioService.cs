@@ -12,6 +12,11 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
     public interface IAudioService
     {
         /// <summary>
+        /// Aktuální hlasitost skladby
+        /// </summary>
+        float Hlasitost { get; set; }
+
+        /// <summary>
         /// Aktuální čas přehrávání skladby
         /// </summary>
         TimeSpan AktualniCas { get; }

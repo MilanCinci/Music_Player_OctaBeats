@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:conv="clr-namespace:Hudebni_Prehravac_OctaBeats.Models.Conventers"
              mc:Ignorable="d"
-             d:DesignHeight="450"
-             d:DesignWidth="280">
+             d:MinHeight="350"
+             d:MinWidth="220">
 
     <UserControl.Resources>
         <conv:NullToBoolConverter x:Key="NullToBoolConverter"/>
@@ -27,7 +27,7 @@
 
             <DockPanel>
                 <TextBlock Text="Playlisty"
-                           FontSize="18"
+                           FontSize="20"
                            FontWeight="Bold"
                            DockPanel.Dock="Top"
                            Margin="0,0,0,10"/>
@@ -48,7 +48,7 @@
          MouseDoubleClick="ListBox_MouseDoubleClick"
          Background="Transparent" 
          BorderThickness="0"
-         HorizontalContentAlignment="Stretch" d:ItemsSource="{d:SampleData ItemCount=5}">
+         HorizontalContentAlignment="Stretch" d:ItemsSource="{d:SampleData ItemCount=5}" FontSize="13">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Padding" Value="0"/>

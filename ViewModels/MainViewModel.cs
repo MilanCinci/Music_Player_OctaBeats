@@ -1,12 +1,15 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Services;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
+using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
 using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using Hudebni_Prehravac_OctaBeats.Views;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +25,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly IPlaylistService _playlistService;
         private readonly IAudioService _audioService;
         private readonly IHistorieService _historieService;
+        private readonly INastaveniAudiaService _nastaveniAudiaService;
+        private readonly IKnihovnaService _knihovnaService;
+        private readonly ILokalizaceService _lokalizaceService;
 
         /// <summary>
         /// ViewModel přehrávače
@@ -56,12 +62,15 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             _playlistService = new PlaylistService();
             _historieService = new HistoryService();
             _audioService = new AudioService();
+            _nastaveniAudiaService = new NastaveniAudiaService();
+            _knihovnaService = new KnihovnaService();
+            _lokalizaceService = new LokalizaceService();
 
-            PrehravacVM = new PrehravacViewModel(_audioService, _historieService);
+            PrehravacVM = new PrehravacViewModel(_audioService, _historieService, _nastaveniAudiaService);
             PlaylistVM = new PlaylistViewModel(_playlistService);
-            KnihovnaVM = new KnihovnaViewModel(new KnihovnaService());
+            KnihovnaVM = new KnihovnaViewModel(_knihovnaService);
             HistoryVM = new HistoryViewModel(_historieService);
-            NastaveniVM = new NastaveniViewModel(new LokalizaceService());
+            NastaveniVM = new NastaveniViewModel(_lokalizaceService);
 
             PlaylistVM.PropertyChanged += (s, e) =>
             {

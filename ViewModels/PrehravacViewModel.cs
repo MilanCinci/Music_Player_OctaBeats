@@ -1,6 +1,7 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using System;
@@ -23,6 +24,13 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly IAudioService _audioService;
         private readonly IHistorieService _historieService;
         private bool uzivatelPosouvaSlider;
+        private readonly DispatcherTimer _timerUlozeniHlasitosti;
+        private readonly INastaveniAudiaService _nastaveniAudiaService;
+
+        /// <summary>
+        /// Konstanta pro výchozí hlasitost skladby
+        /// </summary>
+        private const float VychoziHlasitost = 0.7f;
 
         /// <summary>
         /// Seznam skladeb v daném playlistu
@@ -33,6 +41,26 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Aktuální index skladby, která se právě přehrává
         /// </summary>
         private int aktualniIndex = -1;
+
+        private float hlasitost;
+        public float Hlasitost
+        {
+            get => hlasitost;
+            set
+            {
+                if (Math.Abs(hlasitost - value) > 0.1)
+                {
+                    hlasitost = value;
+                    _audioService.Hlasitost = value / 100f;
+
+                    // Restartování časovače pro uložení do souboru
+                    _timerUlozeniHlasitosti.Stop();
+                    _timerUlozeniHlasitosti.Start();
+
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private Song? aktualniSkladba;
         public Song? AktualniSkladba
@@ -106,10 +134,37 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         /// <param name="audioService">Servis pro obsluhu metod audia</param>
         /// <param name="historieService">Servis pro obsluhu metod historie přehrávání</param>
-        public PrehravacViewModel(IAudioService audioService, IHistorieService historieService)
+        public PrehravacViewModel(IAudioService audioService, IHistorieService historieService, INastaveniAudiaService nastaveniAudiaService)
         {
             _audioService = audioService;
             _historieService = historieService;
+            _nastaveniAudiaService = nastaveniAudiaService;
+
+            NastaveniAudio? ulozeneNastaveni = _nastaveniAudiaService.Load();
+            if(ulozeneNastaveni != null)
+            {
+                hlasitost = ulozeneNastaveni.Hlasitost * 100;
+                _audioService.Hlasitost = ulozeneNastaveni.Hlasitost;
+            }
+
+            else
+            {
+                hlasitost = VychoziHlasitost * 100;
+                _audioService.Hlasitost = VychoziHlasitost;
+            }
+
+            _timerUlozeniHlasitosti = new DispatcherTimer
+            {
+                // Počkání 0,5 sekundy po posledním pohybu slideru hlasitosti
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+
+            _timerUlozeniHlasitosti.Tick += (s, e) =>
+            {
+                _timerUlozeniHlasitosti.Stop();
+                _nastaveniAudiaService.Save(new NastaveniAudio(Hlasitost / 100f));
+            };
+
 
             _audioService.UkonceniSkladby += OnUkonceniSkladby;
 
@@ -195,6 +250,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 await _audioService.Play(AktualniSkladba.CestaKSouboru);
 
+                _audioService.Hlasitost = Hlasitost / 100f;
                 CelkovaDelka = _audioService.CelkovyCas.TotalSeconds;
                 AktualniCas = _audioService.AktualniCas.TotalSeconds;
 
