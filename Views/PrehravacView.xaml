@@ -25,8 +25,7 @@
             <Border x:Name="borderImagePrebalAlba" Width="86" CornerRadius="8" BorderThickness="0" Grid.Column="0" Height="86">
                 <Border.Background>
                     <ImageBrush ImageSource="{Binding AktualniSkladba.PrebalAlba, 
-                        TargetNullValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png', 
-                        FallbackValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png'}" 
+                        TargetNullValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png'}" 
                         Stretch="UniformToFill"/>
                 </Border.Background>
                 <Border.Effect>

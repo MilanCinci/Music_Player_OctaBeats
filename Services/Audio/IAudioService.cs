@@ -30,17 +30,22 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// Metoda slouží ke spuštění přehrávání vybrané skladby
         /// </summary>
         /// <param name="filePath">Cesta k souboru skladby</param>
-        public Task Play(string filePath);
+        Task Play(string filePath);
 
         /// <summary>
         /// Metoda slouží k zastavení přehrávání vybrané skladby
         /// </summary>
-        public void Pause();
+        void Pause();
 
         /// <summary>
         /// Metoda slouží k vypuštění využívaných zdrojů z paměti
         /// </summary>
-        public void Stop();     
+        void Stop();
+
+        /// <summary>
+        /// Metoda slouží ke spuštění pozastavené písničky, od času, kdy se pozastavila
+        /// </summary>
+        void Resume();
 
         /// <summary>
         /// Metoda slouží k posunu posuvníku v závislosti na čase

@@ -112,7 +112,7 @@
         <!-- Vlastní styl slideru pro skladbu -->
         <Style x:Key="SliderStyleVolume" TargetType="Slider">
             <Setter Property="Background" Value="#404040"/>
-            <Setter Property="Foreground" Value="#FFD13636"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -166,7 +166,14 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#FFBD3030"/>
+                                <Setter Property="Foreground">
+                                    <Setter.Value>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FF25BA23"/>
+                                            <GradientStop Color="#FF5BDA3D" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

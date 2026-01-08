@@ -77,7 +77,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             get => vybranaSkladba;
             set
             {
-                if (vybranaSkladba == value) return;
+                if (vybranaSkladba == value)
+                {
+                    return;
+                }
+
                 vybranaSkladba = value;
                 OnPropertyChanged();
 
@@ -128,7 +132,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             if (VybranyPlaylist != null)
             {
-                vyhledavanyText = string.Empty;
+                vyhledavanyText = String.Empty;
                 OnPropertyChanged(nameof(VyhledavanyText));
                 foreach (var s in VybranyPlaylist.Skladby)
                 {

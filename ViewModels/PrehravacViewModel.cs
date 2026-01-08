@@ -220,8 +220,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                 if (vybrana == null)
                 {
-                    aktualniSkladba = null;
-                    _audioService.Stop();
+                    AktualniSkladba = null;
+                    _audioService.Stop();                   
                     return;
                 }
 
@@ -270,7 +270,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             try
             {
-                if (Playlist.Count == 0)
+                if (Playlist.Count == 0 || AktualniSkladba == null)
                 {
                     return;
                 }
@@ -299,7 +299,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             try
             {
-                if (Playlist.Count == 0)
+                if (Playlist.Count == 0 || AktualniSkladba == null)
                 {
                     return;
                 }
@@ -341,6 +341,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public void ZacatekPosunu()
         {
             uzivatelPosouvaSlider = true;
+            _audioService.Pause();
         }
 
         /// <summary>
@@ -349,6 +350,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public void KonecPosunu()
         {
             uzivatelPosouvaSlider = false;
+            _audioService.Resume();
         }
     }
 }

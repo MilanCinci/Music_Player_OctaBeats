@@ -66,7 +66,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                 {
                     lock (_audioLock)
                     {
-                        StopInternal();
+                        ReleaseResources();
 
                         manualStop = false;
                         currentFilePath = filePath;
@@ -86,6 +86,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                         output.Play();
                     }
                 });
+
                 isPaused = false;
             }
 
@@ -124,7 +125,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
             {
                 lock (_audioLock)
                 {
-                    StopInternal();
+                    ReleaseResources();
                 }
             }
 
@@ -132,16 +133,28 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
             {
                 throw new Exception();
             }
-        }
+        }       
 
-        private void StopInternal()
+        /// <summary>
+        /// Metoda slouží ke spuštění pozastavené písničky, od času, kdy se pozastavila
+        /// </summary>
+        public void Resume()
         {
-            manualStop = true;
-            output?.Stop();
-            output?.Dispose();
-            reader?.Dispose();
-            output = null;
-            reader = null;
+            try
+            {
+                if (output == null || reader == null)
+                {
+                    return;
+                }
+
+                output.Play();
+                isPaused = false;
+            }
+
+            catch (Exception)
+            {
+                throw new Exception();
+            }
         }
 
         /// <summary>
@@ -162,6 +175,19 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
             {
                 throw new Exception();
             }
+        }
+
+        /// <summary>
+        /// Pomocná metoda pro zastavení písničky a vypuštění používaných zdrojů
+        /// </summary>
+        private void ReleaseResources()
+        {
+            manualStop = true;
+            output?.Stop();
+            output?.Dispose();
+            reader?.Dispose();
+            output = null;
+            reader = null;
         }
     }
 }

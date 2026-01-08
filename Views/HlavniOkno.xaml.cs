@@ -22,7 +22,7 @@ namespace Hudebni_Prehravac_OctaBeats.Views
     {
         public HlavniOkno()
         {
-            /* TODO 
+            /* TODO Předělat to, aby Load a Save metadat, playlistů, historie a knihoven bylo asynchronní
                     Dodělat Nastavení, Historie Přehrávání */
             InitializeComponent();
             this.DataContext = new MainViewModel();
