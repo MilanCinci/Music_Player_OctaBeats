@@ -17,6 +17,6 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
         /// Metoda slouží k načtení uložených skladeb
         /// </summary>
         /// <returns>Vrací kolekci načtených skladeb</returns>
-        ObservableCollection<Song>? Load();
+        Task<ObservableCollection<Song>>? Load();
     }
 }

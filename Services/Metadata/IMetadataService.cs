@@ -16,12 +16,12 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
         /// Metoda slouží k načtení uložených metadat o skladbě
         /// </summary>
         /// <returns>Vrací metadata skladby</returns>
-        Song Load(string cestaKSouboru);
+        Task<Song> Load(string cestaKSouboru);
 
         /// <summary>
         /// Metoda slouží k uložení metadat skladby
         /// </summary>
         /// <param name="song">skladba, u které chceme uložit metadata</param>
-        void Save(Song song);
+        Task Save(Song song);
     }
 }

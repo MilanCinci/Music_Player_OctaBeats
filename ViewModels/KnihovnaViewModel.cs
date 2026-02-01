@@ -1,10 +1,7 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
@@ -26,20 +23,18 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public ObservableCollection<Song>? VyfiltrovaneSkladby { get; set; }
 
-        // Přidejte proměnnou pro sledování času posledního výběru
         private DateTime posledniVyber = DateTime.MinValue;
 
-        private string? vyhledavanyText; 
-        public string? VyhledavanyText 
-        { 
-            get => vyhledavanyText; 
-
-            set 
-            { 
-                vyhledavanyText = value; 
-                Vyfiltruj(); 
-                OnPropertyChanged(); 
-            } 
+        private string? vyhledavanyText;
+        public string? VyhledavanyText
+        {
+            get => vyhledavanyText;
+            set
+            {
+                vyhledavanyText = value;
+                Vyfiltruj();
+                OnPropertyChanged();
+            }
         }
 
         private TypVyhledavani vybranyTypVyhledavani;
@@ -88,7 +83,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 if (value != null)
                 {
                     // Skladba se spustí jen pokud od posledního výběru uběhlo aspoň 200ms
-                    // Předchází se tím výjimce, kdyby se rychle přepínali skladby
                     DateTime nyni = DateTime.Now;
                     if ((nyni - posledniVyber).TotalMilliseconds > 200)
                     {
@@ -99,7 +93,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
-
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
@@ -107,15 +100,30 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public KnihovnaViewModel(IKnihovnaService knihovnaService)
         {
             _knihovnaService = knihovnaService;
-            Skladby = _knihovnaService.Load();
-            if (Skladby != null)
-            {
-                VyfiltrovaneSkladby = new ObservableCollection<Song>(Skladby);
-                OnPropertyChanged(nameof(VyfiltrovaneSkladby));
-            }
 
             // Výchozí typ vyhledávání
             VybranyTypVyhledavani = TypVyhledavani.Nazev;
+            _ = InicializujAsync();
+        }
+
+        /// <summary>
+        /// Pomocná motoda pro asynchronní načtení knihovny skladeb
+        /// </summary>
+        private async Task InicializujAsync()
+        {
+            try
+            {
+                Skladby = await _knihovnaService.Load()!;
+
+                VyfiltrovaneSkladby = new ObservableCollection<Song>(Skladby);
+                OnPropertyChanged(nameof(Skladby));
+                OnPropertyChanged(nameof(VyfiltrovaneSkladby));
+            }
+
+            catch (Exception)
+            {
+                //TODO
+            }
         }
 
         /// <summary>
@@ -146,13 +154,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
-
         /// <summary>
         /// Metoda slouží k vyfiltrování skladeb podle zvoleného kritéria
         /// </summary>
         private void Vyfiltruj()
         {
-            if(VyfiltrovaneSkladby == null || Skladby == null)
+            if (VyfiltrovaneSkladby == null || Skladby == null)
             {
                 return;
             }
@@ -165,7 +172,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 return;
             }
 
-            // Procházení všech skladeb v knihovně
             foreach (var s in Skladby)
             {
                 if (String.IsNullOrWhiteSpace(VyhledavanyText))
@@ -176,7 +182,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                 bool shoda = false;
 
-                // Logika vyfiltrování podle zvoleného kritéria
                 switch (VybranyTypVyhledavani)
                 {
                     case TypVyhledavani.Nazev:
@@ -188,15 +193,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                         {
                             shoda = s.Interpret.Contains(VyhledavanyText, StringComparison.OrdinalIgnoreCase);
                         }
-
-                        break;
-
-                    default:
-                        shoda = false;
                         break;
                 }
 
-                if (shoda) 
+                if (shoda)
                 {
                     VyfiltrovaneSkladby.Add(s);
                 }

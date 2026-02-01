@@ -1,10 +1,7 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Persistence;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
@@ -18,7 +15,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
         /// Metoda slouží k načtení uloženého nastavení audia
         /// </summary>
         /// <returns>Vrací nastavení audia</returns>
-        public NastaveniAudio? Load()
+        public async Task<NastaveniAudio?> Load()
         {
             try
             {
@@ -27,12 +24,13 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
                     return new NastaveniAudio();
                 }
 
-                return SpravaSouboru.NahrajZeSouboru<NastaveniAudio>(NastaveniAudio.CestaKSouboru) ?? new NastaveniAudio();
+                return await SpravaSouboru.NahrajZeSouboru<NastaveniAudio>(NastaveniAudio.CestaKSouboru) ?? new NastaveniAudio();
             }
 
-            catch(Exception)
+            catch (Exception)
             {
-                throw new Exception();
+                //TODO
+                return new NastaveniAudio();
             }
         }
 
@@ -40,23 +38,23 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
         /// Metoda slouží k uložení aktuálního nastavení audia
         /// </summary>
         /// <param name="nastaveniAudia">Aktuální nastavení audia, které chceme uložit</param>
-        public void Save(NastaveniAudio nastaveniAudia)
+        public async Task Save(NastaveniAudio nastaveniAudia)
         {
             try
             {
-                 var adresar = Path.GetDirectoryName(NastaveniAudio.CestaKSouboru);
+                var adresar = Path.GetDirectoryName(NastaveniAudio.CestaKSouboru);
 
-                 if (!Directory.Exists(adresar))
-                 {
-                     Directory.CreateDirectory(adresar!);
-                 }
+                if (!Directory.Exists(adresar))
+                {
+                    Directory.CreateDirectory(adresar!);
+                }
 
-                 SpravaSouboru.UlozDoSouboru(NastaveniAudio.CestaKSouboru, nastaveniAudia);
-            }   
+                await SpravaSouboru.UlozDoSouboru(NastaveniAudio.CestaKSouboru, nastaveniAudia);
+            }
 
             catch (Exception)
             {
-                throw new Exception();
+                //TODO
             }
         }
     }

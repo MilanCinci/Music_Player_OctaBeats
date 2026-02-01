@@ -22,7 +22,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Seznam vytvořených playlistů
         /// </summary>
-        public ObservableCollection<PlayList> Playlisty { get; set; }
+        public ObservableCollection<PlayList>? Playlisty { get; set; }
 
         private PlayList? vybranyPlaylist;
         public PlayList? VybranyPlaylist
@@ -46,6 +46,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        private int indexPlaylistu = 0;
+
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddPlaylistCommand { get; }
         public ICommand RemovePlaylistCommand { get; }
@@ -59,30 +61,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             _playlistService = playlistService;
 
-            Playlisty = _playlistService.Load() ?? new ObservableCollection<PlayList>();
+            _ = InicializujAsync();
 
-            var metadata = new MetadataService();
-
-            foreach (var playlist in Playlisty)
-            {
-                playlist.Skladby.Clear();
-
-                foreach (var cesta in playlist.CestyKSkladbam)
-                {
-                    try
-                    {
-                        playlist.Skladby.Add(metadata.Load(cesta));
-                    }
-
-                    catch
-                    {
-
-                    }
-                }
-            }
-
-            AddPlaylistCommand = new RelayCommand(_ => AddPlaylist());
-            RemovePlaylistCommand = new RelayCommand(_ => RemovePlaylist());
+            AddPlaylistCommand = new AsyncRelayCommand(AddPlaylist);
+            RemovePlaylistCommand = new AsyncRelayCommand(RemovePlaylist);
             ResetVyberCommand = new RelayCommand(_ => VybranyPlaylist = null);
         }
 
@@ -97,12 +79,18 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k přidání nového playlistu do seznamu
         /// </summary>
-        private void AddPlaylist()
+        private async Task AddPlaylist()
         {
-            // Nastavení výchozího názvu playlistu
-            if (string.IsNullOrWhiteSpace(NovyNazevPlaylistu))
+            if(Playlisty == null)
             {
-                NovyNazevPlaylistu = "Nový playlist";
+                return;
+            }
+
+            // Nastavení výchozího názvu playlistu
+            if (String.IsNullOrWhiteSpace(NovyNazevPlaylistu))
+            {
+                NovyNazevPlaylistu = $"New playlist{indexPlaylistu}";
+                indexPlaylistu++;
             }
 
             PlayList novyPlaylist = new PlayList
@@ -115,19 +103,59 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             NovyNazevPlaylistu = String.Empty;
 
-            _playlistService.Save(Playlisty);
+            await _playlistService.Save(Playlisty);
         }
 
         /// <summary>
         /// Metoda slouží k odebrání vybraného playlistu
         /// </summary>
-        private void RemovePlaylist()
+        private async Task RemovePlaylist()
         {
-            if (VybranyPlaylist != null)
+            if (VybranyPlaylist != null && Playlisty != null)
             {
                 Playlisty.Remove(VybranyPlaylist);
                 VybranyPlaylist = null;
-                _playlistService.Save(Playlisty);
+                await _playlistService.Save(Playlisty);
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k načtení playlistů + metadat
+        /// </summary>
+        private async Task InicializujAsync()
+        {
+            try
+            {
+                Playlisty = await _playlistService.Load()! ?? new ObservableCollection<PlayList>();
+
+                var metadata = new MetadataService();
+
+                foreach (var playlist in Playlisty)
+                {
+                    playlist.Skladby.Clear();
+
+                    foreach (var cesta in playlist.CestyKSkladbam)
+                    {
+                        try
+                        {
+                            playlist.Skladby.Add(
+                                await Task.Run(() => metadata.Load(cesta))
+                            );
+                        }
+
+                        catch
+                        {
+
+                        }
+                    }
+                }
+
+                OnPropertyChanged(nameof(Playlisty));
+            }
+
+            catch (Exception)
+            {
+                //TODO
             }
         }
     }

@@ -24,16 +24,16 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
         /// Metoda slouží k načtení uložených playlistů
         /// </summary>
         /// <returns>Vrací kolekci načtených playlistů</returns>
-        public ObservableCollection<PlayList>? Load()
+        public async Task<ObservableCollection<PlayList>>? Load()
         {
-            return SpravaSouboru.NahrajZeSouboru<ObservableCollection<PlayList>>(CestaKSouboru);
+            return await SpravaSouboru.NahrajZeSouboru<ObservableCollection<PlayList>>(CestaKSouboru);
         }
 
         /// <summary>
         /// Metoda slouží k uložení playlistů
         /// </summary>
         /// <param name="playlisty">Seznam playlistů, který chceme uložit</param>
-        public void Save(ObservableCollection<PlayList> playlisty)
+        public async Task Save(ObservableCollection<PlayList> playlisty)
         {
             var adresar = Path.GetDirectoryName(CestaKSouboru);
 
@@ -42,7 +42,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
                 Directory.CreateDirectory(adresar!);
             }
 
-            SpravaSouboru.UlozDoSouboru(CestaKSouboru, playlisty);
+            await SpravaSouboru.UlozDoSouboru(CestaKSouboru, playlisty);
         }
     }
 }

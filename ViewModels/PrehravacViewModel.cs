@@ -4,12 +4,10 @@ using Hudebni_Prehravac_OctaBeats.Persistence;
 using Hudebni_Prehravac_OctaBeats.Services;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
+using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -23,9 +21,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     {
         private readonly IAudioService _audioService;
         private readonly IHistorieService _historieService;
+        private readonly INastaveniAudiaService _nastaveniAudiaService;
         private bool uzivatelPosouvaSlider;
         private readonly DispatcherTimer _timerUlozeniHlasitosti;
-        private readonly INastaveniAudiaService _nastaveniAudiaService;
 
         /// <summary>
         /// Konstanta pro výchozí hlasitost skladby
@@ -106,7 +104,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
-
         /// <summary>
         /// Aktuální čas přehrávání ve formátu mm:ss
         /// </summary>
@@ -134,24 +131,18 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         /// <param name="audioService">Servis pro obsluhu metod audia</param>
         /// <param name="historieService">Servis pro obsluhu metod historie přehrávání</param>
-        public PrehravacViewModel(IAudioService audioService, IHistorieService historieService, INastaveniAudiaService nastaveniAudiaService)
+        public PrehravacViewModel(
+            IAudioService audioService,
+            IHistorieService historieService,
+            INastaveniAudiaService nastaveniAudiaService)
         {
             _audioService = audioService;
             _historieService = historieService;
             _nastaveniAudiaService = nastaveniAudiaService;
 
-            NastaveniAudio? ulozeneNastaveni = _nastaveniAudiaService.Load();
-            if(ulozeneNastaveni != null)
-            {
-                hlasitost = ulozeneNastaveni.Hlasitost * 100;
-                _audioService.Hlasitost = ulozeneNastaveni.Hlasitost;
-            }
-
-            else
-            {
-                hlasitost = VychoziHlasitost * 100;
-                _audioService.Hlasitost = VychoziHlasitost;
-            }
+            // Výchozí hlasitost
+            hlasitost = VychoziHlasitost * 100;
+            _audioService.Hlasitost = VychoziHlasitost;
 
             _timerUlozeniHlasitosti = new DispatcherTimer
             {
@@ -159,12 +150,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 Interval = TimeSpan.FromMilliseconds(500)
             };
 
-            _timerUlozeniHlasitosti.Tick += (s, e) =>
+            _timerUlozeniHlasitosti.Tick += async (s, e) =>
             {
                 _timerUlozeniHlasitosti.Stop();
-                _nastaveniAudiaService.Save(new NastaveniAudio(Hlasitost / 100f));
+                await _nastaveniAudiaService.Save(new NastaveniAudio(Hlasitost / 100f));
             };
-
 
             _audioService.UkonceniSkladby += OnUkonceniSkladby;
 
@@ -192,6 +182,32 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             };
 
             _casovac.Start();
+
+            // Asynchronní inicializace nastavení audia
+            _ = InicializujAsync();
+        }
+
+        /// <summary>
+        /// Asynchronní inicializace nastavení audia
+        /// </summary>
+        private async Task InicializujAsync()
+        {
+            try
+            {
+                NastaveniAudio? ulozeneNastaveni = await _nastaveniAudiaService.Load();
+
+                if (ulozeneNastaveni != null)
+                {
+                    hlasitost = ulozeneNastaveni.Hlasitost * 100;
+                    _audioService.Hlasitost = ulozeneNastaveni.Hlasitost;
+                    OnPropertyChanged(nameof(Hlasitost));
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, $"Chyba při načítání nastavení audia ve třídě {nameof(PrehravacViewModel)}");
+            }
         }
 
         /// <summary>
@@ -211,7 +227,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public void SetPlaylist(IEnumerable<Song> skladby, Song? vybrana)
         {
             try
-            {              
+            {
                 Playlist.Clear();
                 foreach (var s in skladby)
                 {
@@ -221,7 +237,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 if (vybrana == null)
                 {
                     AktualniSkladba = null;
-                    _audioService.Stop();                   
+                    _audioService.Stop();
                     return;
                 }
 
@@ -241,20 +257,18 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private async void Play()
         {
-            if (AktualniSkladba == null)
-            {
-                return;
-            }
+            if (AktualniSkladba == null) return;
 
             try
             {
                 await _audioService.Play(AktualniSkladba.CestaKSouboru);
 
                 _audioService.Hlasitost = Hlasitost / 100f;
+
                 CelkovaDelka = _audioService.CelkovyCas.TotalSeconds;
                 AktualniCas = _audioService.AktualniCas.TotalSeconds;
 
-                await Task.Run(() => _historieService.Add(AktualniSkladba));
+                _ = _historieService.Add(AktualniSkladba);
             }
 
             catch (Exception ex)
@@ -268,57 +282,41 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void Next()
         {
-            try
+            if (Playlist.Count == 0 || AktualniSkladba == null)
             {
-                if (Playlist.Count == 0 || AktualniSkladba == null)
-                {
-                    return;
-                }
-
-                aktualniIndex++;
-
-                if (aktualniIndex >= Playlist.Count)
-                {
-                    aktualniIndex = 0;
-                }
-
-                AktualniSkladba = Playlist[aktualniIndex];
-                Play();
+                return;
             }
 
-            catch (Exception ex)
+            aktualniIndex++;
+
+            if (aktualniIndex >= Playlist.Count)
             {
-                SpravaSouboru.LogError(ex, $"Chyba při přepínání na další skladbu ve třídě { nameof(PrehravacViewModel)}");
+                aktualniIndex = 0;
             }
+
+            AktualniSkladba = Playlist[aktualniIndex];
+            Play();
         }
 
         /// <summary>
-        /// Metoda slouží k přepnutí se na předchozí skladbu 
+        /// Metoda slouží k přepnutí se na předchozí skladbu
         /// </summary>
         private void Previous()
         {
-            try
+            if (Playlist.Count == 0 || AktualniSkladba == null)
             {
-                if (Playlist.Count == 0 || AktualniSkladba == null)
-                {
-                    return;
-                }
-
-                aktualniIndex--;
-
-                if (aktualniIndex < 0)
-                {
-                    aktualniIndex = Playlist.Count - 1;
-                }
-
-                AktualniSkladba = Playlist[aktualniIndex];
-                Play();
+                return;
             }
 
-            catch (Exception ex)
+            aktualniIndex--;
+
+            if (aktualniIndex < 0)
             {
-                SpravaSouboru.LogError(ex, $"Chyba při přepínání na předchozí skladbu ve třídě {nameof(PrehravacViewModel)}");
+                aktualniIndex = Playlist.Count - 1;
             }
+
+            AktualniSkladba = Playlist[aktualniIndex];
+            Play();
         }
 
         /// <summary>

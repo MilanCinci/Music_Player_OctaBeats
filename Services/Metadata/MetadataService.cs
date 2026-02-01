@@ -1,9 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TagLib;
 
@@ -19,61 +16,68 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
         /// </summary>
         /// <param name="cestaKSouboru">Cesta k souboru se skladbami</param>
         /// <returns>Vrací metadata skladby</returns>
-        public Song Load(string cestaKSouboru)
+        public async Task<Song> Load(string cestaKSouboru)
         {
-            var soubor = TagLib.File.Create(cestaKSouboru);
-
-            byte[]? prebalAlba = null;
-
-            // Získání přebalu alba, pokud je nějaký obrázek přebalu k dispozici v metadatech
-            if (soubor.Tag.Pictures != null && soubor.Tag.Pictures.Length > 0)
+            return await Task.Run(() =>
             {
-                prebalAlba = soubor.Tag.Pictures[0].Data.Data;
-            }
+                var soubor = TagLib.File.Create(cestaKSouboru);
 
-            return new Song
-            {
-                Nazev = soubor.Tag.Title ?? Path.GetFileNameWithoutExtension(cestaKSouboru),
-                Interpret = soubor.Tag.FirstPerformer ?? "Unknown",
-                Album = soubor.Tag.Album ?? "Unknown",
-                Delka = soubor.Properties.Duration,
-                PrebalAlba = prebalAlba,
-                CestaKSouboru = cestaKSouboru
-            };
+                byte[]? prebalAlba = null;
+
+                // Získání přebalu alba, pokud je nějaký obrázek přebalu k dispozici v metadatech
+                if (soubor.Tag.Pictures != null && soubor.Tag.Pictures.Length > 0)
+                {
+                    prebalAlba = soubor.Tag.Pictures[0].Data.Data;
+                }
+
+                return new Song
+                {
+                    Nazev = soubor.Tag.Title ?? Path.GetFileNameWithoutExtension(cestaKSouboru),
+                    Interpret = soubor.Tag.FirstPerformer ?? "Unknown",
+                    Album = soubor.Tag.Album ?? "Unknown",
+                    Delka = soubor.Properties.Duration,
+                    PrebalAlba = prebalAlba,
+                    CestaKSouboru = cestaKSouboru
+                };
+            });
         }
 
         /// <summary>
         /// Metoda slouží k uložení metadat skladby
         /// </summary>
         /// <param name="song">skladba, u které chceme uložit metadata</param>
-        public void Save(Song song)
+        public async Task Save(Song song)
         {
-            var soubor = TagLib.File.Create(song.CestaKSouboru);
-
-            soubor.Tag.Title = song.Nazev;
-            if (song.Interpret != null)
+            await Task.Run(() =>
             {
-                soubor.Tag.Performers = [song.Interpret];
-            }
+                var soubor = TagLib.File.Create(song.CestaKSouboru);
 
-            else
-            {
-                soubor.Tag.Performers = Array.Empty<string>();
-            }
+                soubor.Tag.Title = song.Nazev;
 
-            soubor.Tag.Album = song.Album;
-            if (song.PrebalAlba != null)
-            {
-                // Uložení nového přebalu alba do metadat
-                Picture picture = new Picture(new ByteVector(song.PrebalAlba))
+                if (song.Interpret != null)
                 {
-                    Type = PictureType.FrontCover
-                };
+                    soubor.Tag.Performers = new[] { song.Interpret };
+                }
+                else
+                {
+                    soubor.Tag.Performers = Array.Empty<string>();
+                }
 
-                soubor.Tag.Pictures = [picture];
-            }
+                soubor.Tag.Album = song.Album;
 
-            soubor.Save();
+                if (song.PrebalAlba != null)
+                {
+                    // Uložení nového přebalu alba do metadat
+                    Picture picture = new Picture(new ByteVector(song.PrebalAlba))
+                    {
+                        Type = PictureType.FrontCover
+                    };
+
+                    soubor.Tag.Pictures = new[] { picture };
+                }
+
+                soubor.Save();
+            });
         }
     }
 }

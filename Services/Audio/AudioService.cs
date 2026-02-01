@@ -53,7 +53,6 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         {
             try
             {
-                // Pokud jsme jenom pozastavení, tak stačí pokračovat dál
                 if (reader != null && isPaused && currentFilePath == filePath)
                 {
                     output?.Play();
@@ -61,7 +60,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                     return;
                 }
 
-                // Spuštění inicializace na pozadí
+                // Všechnu těžkou práci (vytvoření readeru i výstupního zařízení) přesuneme na pozadí
                 await Task.Run(() =>
                 {
                     lock (_audioLock)
@@ -70,15 +69,23 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
 
                         manualStop = false;
                         currentFilePath = filePath;
-                        reader = new AudioFileReader(filePath);
-                        output = new WaveOutEvent();
-                        output.Init(reader);
+
+                        // Vytvoření readeru
+                        var novyReader = new AudioFileReader(filePath);
+                        reader = novyReader;
+
+                        // Inicializace výstupu na pozadí
+                        var novyOutput = new WaveOutEvent();
+                        novyOutput.Init(reader);
+
+                        output = novyOutput;
 
                         output.PlaybackStopped += (s, e) =>
                         {
-                            // Kontrola, zda skladba skutečně dojela do konce a nebylo to vyvoláno tlačítkem Stop/Next/Previous
-                            if (!manualStop && reader != null && reader.CurrentTime >= reader.TotalTime.Subtract(TimeSpan.FromMilliseconds(100)))
+                            if (!manualStop && reader != null &&
+                                reader.CurrentTime >= reader.TotalTime.Subtract(TimeSpan.FromMilliseconds(200)))
                             {
+                                // Vyvolání události zpět do UI vlákna
                                 UkonceniSkladby?.Invoke();
                             }
                         };
@@ -89,10 +96,9 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
 
                 isPaused = false;
             }
-
             catch (Exception)
             {
-                throw new Exception();
+                throw;
             }
         }
 

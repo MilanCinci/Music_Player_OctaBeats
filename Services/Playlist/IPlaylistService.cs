@@ -17,12 +17,12 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
         /// Metoda slouží k načtení uložených playlistů
         /// </summary>
         /// <returns>Vrací kolekci načtených playlistů</returns>
-        ObservableCollection<PlayList>? Load();
+        Task<ObservableCollection<PlayList>>? Load();
 
         /// <summary>
         /// Metoda slouží k uložení playlistů
         /// </summary>
         /// <param name="playlisty">Seznam playlistů, který chceme uložit</param>
-        void Save(ObservableCollection<PlayList> playlisty);
+        Task Save(ObservableCollection<PlayList> playlisty);
     }
 }

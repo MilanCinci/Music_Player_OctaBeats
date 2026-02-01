@@ -1,10 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
@@ -28,7 +24,24 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public HistoryViewModel(IHistorieService historieService)
         {
             _historieService = historieService;
-            Historie = _historieService.Load();
+            _ = InicializujAsync();
+        }
+
+        /// <summary>
+        /// Pomocná metoda pro asynchronní načtení historie přehrávání
+        /// </summary>
+        private async Task InicializujAsync()
+        {
+            try
+            {
+                Historie = await _historieService.Load()!;
+                OnPropertyChanged(nameof(Historie));
+            }
+
+            catch (Exception)
+            {
+                //TODO
+            }
         }
     }
 }

@@ -39,5 +39,19 @@ namespace Hudebni_Prehravac_OctaBeats.Views
                 e.Handled = true;
             }
         }
+
+        /// <summary>
+        /// Metoda slouží k zobrazení ozačeného prvku (automatické scrollování v seznamu) 
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">eventArgs</param>
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListBox listBox && listBox.SelectedItem != null)
+            {
+                // Zajištění, že označený prvek bude vždy viditelný na obrazovce
+                listBox.ScrollIntoView(listBox.SelectedItem);
+            }
+        }
     }
 }

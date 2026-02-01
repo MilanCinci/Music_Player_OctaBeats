@@ -1,13 +1,10 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
 {
@@ -43,10 +40,10 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
         private static string CestaKSouboru = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
 
         /// <summary>
-        /// Metoda slouží k načtení uložených skladeb 
+        /// Metoda slouží k načtení uložených skladeb
         /// </summary>
         /// <returns>Vrací kolekci načtených skladeb</returns>
-        public ObservableCollection<Song>? Load()
+        public async Task<ObservableCollection<Song>> Load()
         {
             ObservableCollection<Song> skladby = new ObservableCollection<Song>();
 
@@ -57,18 +54,20 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
 
             // Hledání souborů, které mají podporované formáty
             var soubory = Directory.GetFiles(
-                CestaKSouboru, "*.*", SearchOption.AllDirectories).Where(s => _podporovaneFormaty.Contains(Path.GetExtension(s)));
+                CestaKSouboru, "*.*", SearchOption.AllDirectories)
+                .Where(s => _podporovaneFormaty.Contains(Path.GetExtension(s)));
 
             foreach (var soubor in soubory)
             {
                 try
                 {
-                    skladby.Add(_metadataService.Load(soubor));
+                    var song = await _metadataService.Load(soubor);
+                    skladby.Add(song);
                 }
 
                 catch
                 {
-                    
+
                 }
             }
 

@@ -8,11 +8,6 @@ using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
 using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using Hudebni_Prehravac_OctaBeats.Views;
 using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
@@ -66,12 +61,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             _knihovnaService = new KnihovnaService();
             _lokalizaceService = new LokalizaceService();
 
-            PrehravacVM = new PrehravacViewModel(_audioService, _historieService, _nastaveniAudiaService);
+            PrehravacVM = new PrehravacViewModel(
+                _audioService,
+                _historieService,
+                _nastaveniAudiaService);
+
             PlaylistVM = new PlaylistViewModel(_playlistService);
             KnihovnaVM = new KnihovnaViewModel(_knihovnaService);
             HistoryVM = new HistoryViewModel(_historieService);
             NastaveniVM = new NastaveniViewModel(_lokalizaceService);
 
+            // Propojení playlistů s knihovnou
             PlaylistVM.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(PlaylistViewModel.VybranyPlaylist))
@@ -80,14 +80,28 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 }
             };
 
-            KnihovnaVM.SkladbaVybrana += skladba =>
+
+            // Propojení přehrávače s knihovnou
+            PrehravacVM.PropertyChanged += (s, e) =>
             {
-                PrehravacVM.SetPlaylist(
-                    KnihovnaVM.VyfiltrovaneSkladby!,
-                    skladba
-                );
+                if (e.PropertyName == nameof(PrehravacViewModel.AktualniSkladba))
+                {
+                    // Pokud přehrávač přepne skladbu, aktualizujeme výběr v knihovně
+                    if (KnihovnaVM.VybranaSkladba != PrehravacVM.AktualniSkladba)
+                    {
+                        KnihovnaVM.VybranaSkladba = PrehravacVM.AktualniSkladba;
+                    }
+                }
             };
 
+            // Akci při výběru skladby v knihovně
+            KnihovnaVM.SkladbaVybrana += skladba =>
+            {
+                if (PrehravacVM.AktualniSkladba != skladba)
+                {
+                    PrehravacVM.SetPlaylist(KnihovnaVM.VyfiltrovaneSkladby!, skladba);
+                }
+            };
         }
 
         /// <summary>
@@ -108,14 +122,13 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 Owner = Application.Current.MainWindow
             };
 
-            vm.ZavritDialog += potvrdit =>
+            vm.ZavritDialog += async potvrdit =>
             {
                 dialog.DialogResult = potvrdit;
 
                 if (potvrdit)
                 {
                     playlist.Nazev = vm.NazevPlaylistu;
-
                     playlist.Skladby.Clear();
                     playlist.CestyKSkladbam.Clear();
 
@@ -125,7 +138,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                         playlist.CestyKSkladbam.Add(song.CestaKSouboru);
                     }
 
-                    _playlistService.Save(PlaylistVM.Playlisty);
+                    await _playlistService.Save(PlaylistVM.Playlisty!);
+
                     PlaylistVM.RefreshPlaylisty();
 
                     if (KnihovnaVM.VybranyPlaylist == playlist)
@@ -141,6 +155,5 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             dialog.ShowDialog();
         }
-
     }
 }

@@ -18,7 +18,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- 🔍 VYHLEDÁVÁNÍ -->
+        <!-- VYHLEDÁVÁNÍ -->
         <Grid Grid.Row="0"
               Margin="0,0,0,10">
 
@@ -52,11 +52,11 @@
             </ComboBox>
         </Grid>
 
-        <!-- 🎵 SEZNAM SKLADEB -->
+        <!-- SEZNAM SKLADEB -->
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding VyfiltrovaneSkladby}"
                  SelectedItem="{Binding VybranaSkladba}"
-                 HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown">
+                 HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown" SelectionChanged="ListBox_SelectionChanged">
 
             <ListBox.ItemTemplate>
                 <DataTemplate>

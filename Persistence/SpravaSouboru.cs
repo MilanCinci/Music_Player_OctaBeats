@@ -21,7 +21,7 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
         /// <typeparam name="T">Generický datový typ T</typeparam>
         /// <param name="cesta">Cesta k souboru</param>
         /// <param name="data">Data, která chceme uložit</param>
-        public static void UlozDoSouboru<T>(string cesta, T data)
+        public static async Task UlozDoSouboru<T>(string cesta, T data)
         {
             if (String.IsNullOrEmpty(cesta))
             {
@@ -45,7 +45,7 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
                 Directory.CreateDirectory(adresar);
             }
 
-            File.WriteAllText(cesta, json);
+            await File.WriteAllTextAsync(cesta, json);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
         /// <typeparam name="T">Generický datový typ T</typeparam>
         /// <param name="cesta">Cesta k souboru</param>
         /// <returns>Vrací načtená data, pokud soubor neexistuje vrátí prázdný objekt definovaného datového typu</returns>
-        public static T NahrajZeSouboru<T>(string cesta) where T : new()
+        public static async Task<T> NahrajZeSouboru<T>(string cesta) where T : new()
         {
             if (!File.Exists(cesta))
             {
@@ -63,7 +63,7 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
 
             try
             {
-                var json = File.ReadAllText(cesta);
+                var json = await File.ReadAllTextAsync(cesta);
                 return JsonSerializer.Deserialize<T>(json) ?? new T();
             }
 
