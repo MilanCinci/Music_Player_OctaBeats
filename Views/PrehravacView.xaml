@@ -83,12 +83,28 @@
                     <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Predchozi.png" Width="20" Height="20"/>
                 </Button>
 
-                <Button Command="{Binding PlayCommand}" Style="{StaticResource ImageButtonStyle}" Margin="10,0">
-                    <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Prehrat.png" Width="20" Height="20"/>
-                </Button>
+                <Button Margin="10,0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ImageButtonStyle}">
+                            <Setter Property="Command" Value="{Binding PlayCommand}"/>
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Prehrat.png" Width="20" Height="20"/>
+                                </Setter.Value>
+                            </Setter>
 
-                <Button Command="{Binding PauseCommand}" Style="{StaticResource ImageButtonStyle}" Margin="10,0">
-                    <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Pozastavit.png" Width="20" Height="20"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                    <Setter Property="Command" Value="{Binding PauseCommand}"/>
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Pozastavit.png" Width="20" Height="20"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                 </Button>
 
                 <Button Command="{Binding NextCommand}" Style="{StaticResource ImageButtonStyle}" Margin="10,0">
@@ -110,6 +126,9 @@
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Hlasitost, Converter={StaticResource VolumeRangeConverter}, ConverterParameter=3}" Value="True">
                                     <Setter Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_3.png"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Hlasitost, Converter={StaticResource VolumeRangeConverter}, ConverterParameter=5}" Value="True">
+                                    <Setter Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_5.png"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

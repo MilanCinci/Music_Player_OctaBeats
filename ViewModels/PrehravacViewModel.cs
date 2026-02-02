@@ -40,6 +40,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private int aktualniIndex = -1;
 
+        private bool isPlaying;
+        public bool IsPlaying
+        {
+            get => isPlaying;
+            set
+            {
+                isPlaying = value;
+                OnPropertyChanged(nameof(IsPlaying));
+            }
+        }
+
         private float hlasitost;
         public float Hlasitost
         {
@@ -159,7 +170,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             _audioService.UkonceniSkladby += OnUkonceniSkladby;
 
             PlayCommand = new RelayCommand(_ => Play());
-            PauseCommand = new RelayCommand(_ => _audioService.Pause());
+            PauseCommand = new RelayCommand(_ => Pause());
             StopCommand = new RelayCommand(_ => _audioService.Stop());
             NextCommand = new RelayCommand(_ => Next());
             PreviousCommand = new RelayCommand(_ => Previous());
@@ -188,8 +199,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Asynchronní inicializace nastavení audia
+        /// Metoda slouží k asynchronní inicializaci nastavení audia
         /// </summary>
+        /// <returns></returns>
         private async Task InicializujAsync()
         {
             try
@@ -257,10 +269,15 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private async void Play()
         {
-            if (AktualniSkladba == null) return;
+            if (AktualniSkladba == null)
+            {
+                return;
+            }
 
             try
             {
+                IsPlaying = true;
+
                 await _audioService.Play(AktualniSkladba.CestaKSouboru);
 
                 _audioService.Hlasitost = Hlasitost / 100f;
@@ -275,6 +292,15 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 SpravaSouboru.LogError(ex, $"Chyba při spuštění skladby ve třídě {nameof(PrehravacViewModel)}");
             }
+        }
+
+        /// <summary>
+        /// Metoda slouží k pozastavení aktuálně přehrávané skladby
+        /// </summary>
+        private void Pause()
+        {
+            IsPlaying = false;
+            _audioService.Pause();
         }
 
         /// <summary>

@@ -15,10 +15,11 @@ namespace Hudebni_Prehravac_OctaBeats.Models.Conventers
             {
                 return range switch
                 {
-                    "1" => vol <= 25,          
+                    "5" => vol <= 0,
+                    "1" => vol > 0 && vol <= 25,          
                     "2" => vol > 25 && vol <= 50, 
                     "3" => vol > 50 && vol <= 75, 
-                    "4" => vol > 75,           
+                    "4" => vol > 75,   
                     _ => false
                 };
             }

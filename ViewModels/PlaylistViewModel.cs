@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -46,7 +47,15 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
-        private int indexPlaylistu = 0;
+        /// <summary>
+        /// Aktuální index pro nepojmenované playlisty
+        /// </summary>
+        private int indexPlaylistu = 1;
+
+        /// <summary>
+        /// Výchozí název pro nepojmenované playlisty
+        /// </summary>
+        private static string vychoziNazev = "New playlist";
 
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddPlaylistCommand { get; }
@@ -89,7 +98,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             // Nastavení výchozího názvu playlistu
             if (String.IsNullOrWhiteSpace(NovyNazevPlaylistu))
             {
-                NovyNazevPlaylistu = $"New playlist{indexPlaylistu}";
+                NovyNazevPlaylistu = $"{vychoziNazev}{indexPlaylistu}";
                 indexPlaylistu++;
             }
 
@@ -120,7 +129,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Metoda slouží k načtení playlistů + metadat
+        /// Metoda slouží k asynchronnímu načtení playlistů a metadat
         /// </summary>
         private async Task InicializujAsync()
         {
@@ -151,6 +160,29 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 }
 
                 OnPropertyChanged(nameof(Playlisty));
+
+                // Hledání aktuálního indexu u uložených playlistů jako "New playlist" 
+                List<PlayList> hledanePlaylisty = Playlisty.Where(playlist => playlist.Nazev.StartsWith(vychoziNazev, StringComparison.OrdinalIgnoreCase))
+                                                            .ToList();
+                int maxIndex = 0;
+
+                foreach (PlayList playlist in hledanePlaylisty)
+                {
+                    var shoda = Regex.Match(playlist.Nazev, @"\d+$");
+
+                    if (shoda.Success)
+                    {
+                        if (int.TryParse(shoda.Value, out int index))
+                        {
+                            if (index > maxIndex)
+                            {
+                                maxIndex = index;
+                            }
+                        }
+                    }
+                }
+
+                indexPlaylistu = maxIndex + 1;
             }
 
             catch (Exception)
