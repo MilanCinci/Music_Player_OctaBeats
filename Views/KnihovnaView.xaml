@@ -56,7 +56,33 @@
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding VyfiltrovaneSkladby}"
                  SelectedItem="{Binding VybranaSkladba}"
-                 HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown" SelectionChanged="ListBox_SelectionChanged">
+                 HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown" SelectionChanged="ListBox_SelectionChanged" MouseDoubleClick="ListBox_MouseDoubleClick">
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Header="Přehrát" 
+                                  FontWeight="Bold">
+                                </MenuItem>
+
+                                <Separator />
+
+                                <MenuItem Header="Smazat z knihovny"
+          Command="{Binding PlacementTarget.Tag.DataContext.RemoveSongCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+          Foreground="Red" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="🗑️" VerticalAlignment="Center"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
 
             <ListBox.ItemTemplate>
                 <DataTemplate>

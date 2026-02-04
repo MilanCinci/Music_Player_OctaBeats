@@ -1,8 +1,11 @@
-﻿using Hudebni_Prehravac_OctaBeats.Models;
+﻿using Hudebni_Prehravac_OctaBeats.Commands;
+using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
@@ -66,6 +69,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public event Action<Song>? SkladbaVybrana;
 
+        /// <summary>
+        /// Akce pro vymazanou skladbu
+        /// </summary>
+        public event Action<Song>? SkladbaSmazana;
+
         private Song? vybranaSkladba;
         public Song? VybranaSkladba
         {
@@ -93,6 +101,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /* Příkazy pro obsluhu jednotlivých metod */
+        public ICommand AddSongCommand { get; }
+        public ICommand RemoveSongCommand { get; }
+
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
@@ -100,6 +112,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public KnihovnaViewModel(IKnihovnaService knihovnaService)
         {
             _knihovnaService = knihovnaService;
+            AddSongCommand = new AsyncRelayCommand(PridejSkladbuDoKnihovny);
+            RemoveSongCommand = new RelayCommand(param => OdeberVybranouSkladbuZKnihovny(param), _ => VybranaSkladba != null || VyfiltrovaneSkladby?.Count > 0);
 
             // Výchozí typ vyhledávání
             VybranyTypVyhledavani = TypVyhledavani.Nazev;
@@ -154,6 +168,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        //TODO Dodělat tady to mazání, aby se nedělal focus při pravým kliknutí
+
         /// <summary>
         /// Metoda slouží k vyfiltrování skladeb podle zvoleného kritéria
         /// </summary>
@@ -200,6 +216,83 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 {
                     VyfiltrovaneSkladby.Add(s);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k asynchronnímu překopírování vybraných skladeb do složky MyMusic
+        /// </summary>
+        /// <returns>Vrací Task</returns>
+        public async Task PridejSkladbuDoKnihovny()
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog
+            {
+                Title = "Select music files to copy",
+                Multiselect = true,
+                Filter = "Music files (*.mp3;*.wav;*.flac)|*.mp3;*.wav;*.flac"
+            };
+
+            if(fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                await _knihovnaService.CopySongsToMyMusic(fileDialog.FileNames);
+                Skladby = await _knihovnaService.Load()!;
+                PrepnoutZdrojSkladeb();
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k odebrání skladby ze složky MyMusic.
+        /// Podporuje smazání vybrané skladby i skladby předané parametrem (pravý klik).
+        /// </summary>
+        public void OdeberVybranouSkladbuZKnihovny(object? parameter)
+        {
+            // Získáme skladbu: buď z parametru (ContextMenu), nebo aktuálně vybranou.
+            Song? skladbaKeSmazani = parameter as Song ?? VybranaSkladba;
+
+            // Pokud nemáme ani jedno, nemáme co mazat.
+            if (skladbaKeSmazani == null)
+            {
+                return;
+            }
+
+            try
+            {
+                // Používáme MessageBox pro potvrzení
+                DialogResult vysledekDiaOkna = MessageBox.Show(
+                    $"Opravdu chcete vymazat skladbu '{skladbaKeSmazani.Nazev}' ?",
+                    "Potvrdit smazání",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (vysledekDiaOkna == DialogResult.Yes)
+                {
+                    // 1. Signál pro přehrávač, aby přestal soubor používat (uvolnění zámku souboru)
+                    SkladbaSmazana?.Invoke(skladbaKeSmazani);
+
+                    // 2. Fyzické smazání z disku
+                    bool uspesneSmazano = _knihovnaService.DeleteSongFromMyMusic(skladbaKeSmazani.CestaKSouboru);
+
+                    if (uspesneSmazano)
+                    {
+                        // 3. Odstranění z kolekcí v UI
+                        Skladby?.Remove(skladbaKeSmazani);
+                        VyfiltrovaneSkladby?.Remove(skladbaKeSmazani);
+
+                        // 4. Pokud smazaná skladba byla ta vybraná (přehrávaná), vynulujeme výběr
+                        if (VybranaSkladba == skladbaKeSmazani)
+                        {
+                            VybranaSkladba = null;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Soubor se nepodařilo smazat. Možná je používán jiným programem/procesem!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

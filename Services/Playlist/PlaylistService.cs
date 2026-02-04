@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
 {
@@ -26,7 +27,16 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
         /// <returns>Vrací kolekci načtených playlistů</returns>
         public async Task<ObservableCollection<PlayList>>? Load()
         {
-            return await SpravaSouboru.NahrajZeSouboru<ObservableCollection<PlayList>>(CestaKSouboru);
+            try
+            {
+                return await SpravaSouboru.NahrajZeSouboru<ObservableCollection<PlayList>>(CestaKSouboru);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
         }
 
         /// <summary>

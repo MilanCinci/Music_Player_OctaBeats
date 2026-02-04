@@ -34,9 +34,39 @@ namespace Hudebni_Prehravac_OctaBeats.Views
         /// <param name="e">eventArgs</param>
         private void ListBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource is ScrollViewer || e.OriginalSource is Grid)
+            if ((e.OriginalSource is ScrollViewer || e.OriginalSource is Grid))
             {
-                e.Handled = true;
+                if(e.LeftButton == MouseButtonState.Pressed)
+                {
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            // Zamezení vybraní skladby při stisknutí pravého tlačítka myši
+            if (e.ClickCount < 2)
+            {
+                DependencyObject dep = (DependencyObject)e.OriginalSource;
+                while (dep != null && !(dep is ListBoxItem))
+                {
+                    dep = VisualTreeHelper.GetParent(dep);
+                }
+
+                if (dep is ListBoxItem && DataContext is KnihovnaViewModel vm)
+                {
+                    // Pokud jde o jednoduché kliknutí na položku, označíme událost jako vyřízenou.
+                    // ListBoxItem se neoznačí, ale událost probublá dál pro ContextMenu (u pravého tlačítka).
+
+                    if(vm.VybranyPlaylist != null && e.RightButton == MouseButtonState.Pressed)
+                    {
+                        MessageBox.Show("kjfka");
+                    }
+
+                    if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)
+                    {
+                        e.Handled = true;
+                    }
+                }
             }
         }
 
@@ -51,6 +81,29 @@ namespace Hudebni_Prehravac_OctaBeats.Views
             {
                 // Zajištění, že označený prvek bude vždy viditelný na obrazovce
                 listBox.ScrollIntoView(listBox.SelectedItem);
+            }
+        }
+
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListBox listBox)
+            {
+                DependencyObject dep = (DependencyObject)e.OriginalSource;
+                while (dep != null && !(dep is ListBoxItem))
+                {
+                    dep = VisualTreeHelper.GetParent(dep);
+                }
+
+                if (dep is ListBoxItem item)
+                {
+                    Song? skladba = item.Content as Song;
+
+                    if (skladba != null && DataContext is KnihovnaViewModel vm)
+                    {
+                        listBox.SelectedItem = skladba;
+                        vm.VybranaSkladba = skladba;
+                    }
+                }
             }
         }
     }

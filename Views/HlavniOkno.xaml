@@ -27,6 +27,8 @@
               Foreground="White">
             <MenuItem Header="Soubor">
                 <MenuItem Header="Ukončit" Command="{Binding ExitCommand}"/>
+                <MenuItem Header="Přidej skladbu" Command="{Binding AddSongCommand}"/>
+                <MenuItem Header="Smaž vybranou skladbu" Command="{Binding RemoveSongCommand}" Foreground="Red"/>
             </MenuItem>
             <MenuItem Header="Zobrazení">
                 <MenuItem Header="Knihovna"/>

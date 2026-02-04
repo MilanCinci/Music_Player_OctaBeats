@@ -86,8 +86,50 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
+        /// Metoda slouží k odstranění skladby z playlistu, pokud se odstraňuje skladba z knihovny
+        /// </summary>
+        /// <param name="odstranenaSkladba">Skladba, kterou chceme odstranit</param>
+        /// <returns>Vrací Task</returns>
+        public async Task RemoveSongFromPlaylist(Song odstranenaSkladba)
+        {
+            if (odstranenaSkladba == null || Playlisty == null)
+            {
+                return;
+            }
+
+            bool celkovaZmena = false;
+
+            foreach (PlayList playlist in Playlisty)
+            {
+                if (playlist != null)
+                {
+                    bool zmenaCest = playlist.CestyKSkladbam.Remove(odstranenaSkladba.CestaKSouboru);
+                    Song? songInPlaylist = playlist.Skladby.FirstOrDefault(s => s.CestaKSouboru == odstranenaSkladba.CestaKSouboru);
+                    bool zmenaSkladeb = false;
+                    if (songInPlaylist != null)
+                    {
+                        zmenaSkladeb = playlist.Skladby.Remove(songInPlaylist);
+                    }
+
+                    // Pokud došlo k jakékoliv změně v tomto playlistu, tak si ji zapamatujeme pro následné uložení
+                    if (zmenaCest || zmenaSkladeb)
+                    {
+                        celkovaZmena = true;
+                    }
+                }
+            }
+
+            // Uložení pouze v případě, když se provedou změny v nějakém playlistu
+            if (celkovaZmena)
+            {
+                await _playlistService.Save(Playlisty);
+            }
+        }
+
+        /// <summary>
         /// Metoda slouží k přidání nového playlistu do seznamu
         /// </summary>
+        /// <returns>Vrací Task</returns>
         private async Task AddPlaylist()
         {
             if(Playlisty == null)
@@ -118,6 +160,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k odebrání vybraného playlistu
         /// </summary>
+        /// <returns>Vrací Task</returns>
         private async Task RemovePlaylist()
         {
             if (VybranyPlaylist != null && Playlisty != null)
@@ -131,6 +174,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k asynchronnímu načtení playlistů a metadat
         /// </summary>
+        /// <returns>Vrací Task</returns>
         private async Task InicializujAsync()
         {
             try
@@ -147,9 +191,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     {
                         try
                         {
-                            playlist.Skladby.Add(
-                                await Task.Run(() => metadata.Load(cesta))
-                            );
+                            playlist.Skladby.Add(await Task.Run(() => metadata.Load(cesta)));
                         }
 
                         catch

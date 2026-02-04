@@ -376,5 +376,41 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             uzivatelPosouvaSlider = false;
             _audioService.Resume();
         }
+
+        /// <summary>
+        /// Metoda slouží k odstranění vybrané skladby z fronty přehrávání
+        /// </summary>
+        /// <param name="skladba">Vybraná skladba, kterou chceme smazat</param>
+        public void OdstranSkladbuZFronty(Song skladba)
+        {
+            if (skladba == null) return;
+
+            // Najdeme skladbu ve frontě, která má stejnou cestu k souboru
+            var songVeFronte = Playlist.FirstOrDefault(s => s.CestaKSouboru == skladba.CestaKSouboru);
+
+            if (songVeFronte != null)
+            {
+                // Pokud je to zrovna ta, co hraje, stopneme ji
+                if (AktualniSkladba != null && AktualniSkladba.CestaKSouboru == songVeFronte.CestaKSouboru)
+                {
+                    _audioService.Stop();
+                    AktualniSkladba = null;
+                    IsPlaying = false;
+                }
+
+                // Odstraníme nalezenou instanci z kolekce
+                Playlist.Remove(songVeFronte);
+
+                // Přepočítáme index aktuální skladby
+                if (AktualniSkladba != null)
+                {
+                    aktualniIndex = Playlist.IndexOf(AktualniSkladba);
+                }
+                else
+                {
+                    aktualniIndex = -1;
+                }
+            }
+        }
     }
 }

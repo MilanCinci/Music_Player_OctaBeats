@@ -1,10 +1,13 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
 {
@@ -13,9 +16,6 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
     /// </summary>
     public class KnihovnaService : IKnihovnaService
     {
-        /// <summary>
-        /// Obslužná třída pro získání skladeb společně s jejich metadaty
-        /// </summary>
         private readonly IMetadataService _metadataService;
 
         /// <summary>
@@ -65,13 +65,87 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
                     skladby.Add(song);
                 }
 
-                catch
+                catch (FileNotFoundException)
                 {
+                    // Soubor zmizel z disku -> přeskočí se
+                    continue;
+                }
 
+                catch (Exception)
+                {
+                    // Jiná chyba (poškozený tag apod.) -> přeskočí se
+                    continue;
                 }
             }
 
             return skladby;
+        }
+
+        /// <summary>
+        /// Metoda slouží k překopírování souborů do složky s hudbou MyMusic
+        /// </summary>
+        /// <param name="vybraneSoubory">Uživatelem vybrané soubory dialogu</param>
+        /// <returns>Vrací Task</returns>
+        public async Task CopySongsToMyMusic(string[] vybraneSoubory)
+        {
+            string cilovaSlozka = CestaKSouboru;
+
+            foreach (string zdroj in vybraneSoubory)
+            {
+                try
+                {
+                    string nazevSouboru = Path.GetFileName(zdroj);
+                    string cil = Path.Combine(cilovaSlozka, nazevSouboru);
+
+                    // Pokud soubor už existuje, zobrazí se upozornění
+                    if (File.Exists(cil))
+                    {
+                        MessageBox.Show($"Skladba s názvem '{nazevSouboru} už ve složce {cilovaSlozka} existuje!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        continue;
+                    }
+
+                    // Použití asynchronního kopírování
+                    using (FileStream zdrojovyStream = File.OpenRead(zdroj))
+                    using (FileStream cilovyStream = File.Create(cil))
+                    {
+                        await zdrojovyStream.CopyToAsync(cilovyStream);
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    SpravaSouboru.LogError(ex, $"Chyba při kopírování vybraných skladeb do MyMusic ve třídě {nameof(KnihovnaService)}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k vymazání souboru ze složky s hudbou MyMusic
+        /// </summary>
+        /// <param name="cestaVybraneSkladby">Uživatelem vybraná skladba ke smazání</param>
+        /// <returns>Vrací true, pokud cesta ke skladbě je validní, jinak false</returns>
+        public bool DeleteSongFromMyMusic(string cestaVybraneSkladby)
+        {
+            if(String.IsNullOrEmpty(cestaVybraneSkladby))
+            {
+                throw new ArgumentException("Cesta není správná, nic nebylo smazáno!");
+            }
+
+            try
+            {
+                if (File.Exists(cestaVybraneSkladby))
+                {
+                    File.Delete(cestaVybraneSkladby);
+                    return true;
+                }
+            }
+
+            catch(Exception ex)
+            {
+                SpravaSouboru.LogError(ex, $"Nastala chyba při mazání skladby z MyMusic ve třídě {nameof(KnihovnaService)}");
+            }
+
+            return false;
         }
     }
 }

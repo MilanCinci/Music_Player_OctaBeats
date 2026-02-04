@@ -9,6 +9,7 @@ using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using Hudebni_Prehravac_OctaBeats.Views;
 using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
@@ -23,6 +24,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly INastaveniAudiaService _nastaveniAudiaService;
         private readonly IKnihovnaService _knihovnaService;
         private readonly ILokalizaceService _lokalizaceService;
+
+        /* Příkazy pro obsluhu jednotlivých metod */
+        public ICommand AddSongCommand { get; }
+        public ICommand RemoveSongCommand { get; }
 
         /// <summary>
         /// ViewModel přehrávače
@@ -80,7 +85,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 }
             };
 
-
             // Propojení přehrávače s knihovnou
             PrehravacVM.PropertyChanged += (s, e) =>
             {
@@ -94,7 +98,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 }
             };
 
-            // Akci při výběru skladby v knihovně
+            // Akce při výběru skladby v knihovně
             KnihovnaVM.SkladbaVybrana += skladba =>
             {
                 if (PrehravacVM.AktualniSkladba != skladba)
@@ -102,6 +106,16 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     PrehravacVM.SetPlaylist(KnihovnaVM.VyfiltrovaneSkladby!, skladba);
                 }
             };
+
+            // Akce při smazání vybrané skladby v knihovně
+            KnihovnaVM.SkladbaSmazana += async skladba =>
+            {
+                PrehravacVM.OdstranSkladbuZFronty(skladba);
+                await PlaylistVM.RemoveSongFromPlaylist(skladba);
+            };
+
+            AddSongCommand = KnihovnaVM.AddSongCommand;
+            RemoveSongCommand = KnihovnaVM.RemoveSongCommand;
         }
 
         /// <summary>

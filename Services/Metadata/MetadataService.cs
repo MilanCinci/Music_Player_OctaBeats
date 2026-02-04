@@ -1,4 +1,5 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Persistence;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -18,28 +19,58 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
         /// <returns>Vrací metadata skladby</returns>
         public async Task<Song> Load(string cestaKSouboru)
         {
-            return await Task.Run(() =>
+            if (string.IsNullOrEmpty(cestaKSouboru))
             {
-                var soubor = TagLib.File.Create(cestaKSouboru);
+                throw new ArgumentException("Cesta k souboru nemůže být prázdná!");
+            }
 
-                byte[]? prebalAlba = null;
+            // Kontrola, zda soubor na disku vůbec existuje
+            if (!System.IO.File.Exists(cestaKSouboru))
+            {
+                throw new FileNotFoundException($"Soubor nebyl nalezen na cestě: {cestaKSouboru}");
+            }
 
-                // Získání přebalu alba, pokud je nějaký obrázek přebalu k dispozici v metadatech
-                if (soubor.Tag.Pictures != null && soubor.Tag.Pictures.Length > 0)
+            try
+            {
+                return await Task.Run(() =>
                 {
-                    prebalAlba = soubor.Tag.Pictures[0].Data.Data;
-                }
+                    using (var soubor = TagLib.File.Create(cestaKSouboru))
+                    {
+                        byte[]? prebalAlba = null;
 
-                return new Song
-                {
-                    Nazev = soubor.Tag.Title ?? Path.GetFileNameWithoutExtension(cestaKSouboru),
-                    Interpret = soubor.Tag.FirstPerformer ?? "Unknown",
-                    Album = soubor.Tag.Album ?? "Unknown",
-                    Delka = soubor.Properties.Duration,
-                    PrebalAlba = prebalAlba,
-                    CestaKSouboru = cestaKSouboru
-                };
-            });
+                        // Získání přebalu alba, pokud je k dispozici
+                        if (soubor.Tag.Pictures != null && soubor.Tag.Pictures.Length > 0)
+                        {
+                            prebalAlba = soubor.Tag.Pictures[0].Data.Data;
+                        }
+
+                        return new Song
+                        {
+                            Nazev = soubor.Tag.Title ?? Path.GetFileNameWithoutExtension(cestaKSouboru),
+                            Interpret = soubor.Tag.FirstPerformer ?? "Unknown",
+                            Album = soubor.Tag.Album ?? "Unknown",
+                            Delka = soubor.Properties.Duration,
+                            PrebalAlba = prebalAlba,
+                            CestaKSouboru = cestaKSouboru
+                        };
+                    }
+                });
+            }
+
+            catch (TagLib.UnsupportedFormatException)
+            {
+                throw new InvalidDataException($"Formát souboru '{cestaKSouboru}' není podporován!");
+            }
+
+            catch (TagLib.CorruptFileException)
+            {
+                throw new InvalidDataException($"Soubor '{cestaKSouboru}' je poškozen!");
+            }
+
+            catch (Exception ex)
+            {
+                throw new IOException($"Nepodařilo se načíst metadata: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -48,36 +79,52 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
         /// <param name="song">skladba, u které chceme uložit metadata</param>
         public async Task Save(Song song)
         {
-            await Task.Run(() =>
+            if (song == null || string.IsNullOrEmpty(song.CestaKSouboru)) return;
+
+            if (!System.IO.File.Exists(song.CestaKSouboru))
             {
-                var soubor = TagLib.File.Create(song.CestaKSouboru);
-
-                soubor.Tag.Title = song.Nazev;
-
-                if (song.Interpret != null)
-                {
-                    soubor.Tag.Performers = new[] { song.Interpret };
-                }
-                else
-                {
-                    soubor.Tag.Performers = Array.Empty<string>();
+                return;
                 }
 
-                soubor.Tag.Album = song.Album;
-
-                if (song.PrebalAlba != null)
+                try
                 {
-                    // Uložení nového přebalu alba do metadat
-                    Picture picture = new Picture(new ByteVector(song.PrebalAlba))
+                    await Task.Run(() =>
                     {
-                        Type = PictureType.FrontCover
-                    };
+                        using (var soubor = TagLib.File.Create(song.CestaKSouboru))
+                        {
+                            soubor.Tag.Title = song.Nazev;
+                    
+                            if (song.Interpret != null)
+                            {
+                                soubor.Tag.Performers = new[] { song.Interpret };
+                            }
 
-                    soubor.Tag.Pictures = new[] { picture };
-                }
+                            else
+                            {
+                                soubor.Tag.Performers = Array.Empty<string>();
+                            }
+                    
+                            soubor.Tag.Album = song.Album;
+                    
+                            if (song.PrebalAlba != null)
+                            {
+                                Picture picture = new Picture(new ByteVector(song.PrebalAlba))
+                                {
+                                    Type = PictureType.FrontCover
+                                };
+                    
+                                soubor.Tag.Pictures = new[] { picture };
+                            }
+                    
+                            soubor.Save();
+                        }
+                    });
+            }
 
-                soubor.Save();
-            });
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Nastala chyba při ukládání metadat skladby!", nameof(MetadataService));
+            }
         }
     }
 }
