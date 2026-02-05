@@ -25,6 +25,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly IKnihovnaService _knihovnaService;
         private readonly ILokalizaceService _lokalizaceService;
 
+        /// <summary>
+        /// Výchozí název zdroje přehrávání, pokud není uveden
+        /// </summary>
+        private static string VychoziNazevZdroje = "Knihovna";
+
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddSongCommand { get; }
         public ICommand RemoveSongCommand { get; }
@@ -103,7 +108,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 if (PrehravacVM.AktualniSkladba != skladba)
                 {
-                    PrehravacVM.SetPlaylist(KnihovnaVM.VyfiltrovaneSkladby!, skladba);
+                    string zdroj = KnihovnaVM.VybranyPlaylist?.Nazev ?? VychoziNazevZdroje;
+                    PrehravacVM.SetPlaylist(KnihovnaVM.VyfiltrovaneSkladby!, skladba, zdroj);
                 }
             };
 
@@ -124,6 +130,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="playlist">Playlist, který chceme upravit</param>
         public void UpravitPlaylist(PlayList playlist)
         {
+            bool upravovanyPlaylistPraveHraje = PrehravacVM.ZdrojPrehravani == playlist.Nazev;
+
             var vm = new PlaylistEditorDialogViewModel(
                 KnihovnaVM.Skladby!,
                 playlist.Skladby,
@@ -153,14 +161,32 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     }
 
                     await _playlistService.Save(PlaylistVM.Playlisty!);
-
                     PlaylistVM.RefreshPlaylisty();
+
+                    if (upravovanyPlaylistPraveHraje)
+                    {
+                        PrehravacVM.ZdrojPrehravani = playlist.Nazev;
+
+                        // Hledání skladby, co právě hraje
+                        Song? hrajiciSkladbaVNovémSeznamu = playlist.Skladby.FirstOrDefault(s => s.CestaKSouboru == PrehravacVM.AktualniSkladba?.CestaKSouboru);
+
+                        if (hrajiciSkladbaVNovémSeznamu != null)
+                        {
+                            // Pokud hrající skladba v playlistu zůstala, jen přenačteme frontu bez stopnutí
+                            PrehravacVM.SetPlaylist(playlist.Skladby, hrajiciSkladbaVNovémSeznamu, playlist.Nazev);
+                        }
+
+                        else
+                        {
+                            // Pokud byla hrající skladbu z playlistu vyhozena, všechno stopneme
+                            PrehravacVM.SetPlaylist(playlist.Skladby, null, playlist.Nazev);
+                        }
+                    }
 
                     if (KnihovnaVM.VybranyPlaylist == playlist)
                     {
                         KnihovnaVM.VybranyPlaylist = null;
                         KnihovnaVM.VybranyPlaylist = playlist;
-                        PrehravacVM.SetPlaylist(KnihovnaVM.VybranyPlaylist.Skladby, null);
                     }
                 }
 

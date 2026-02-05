@@ -71,6 +71,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        private string zdrojPrehravani;
+        public string ZdrojPrehravani
+        {
+            get => zdrojPrehravani;
+            set
+            {
+                zdrojPrehravani = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Song? aktualniSkladba;
         public Song? AktualniSkladba
         {
@@ -229,6 +240,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public void Seek(double sekundy)
         {
             _audioService.Seek(TimeSpan.FromSeconds(sekundy));
+            IsPlaying = true;
         }
 
         /// <summary>
@@ -236,10 +248,13 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         /// <param name="skladby">Skladby v playlistu</param>
         /// <param name="vybrana">Vybraná skladba</param>
-        public void SetPlaylist(IEnumerable<Song> skladby, Song? vybrana)
+        public void SetPlaylist(IEnumerable<Song> skladby, Song? vybrana, string nazevZdroje)
         {
             try
             {
+                bool uzHrajeStejnaSkladba = AktualniSkladba != null && vybrana != null &&
+                                            AktualniSkladba.CestaKSouboru == vybrana.CestaKSouboru;
+                ZdrojPrehravani = nazevZdroje;
                 Playlist.Clear();
                 foreach (var s in skladby)
                 {
@@ -252,10 +267,22 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     _audioService.Stop();
                     return;
                 }
+               
+                Song? hledanaSkldaba = Playlist.FirstOrDefault(s => s.CestaKSouboru == vybrana.CestaKSouboru);
+                if(hledanaSkldaba == null)
+                {
+                    return;
+                }
 
-                aktualniIndex = Playlist.IndexOf(vybrana);
-                AktualniSkladba = vybrana;
-                Play();
+                // Hledání indexu v novém seznamu
+                aktualniIndex = Playlist.IndexOf(hledanaSkldaba);
+                AktualniSkladba = Playlist[aktualniIndex];
+
+                // Spuštění přehrávání skladby, pouze pokud je jiná, než stávající
+                if (!uzHrajeStejnaSkladba)
+                {
+                    Play();
+                }
             }
 
             catch (Exception ex)

@@ -6,6 +6,7 @@
 
     <UserControl.Resources>
         <conv:VolumeRangeConverter x:Key="VolumeRangeConverter"/>
+        <conv:NullToVisibiltyConverter x:Key="NullToVisibilityConverter"/>
     </UserControl.Resources>
     
     <Grid Margin="10">
@@ -38,6 +39,10 @@
                    Foreground="White" FontWeight="Bold" FontSize="16"/>
                 <TextBlock x:Name="tblockInterpret" Text="{Binding AktualniSkladba.Interpret}" 
                    Foreground="#CCC" FontSize="13"/>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Visibility="{Binding AktualniSkladba, Converter={StaticResource NullToVisibilityConverter}}">
+                    <TextBlock Text="Zdroj: " Foreground="#FF9D9D9D" FontSize="11"/>
+                    <TextBlock Text="{Binding ZdrojPrehravani}" Foreground="#FFE3FF85" FontSize="11"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
 
