@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Linq;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
@@ -16,15 +17,25 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     {
         private readonly IKnihovnaService _knihovnaService;
 
+        private ObservableCollection<Song>? skladby;
         /// <summary>
         /// Seznam skladeb
         /// </summary>
-        public ObservableCollection<Song>? Skladby { get; set; }
+        public ObservableCollection<Song>? Skladby
+        {
+            get => skladby;
+            set { skladby = value; OnPropertyChanged(); }
+        }
 
+        private ObservableCollection<Song>? vyfiltrovaneSkladby;
         /// <summary>
         /// Seznam vyfiltrovaných skladeb podle zadaných vyhledávacích kritérií
         /// </summary>
-        public ObservableCollection<Song>? VyfiltrovaneSkladby { get; set; }
+        public ObservableCollection<Song>? VyfiltrovaneSkladby
+        {
+            get => vyfiltrovaneSkladby;
+            set { vyfiltrovaneSkladby = value; OnPropertyChanged(); }
+        }
 
         private DateTime posledniVyber = DateTime.MinValue;
 
@@ -74,6 +85,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public event Action<Song>? SkladbaSmazana;
 
+        /// <summary>
+        /// Akce pro editaci metadat skladby
+        /// </summary>
+        public event Action<Song>? SkladbaEditacePozadovana;
+
         private Song? vybranaSkladba;
         public Song? VybranaSkladba
         {
@@ -104,6 +120,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddSongCommand { get; }
         public ICommand RemoveSongCommand { get; }
+        public ICommand EditMetadataCommand { get; }
 
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
@@ -113,7 +130,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             _knihovnaService = knihovnaService;
             AddSongCommand = new AsyncRelayCommand(PridejSkladbuDoKnihovny);
-            RemoveSongCommand = new RelayCommand(param => OdeberVybranouSkladbuZKnihovny(param), _ => VybranaSkladba != null || VyfiltrovaneSkladby?.Count > 0);
+            RemoveSongCommand = new RelayCommand(
+                 param => OdeberVybranouSkladbuZKnihovny(param),
+                 param => VybranyPlaylist == null && (param is Song || VybranaSkladba != null)
+            );
+            EditMetadataCommand = new RelayCommand(param => { if (param is Song s) SkladbaEditacePozadovana?.Invoke(s); });
 
             // Výchozí typ vyhledávání
             VybranyTypVyhledavani = TypVyhledavani.Nazev;
@@ -220,6 +241,16 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
+        /// Metoda slouží k refreshnutí změn ve View
+        /// </summary>
+        public void RefreshKnihovnu()
+        {
+            OnPropertyChanged(nameof(Skladby));
+            OnPropertyChanged(nameof(VyfiltrovaneSkladby));
+            PrepnoutZdrojSkladeb();
+        }
+
+        /// <summary>
         /// Metoda slouží k asynchronnímu překopírování vybraných skladeb do složky MyMusic
         /// </summary>
         /// <returns>Vrací Task</returns>
@@ -232,7 +263,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 Filter = "Music files (*.mp3;*.wav;*.flac)|*.mp3;*.wav;*.flac"
             };
 
-            if(fileDialog.ShowDialog() == DialogResult.OK)
+            if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 await _knihovnaService.CopySongsToMyMusic(fileDialog.FileNames);
                 Skladby = await _knihovnaService.Load()!;
@@ -266,7 +297,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                 if (vysledekDiaOkna == DialogResult.Yes)
                 {
-                    // 1. Signál pro přehrávač, aby přestal soubor používat (uvolnění zámku souboru)
+                    // 1. Signál pro přehrávač a playlisty, aby přestaly soubor používat
                     SkladbaSmazana?.Invoke(skladbaKeSmazani);
 
                     // 2. Fyzické smazání z disku

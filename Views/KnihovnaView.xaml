@@ -52,7 +52,7 @@
             </ComboBox>
         </Grid>
 
-        <!-- SEZNAM SKLADEB -->
+        <!-- Seznam skladeb -->
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding VyfiltrovaneSkladby}"
                  SelectedItem="{Binding VybranaSkladba}"
@@ -66,6 +66,16 @@
                             <ContextMenu>
                                 <MenuItem Header="Přehrát" 
                                   FontWeight="Bold">
+                                </MenuItem>
+
+                                <Separator />
+
+                                <MenuItem Header="Zobraz informace"
+              Command="{Binding PlacementTarget.Tag.DataContext.EditMetadataCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="📝" VerticalAlignment="Center"/>
+                                    </MenuItem.Icon>
                                 </MenuItem>
 
                                 <Separator />

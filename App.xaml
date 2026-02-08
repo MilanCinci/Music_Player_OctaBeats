@@ -119,9 +119,9 @@
                     <ControlTemplate TargetType="Slider">
                         <Grid VerticalAlignment="Center" Height="20" Background="Transparent">
                             <Border x:Name="TrackBackground" 
-                        Height="4" 
-                        CornerRadius="2" 
-                        Background="{TemplateBinding Background}"/>
+                            Height="4" 
+                            CornerRadius="2" 
+                            Background="{TemplateBinding Background}"/>
 
                             <Track x:Name="PART_Track">
                                 <Track.DecreaseRepeatButton>
@@ -129,7 +129,7 @@
                                         <RepeatButton.Template>
                                             <ControlTemplate TargetType="RepeatButton">
                                                 <Border Height="4" CornerRadius="2" 
-                                            Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Slider}}"/>
+                                                Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Slider}}"/>
                                             </ControlTemplate>
                                         </RepeatButton.Template>
                                     </RepeatButton>
@@ -149,13 +149,13 @@
                                     <Thumb x:Name="Thumb">
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
-                                                <Rectangle x:Name="ThumbRect" 
-                                             Width="10" Height="12" 
-                                             Fill="White" 
-                                             Visibility="Collapsed"/>
+                                                <Ellipse x:Name="ThumbEllipse" 
+                                                 Width="12" Height="12" 
+                                                 Fill="White" 
+                                                 Visibility="Collapsed"/>
                                                 <ControlTemplate.Triggers>
                                                     <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Slider}}" Value="True">
-                                                        <Setter TargetName="ThumbRect" Property="Visibility" Value="Visible"/>
+                                                        <Setter TargetName="ThumbEllipse" Property="Visibility" Value="Visible"/>
                                                     </DataTrigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -179,6 +179,32 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+
+        <!-- Vlastní styl pro zobrazení chybové hlášky IDataErrorInfo-->
+        <ControlTemplate x:Key="ErrorTemplate">
+            <StackPanel>
+                <AdornedElementPlaceholder x:Name="textBox"/>
+
+                <TextBlock Text="{Binding [0].ErrorContent}" 
+                           Foreground="Red" 
+                           FontSize="10" 
+                           Margin="2,2,0,0"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </ControlTemplate>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>
+
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Background" Value="#FFFCE0E0"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Application.Resources>
 </Application>

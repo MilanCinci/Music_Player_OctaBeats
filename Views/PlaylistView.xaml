@@ -79,9 +79,10 @@
                     <!-- Název nového playlistu -->
                     <TextBox Grid.Row="1"
                         Height="28"
-                        Margin="0,0,0,8"
+                        Margin="0,0,0,16"
                         Text="{Binding NovyNazevPlaylistu,
-                            UpdateSourceTrigger=PropertyChanged}"
+                            UpdateSourceTrigger=PropertyChanged,
+                            ValidatesOnDataErrors=True}"
                         ToolTip="Zadejte název nového playlistu"/>
                    
                     <Grid Grid.Row="2">

@@ -4,6 +4,7 @@ using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
+using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
 using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using Hudebni_Prehravac_OctaBeats.Views;
@@ -120,6 +121,19 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 await PlaylistVM.RemoveSongFromPlaylist(skladba);
             };
 
+            // Akce při smazání playlistu, který se právě přehrává
+            PlaylistVM.PlaylistSmazan += playlist =>
+            {
+                PrehravacVM.VymazFrontuPrehravani(playlist);
+            };
+
+            // Akce při editaci metadat vybrané skladby
+            KnihovnaVM.SkladbaEditacePozadovana += song => 
+            {
+                UpravitMetadata(song);
+                
+            };
+
             AddSongCommand = KnihovnaVM.AddSongCommand;
             RemoveSongCommand = KnihovnaVM.RemoveSongCommand;
         }
@@ -135,7 +149,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             var vm = new PlaylistEditorDialogViewModel(
                 KnihovnaVM.Skladby!,
                 playlist.Skladby,
-                playlist
+                playlist,
+                PlaylistVM.Playlisty!
             );
 
             var dialog = new PlaylistEditorDialogView
@@ -187,6 +202,122 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     {
                         KnihovnaVM.VybranyPlaylist = null;
                         KnihovnaVM.VybranyPlaylist = playlist;
+                    }
+                }
+
+                dialog.Close();
+            };
+
+            dialog.ShowDialog();
+        }
+
+        /// <summary>
+        /// Metoda slouží k úprávě metadat vybrané skladby
+        /// </summary>
+        /// <param name="song">Skladba, kterou chceme editovat</param>
+        public void UpravitMetadata(Song song)
+        {
+            var vm = new SongMetadataEditorViewModel(song);
+            var dialog = new SongMetadataEditorView
+            {
+                DataContext = vm,
+                Owner = Application.Current.MainWindow
+            };
+
+            vm.ZavritDialog += async potvrdit =>
+            {
+                if (potvrdit)
+                {
+                    bool hrajeTatoSkladba = PrehravacVM.AktualniSkladba != null && PrehravacVM.AktualniSkladba.CestaKSouboru == song.CestaKSouboru;
+
+                    TimeSpan poziceVPrehravaci = TimeSpan.Zero;
+
+                    // Pokud hraje editováná skladba, musíme ji zastavit a vypustit zdroje, aby se uvolnil proces pro uložení!
+                    if (hrajeTatoSkladba)
+                    {
+                        poziceVPrehravaci = _audioService.AktualniCas;
+                        _audioService.Stop();
+                    }
+
+                    // Aktualizace metadat skladby                   
+                    song.Nazev = vm.Nazev;
+                    if (String.IsNullOrWhiteSpace(vm.Interpret))
+                    {
+                        song.Interpret = "Unknown";
+                    }
+
+                    else
+                    {
+                        song.Interpret = vm.Interpret;
+                    }
+
+                    if (String.IsNullOrWhiteSpace(vm.Album))
+                    {
+                        song.Album = "Unknown";
+                    }
+
+                    else
+                    {
+                        song.Album = vm.Album;
+                    }
+
+                    song.Zanr = vm.Zanr;
+                    if (uint.TryParse(vm.RokVydani, out uint rok))
+                    {
+                        song.RokVydani = rok;
+                    }
+
+                    song.PrebalAlba = vm.PrebalAlba;
+
+                    try
+                    {
+                        IMetadataService metadataService = new MetadataService();
+                        await metadataService.Save(song);
+
+                        // Aktualizace stejné skladby ve všech playlistech
+                        if (PlaylistVM.Playlisty != null)
+                        {
+                            foreach (PlayList playlist in PlaylistVM.Playlisty)
+                            {
+                                Song? songInPlaylist = playlist.Skladby.FirstOrDefault(s => s.CestaKSouboru == song.CestaKSouboru);
+                                if (songInPlaylist != null)
+                                {
+                                    // Přepsání dat v objektu, který drží playlist
+                                    songInPlaylist.Nazev = song.Nazev;
+                                    songInPlaylist.Interpret = song.Interpret;
+                                    songInPlaylist.Album = song.Album;
+                                    songInPlaylist.Zanr = song.Zanr;
+                                    songInPlaylist.RokVydani = song.RokVydani;
+                                }
+                            }
+                        }
+                    }
+
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                    // Pokud hraje editovaná skladba, tak ji musíme zastavit a poté znovu přehrát
+                    if (hrajeTatoSkladba)
+                    {
+                        await _audioService.Play(song.CestaKSouboru);
+                        _audioService.Pause();
+                        _audioService.Seek(poziceVPrehravaci);
+                        PrehravacVM.IsPlaying = false;
+                        PrehravacVM.RefreshAktualniSkladbu();
+                    }
+
+                    //Refresh všech potřebných UI komponent
+                    KnihovnaVM.RefreshKnihovnu();
+                    PlaylistVM.RefreshPlaylisty();
+
+                    // Pokud je v knihovně zobrazen playlist, který jsme právě změnili, musíme ho znovu prokliknout, aby se refreshnul
+                    if (KnihovnaVM.VybranyPlaylist != null)
+                    {
+                        PlayList? aktualni = KnihovnaVM.VybranyPlaylist;
+                        KnihovnaVM.VybranyPlaylist = null;
+                        KnihovnaVM.VybranyPlaylist = aktualni;
                     }
                 }
 

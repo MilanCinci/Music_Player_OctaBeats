@@ -212,7 +212,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k asynchronní inicializaci nastavení audia
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Vrací Task</returns>
         private async Task InicializujAsync()
         {
             try
@@ -438,6 +438,36 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     aktualniIndex = -1;
                 }
             }
+        }
+
+        /// <summary>
+        /// Metoda slouží k vymazání aktuálně přehrávané fronty
+        /// </summary>
+        /// <param name="smazanyPlaylist">Playlist, který chceme smazat</param>
+        public void VymazFrontuPrehravani(PlayList? smazanyPlaylist)
+        {
+            if (smazanyPlaylist == null)
+            {
+                return;
+            }
+
+            if (smazanyPlaylist.Nazev == ZdrojPrehravani)
+            {
+                _audioService.Stop();
+                AktualniSkladba = null;
+                IsPlaying = false;
+                Playlist.Clear();
+                ZdrojPrehravani = String.Empty;
+                aktualniIndex = -1;
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k refreshnutí změn metadat skladby ve View
+        /// </summary>
+        public void RefreshAktualniSkladbu()
+        {
+            OnPropertyChanged(nameof(AktualniSkladba));
         }
     }
 }

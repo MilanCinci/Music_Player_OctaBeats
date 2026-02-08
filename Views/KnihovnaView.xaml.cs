@@ -59,7 +59,9 @@ namespace Hudebni_Prehravac_OctaBeats.Views
 
                     if(vm.VybranyPlaylist != null && e.RightButton == MouseButtonState.Pressed)
                     {
-                        MessageBox.Show("kjfka");
+                        MessageBox.Show("V playlistech není povoleno kontextové menu. Pokud chcete editovat složení playlistu, " +
+                            "tak stačí dvakrát kliknout na vybraný playlist. Pokud chcete editovat metadata skladeb, tak to lze ve vaší knihovně",
+                            "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
 
                     if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)

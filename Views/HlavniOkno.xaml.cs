@@ -22,7 +22,8 @@ namespace Hudebni_Prehravac_OctaBeats.Views
     {
         public HlavniOkno()
         {
-            /* TODO Předělat to, aby Load a Save nastavení bylo asynchronní
+            /* TODO Předělat to, aby Load a Save nastavení bylo asynchronní.
+                    Přidat něco jako refresh do ErrorMessageBoxu, kdyby uživatel ručně smazal z MyMusic písnička nebo ji tam přidal, tak aby se to refreshnulo všechno (Playlisty, knihovna)
                     Dodělat Nastavení, Historie Přehrávání */
             InitializeComponent();
             this.DataContext = new MainViewModel();

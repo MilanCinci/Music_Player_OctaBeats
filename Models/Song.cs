@@ -35,6 +35,16 @@ namespace Hudebni_Prehravac_OctaBeats.Models
         /// Přebal alba
         /// </summary>
         public byte[]? PrebalAlba { get; set; }
+
+        /// <summary>
+        /// Hlavní žánr skladby
+        /// </summary>
+        public string? Zanr { get; set; }
+
+        /// <summary>
+        /// Rok vydání skladby
+        /// </summary>
+        public uint? RokVydani {  get; set; }
         
         /// <summary>
         /// Cesta k souboru skladby
@@ -53,14 +63,19 @@ namespace Hudebni_Prehravac_OctaBeats.Models
         /// <param name="interpret">Interpret (autor) skladby</param>
         /// <param name="album">Název alba</param>
         /// <param name="delka">Doba trvání skladby</param>
+        /// <param name="prebalAlba">Přebal alba</param>
+        /// <param name="zanr">Hlavní žánr skladby</param>
+        /// <param name="rokVydani">Rok vydání skladby</param>
         /// <param name="cestaKSouboru">Cesta k souboru skladby</param>
-        public Song(string nazev, string? interpret, string? album, TimeSpan delka, byte[]? prebalAlba, string cestaKSouboru)
+        public Song(string nazev, string? interpret, string? album, TimeSpan delka, byte[]? prebalAlba, string? zanr, uint? rokVydani, string cestaKSouboru)
         {
             Nazev = nazev;
             Interpret = interpret;
             Album = album;
             Delka = delka;
             PrebalAlba = prebalAlba;
+            Zanr = zanr;
+            RokVydani = rokVydani;
             CestaKSouboru = cestaKSouboru;
         }
     }

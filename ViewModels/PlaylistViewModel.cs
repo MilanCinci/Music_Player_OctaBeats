@@ -5,6 +5,7 @@ using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,7 +17,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     /// <summary>
     /// ViewModel pro obsluhu metod playlist 
     /// </summary>
-    public class PlaylistViewModel : BaseViewModel
+    public class PlaylistViewModel : BaseViewModel, IDataErrorInfo
     {
         private readonly IPlaylistService _playlistService;
 
@@ -62,6 +63,35 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand RemovePlaylistCommand { get; }
         public ICommand ResetVyberCommand { get; }
 
+        // Implementace IDataErrorInfo pro validaci
+        public string Error => String.Empty;
+        public string this[string columnName]
+        {
+            get
+            {
+                string? result = String.Empty;
+                switch (columnName)
+                {
+                    case nameof(NovyNazevPlaylistu):
+                        if(Playlisty != null && Playlisty.Count > 0)
+                        {
+                            if (Playlisty.Any(playlist => playlist.Nazev.Equals(NovyNazevPlaylistu, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                result = $"Playlist s názvem '{NovyNazevPlaylistu}' již existuje!";
+                            }
+                        }
+                        break;
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Akce pro vymazaný playlist
+        /// </summary>
+        public event Action<PlayList>? PlaylistSmazan;
+
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
@@ -72,7 +102,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             _ = InicializujAsync();
 
-            AddPlaylistCommand = new AsyncRelayCommand(AddPlaylist);
+            AddPlaylistCommand = new AsyncRelayCommand(AddPlaylist, () => JeValidni());
             RemovePlaylistCommand = new AsyncRelayCommand(RemovePlaylist);
             ResetVyberCommand = new RelayCommand(_ => VybranyPlaylist = null);
         }
@@ -165,9 +195,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             if (VybranyPlaylist != null && Playlisty != null)
             {
-                Playlisty.Remove(VybranyPlaylist);
+                PlaylistSmazan?.Invoke(VybranyPlaylist);
+                Playlisty.Remove(VybranyPlaylist);                
                 VybranyPlaylist = null;
-                await _playlistService.Save(Playlisty);
+                await _playlistService.Save(Playlisty);                
             }
         }
 
@@ -231,6 +262,14 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 //TODO
             }
+        }
+
+        /// <summary>
+        /// Metoda slouží k validaci, zda jsou všechna pole správně vyplněna
+        /// </summary>
+        private bool JeValidni()
+        {
+            return String.IsNullOrEmpty(this[nameof(NovyNazevPlaylistu)]);
         }
     }
 }
