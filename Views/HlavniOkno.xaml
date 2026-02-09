@@ -26,14 +26,14 @@
               Background="#222"
               Foreground="White">
             <MenuItem Header="Soubor">
-                <MenuItem Header="Ukončit" Command="{Binding ExitCommand}"/>
-                <MenuItem Header="Přidej skladbu" Command="{Binding AddSongCommand}"/>
-                <MenuItem Header="Smaž vybranou skladbu" Command="{Binding RemoveSongCommand}" Foreground="Red"/>
-            </MenuItem>
-            <MenuItem Header="Zobrazení">
-                <MenuItem Header="Knihovna"/>
-                <MenuItem Header="Playlisty"/>
-                <MenuItem Header="Historie"/>
+                <MenuItem Header="Ukončit" Command="{Binding ExitCommand}" Foreground="Black"/>
+                <MenuItem Header="Přidej skladbu" Command="{Binding AddSongCommand}" Foreground="Black"/>
+                <MenuItem Header="Smaž vybranou skladbu" Command="{Binding RemoveSongCommand}" Foreground="Black"/>
+                <MenuItem Header="Synchronizovat změny" Command="{Binding RefreshChangesCommand}" Foreground="Black" ToolTip="Znovu načte hudební složku a playlisty">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🔄" VerticalAlignment="Center"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Nastavení">
                 <MenuItem Header="Jazyk" Command="{Binding OpenSettingsCommand}"/>

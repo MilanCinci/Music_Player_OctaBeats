@@ -144,20 +144,19 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Pomocná motoda pro asynchronní načtení knihovny skladeb
         /// </summary>
-        private async Task InicializujAsync()
+        public async Task InicializujAsync()
         {
             try
             {
                 Skladby = await _knihovnaService.Load()!;
-
                 VyfiltrovaneSkladby = new ObservableCollection<Song>(Skladby);
                 OnPropertyChanged(nameof(Skladby));
                 OnPropertyChanged(nameof(VyfiltrovaneSkladby));
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                //TODO
+                MessageBox.Show($"Nepodařilo se načíst knihovnu: {ex.Message} !");
             }
         }
 

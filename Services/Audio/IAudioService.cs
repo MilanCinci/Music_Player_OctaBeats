@@ -56,6 +56,11 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// <summary>
         /// Akce ukončení skladby
         /// </summary>
-        event Action UkonceniSkladby;
+        event Action? UkonceniSkladby;
+
+        /// <summary>
+        /// Akce nenalezení souboru skladby
+        /// </summary>
+        public event Action<string>? SouborNenalezen;
     }
 }

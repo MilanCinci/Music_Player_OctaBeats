@@ -1,4 +1,5 @@
-﻿using Hudebni_Prehravac_OctaBeats.Models;
+﻿using Hudebni_Prehravac_OctaBeats.Commands;
+using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Services;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
@@ -9,6 +10,7 @@ using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
 using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using Hudebni_Prehravac_OctaBeats.Views;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -34,6 +36,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddSongCommand { get; }
         public ICommand RemoveSongCommand { get; }
+        public ICommand RefreshChangesCommand { get; }
 
         /// <summary>
         /// ViewModel přehrávače
@@ -134,8 +137,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 
             };
 
+            // Akce při nenalezení souboru skladby
+            _audioService.SouborNenalezen += async (cestaKSouboru) =>
+            {
+                await RefreshVsechDat();
+                MessageBox.Show($"Soubor '{cestaKSouboru}' neexistuje! Knihovna a playlistu jsou aktualizovány",
+                                "Playing Error ", MessageBoxButton.OK, MessageBoxImage.Information);
+            };
+
             AddSongCommand = KnihovnaVM.AddSongCommand;
             RemoveSongCommand = KnihovnaVM.RemoveSongCommand;
+            RefreshChangesCommand = new AsyncRelayCommand(RefreshVsechDat);
         }
 
         /// <summary>
@@ -325,6 +337,57 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             };
 
             dialog.ShowDialog();
+        }
+
+        /// <summary>
+        /// Metoda slouží k globálnímu refresh celé aplikace (načte znovu disk i playlisty)
+        /// </summary>
+        /// <returns>Vrací Task</returns>
+        public async Task RefreshVsechDat()
+        {
+            try
+            {
+                // Načtení skladeb znovu do knihovny
+                await KnihovnaVM.InicializujAsync();
+
+                // Procházení všech playlistů a odstranění z nich skladby, které již neexistují na disku
+                if (PlaylistVM.Playlisty != null)
+                {
+                    bool bylaZmena = false;
+                    foreach (PlayList playlist in PlaylistVM.Playlisty)
+                    {
+                        // Najdeme všechny skladby, které už fyzicky neexistují
+                        var kOdstraneni = playlist.Skladby.Where(s => !File.Exists(s.CestaKSouboru)).ToList();
+
+                        foreach (Song song in kOdstraneni)
+                        {
+                            playlist.Skladby.Remove(song);
+                            playlist.CestyKSkladbam.Remove(song.CestaKSouboru);
+                            bylaZmena = true;
+                        }
+                    }
+
+                    if (bylaZmena)
+                    {
+                        await _playlistService.Save(PlaylistVM.Playlisty);
+                        PlaylistVM.RefreshPlaylisty();
+                        PlaylistVM.VybranyPlaylist = null;
+                    }
+                }
+
+                // reset přehrávače, pokud hrající skladba zmizela
+                if (PrehravacVM.AktualniSkladba != null && !File.Exists(PrehravacVM.AktualniSkladba.CestaKSouboru))
+                {
+                    _audioService.Stop();
+                    PrehravacVM.AktualniSkladba = null;
+                    PrehravacVM.IsPlaying = false;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Chyba při synchronizaci změn: {ex.Message} !");
+            }
         }
     }
 }

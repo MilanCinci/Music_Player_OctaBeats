@@ -6,10 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
@@ -206,28 +208,31 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Metoda slouží k asynchronnímu načtení playlistů a metadat
         /// </summary>
         /// <returns>Vrací Task</returns>
-        private async Task InicializujAsync()
+        public async Task InicializujAsync()
         {
             try
             {
                 Playlisty = await _playlistService.Load()! ?? new ObservableCollection<PlayList>();
+                MetadataService metadata = new MetadataService();
 
-                var metadata = new MetadataService();
-
-                foreach (var playlist in Playlisty)
+                foreach (PlayList playlist in Playlisty)
                 {
                     playlist.Skladby.Clear();
 
                     foreach (var cesta in playlist.CestyKSkladbam)
                     {
-                        try
+                        // Kontrola existence souboru před načtením jeho metadat
+                        if (File.Exists(cesta))
                         {
-                            playlist.Skladby.Add(await Task.Run(() => metadata.Load(cesta)));
-                        }
+                            try
+                            {
+                                playlist.Skladby.Add(await Task.Run(() => metadata.Load(cesta)));
+                            }
 
-                        catch
-                        {
-
+                            catch
+                            { 
+                                // Poškozený soubor se přeskočí
+                            }
                         }
                     }
                 }
@@ -258,9 +263,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 indexPlaylistu = maxIndex + 1;
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                //TODO
+                MessageBox.Show($"Nastala chyba při synchronizaci playlistů: {ex.Message} !");
             }
         }
 

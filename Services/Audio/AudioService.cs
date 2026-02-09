@@ -1,5 +1,9 @@
-﻿using NAudio.Wave;
+﻿using Hudebni_Prehravac_OctaBeats.Persistence;
+using NAudio.Wave;
 using System;
+using System.IO;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace Hudebni_Prehravac_OctaBeats.Services.Audio
 {
@@ -46,9 +50,15 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         public event Action? UkonceniSkladby;
 
         /// <summary>
+        /// Akce nenalezení souboru skladby
+        /// </summary>
+        public event Action<string>? SouborNenalezen;
+
+        /// <summary>
         /// Metoda slouží ke spuštění přehrávání vybrané skladby
         /// </summary>
         /// <param name="filePath">Cesta k souboru skladby</param>
+        /// <returns>Vrací Task</returns>
         public async Task Play(string filePath)
         {
             try
@@ -60,45 +70,68 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                     return;
                 }
 
-                // Všechnu těžkou práci (vytvoření readeru i výstupního zařízení) přesuneme na pozadí
+                // Kontrola existence souboru ještě před spuštěním asynchronního vlákna
+                if (!File.Exists(filePath))
+                {
+                    throw new FileNotFoundException($"Soubor '{filePath}' nebyl nalezen!", filePath);
+                }
+
+                // Všechna inicializace se provádí na pozadí
                 await Task.Run(() =>
                 {
                     lock (_audioLock)
                     {
-                        ReleaseResources();
-
-                        manualStop = false;
-                        currentFilePath = filePath;
-
-                        // Vytvoření readeru
-                        var novyReader = new AudioFileReader(filePath);
-                        reader = novyReader;
-
-                        // Inicializace výstupu na pozadí
-                        var novyOutput = new WaveOutEvent();
-                        novyOutput.Init(reader);
-
-                        output = novyOutput;
-
-                        output.PlaybackStopped += (s, e) =>
+                        try
                         {
-                            if (!manualStop && reader != null &&
-                                reader.CurrentTime >= reader.TotalTime.Subtract(TimeSpan.FromMilliseconds(200)))
-                            {
-                                // Vyvolání události zpět do UI vlákna
-                                UkonceniSkladby?.Invoke();
-                            }
-                        };
+                            ReleaseResources();
 
-                        output.Play();
+                            manualStop = false;
+                            currentFilePath = filePath;
+
+                            // Vytvoření readeru a výstupního zařízení
+                            var novyReader = new AudioFileReader(filePath);
+                            var novyOutput = new WaveOutEvent();
+
+                            novyOutput.Init(novyReader);
+
+                            reader = novyReader;
+                            output = novyOutput;
+
+                            output.PlaybackStopped += (s, e) =>
+                            {
+                                // Kontrola, zda skladba skončila přirozeně (není to manuální Stop)
+                                if (!manualStop && reader != null &&
+                                    reader.CurrentTime >= reader.TotalTime.Subtract(TimeSpan.FromMilliseconds(200)))
+                                {
+                                    UkonceniSkladby?.Invoke();
+                                }
+                            };
+
+                            output.Play();
+                        }
+
+                        catch (Exception)
+                        {
+                            // Pokud selže inicializace (např. poškozený soubor), uvolníme zdroje a pošleme chybu dál
+                            ReleaseResources();
+                            throw;
+                        }
                     }
                 });
 
                 isPaused = false;
             }
-            catch (Exception)
+
+            catch (FileNotFoundException)
             {
-                throw;
+                // Signalizace pro MainViewModel, že soubor neexistuje a je potřeba provést refresh
+                SouborNenalezen?.Invoke(filePath);
+            }
+
+            catch (Exception ex)
+            {
+                ReleaseResources();
+                SpravaSouboru.LogError(ex, "Audio výstup selhal", nameof(AudioService));
             }
         }
 
