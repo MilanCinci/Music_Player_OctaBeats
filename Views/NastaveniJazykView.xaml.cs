@@ -1,5 +1,4 @@
-﻿using Hudebni_Prehravac_OctaBeats.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,17 +15,13 @@ using System.Windows.Shapes;
 namespace Hudebni_Prehravac_OctaBeats.Views
 {
     /// <summary>
-    /// View, které je vázané na MainViewModel
+    /// Interaction logic for NastaveniJazykView.xaml
     /// </summary>
-    public partial class HlavniOkno : Window
+    public partial class NastaveniJazykView : Window
     {
-        public HlavniOkno()
+        public NastaveniJazykView()
         {
-            /* TODO Předělat to, aby Load a Save nastavení bylo asynchronní.
-                    Pomocí klávesové zkratky, odfocusovat vybraný záznam z historie
-                    Dodělat Nastavení */
             InitializeComponent();
-            this.DataContext = new MainViewModel();
         }
     }
 }

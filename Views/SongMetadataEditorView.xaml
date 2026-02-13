@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Hudebni_Prehravac_OctaBeats.Views"
         xmlns:conv="clr-namespace:Hudebni_Prehravac_OctaBeats.Models.Conventers"
         mc:Ignorable="d"
-        Title="Song metadata"
+        Title="{Binding [SongMetadataTitle]}"
         Width="650"
         Height="600"
         WindowStartupLocation="CenterOwner" MinWidth="550" MinHeight="530" MaxWidth="650" MaxHeight="600">
@@ -39,13 +39,13 @@
 
             <!-- Název skladby -->
             <StackPanel Margin="15,5,15,8" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                <TextBlock Text="Název" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
+                <TextBlock Text="{Binding [Name]}" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
                 <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" TabIndex="1" MaxLength="60" TextWrapping="WrapWithOverflow" Height="22" VerticalContentAlignment="Center"/>
             </StackPanel>
 
             <!-- Interpreti skladby -->
             <StackPanel Margin="15,5,15,5" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">
-                <TextBlock Text="Interpret" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
+                <TextBlock Text="{Binding [Artist]}" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
                 <TextBox Text="{Binding Interpret, UpdateSourceTrigger=PropertyChanged}" TabIndex="2" MaxLength="60" TextWrapping="WrapWithOverflow" Height="22" VerticalContentAlignment="Center"/>
             </StackPanel>
 
@@ -57,13 +57,13 @@
 
                 <!-- Album -->
                 <StackPanel Margin="15,5,15,5" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                    <TextBlock Text="Album" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
+                    <TextBlock Text="{Binding [Album]}" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
                     <TextBox Text="{Binding Album, UpdateSourceTrigger=PropertyChanged}" TabIndex="3" MaxLength="40" TextWrapping="WrapWithOverflow" Height="22" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Rok vydání -->
                 <StackPanel Margin="15,5,15,5" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
-                    <TextBlock Text="Rok vydání" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
+                    <TextBlock Text="{Binding [ReleaseYear]}" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
                     <TextBox Text="{Binding RokVydani, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" TabIndex="4" MaxLength="4" TextWrapping="WrapWithOverflow" Height="22" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </Grid>
@@ -76,13 +76,13 @@
 
                 <!-- Žánr -->
                 <StackPanel Margin="15,5,15,5" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                    <TextBlock Text="Žánr" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
+                    <TextBlock Text="{Binding [Genre]}" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
                     <TextBox Text="{Binding Zanr, UpdateSourceTrigger=PropertyChanged}" TabIndex="5" MaxLength="20" TextWrapping="WrapWithOverflow" Height="22" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Rok vydání -->
                 <StackPanel Margin="15,5,15,5" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
-                    <TextBlock Text="Délka" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
+                    <TextBlock Text="{Binding [Duration]}" Margin="0,0,0,5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold"/>
                     <TextBlock Text="{Binding Delka, UpdateSourceTrigger=PropertyChanged}" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" FontWeight="DemiBold" Height="22"/>
                 </StackPanel>
             </Grid>
@@ -95,7 +95,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" 
-               Text="Přebal alba" 
+               Text="{Binding [AlbumCover]}" 
                Margin="0,0,0,5" 
                FontWeight="DemiBold"/>
 

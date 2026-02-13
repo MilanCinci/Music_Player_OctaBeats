@@ -117,11 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="About" xml:space="preserve">
+    <value>O aplikaci</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Přidat</value>
+  </data>
+  <data name="AddSong" xml:space="preserve">
+    <value>Přidat skladbu</value>
+  </data>
   <data name="AppTitle" xml:space="preserve">
     <value>Hudební přehrávač OctaBeats</value>
   </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Ukončit</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>Soubor</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Nápověda</value>
+  </data>
   <data name="History" xml:space="preserve">
-    <value>Historie přehrávání</value>
+    <value>Historie</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Jazyk</value>
@@ -135,8 +153,23 @@
   <data name="Play" xml:space="preserve">
     <value>Přehrát</value>
   </data>
-  <data name="Playlist" xml:space="preserve">
-    <value>Playlist</value>
+  <data name="Playlists" xml:space="preserve">
+    <value>Playlisty</value>
+  </data>
+  <data name="RefreshChanges" xml:space="preserve">
+    <value>Synchronizovat změny</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Odstranit</value>
+  </data>
+  <data name="RemoveAllHistory" xml:space="preserve">
+    <value>Vymaž celou historii</value>
+  </data>
+  <data name="RemoveSelectedHistory" xml:space="preserve">
+    <value>Vymaž vybranou historii</value>
+  </data>
+  <data name="RemoveSong" xml:space="preserve">
+    <value>Vymazat skladbu</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>Vyhledávání</value>
@@ -144,7 +177,64 @@
   <data name="Settings" xml:space="preserve">
     <value>Nastavení</value>
   </data>
+  <data name="Songs" xml:space="preserve">
+    <value>Skladby</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Zdroj: </value>
+  </data>
   <data name="Stop" xml:space="preserve">
     <value>Zastavit</value>
+  </data>
+  <data name="ShowLibrary" xml:space="preserve">
+    <value>Zobrazit celou knihovnu</value>
+  </data>
+  <data name="PlaylistName" xml:space="preserve">
+    <value>Název playlistu:</value>
+  </data>
+  <data name="PlaylistEditorTitle" xml:space="preserve">
+    <value>Úprava playlistu</value>
+  </data>
+  <data name="SongMetadataTitle" xml:space="preserve">
+    <value>Metadata skladby</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Název</value>
+  </data>
+  <data name="Artist" xml:space="preserve">
+    <value>Interpret</value>
+  </data>
+  <data name="Album" xml:space="preserve">
+    <value>Album</value>
+  </data>
+  <data name="ReleaseYear" xml:space="preserve">
+    <value>Rok vydání</value>
+  </data>
+  <data name="Genre" xml:space="preserve">
+    <value>Žánr</value>
+  </data>
+  <data name="GettingStarted" xml:space="preserve">
+    <value>Začínáme</value>
+  </data>
+  <data name="AlbumCover" xml:space="preserve">
+    <value>Přebal alba</value>
+  </data>
+  <data name="ErrorNameEmpty" xml:space="preserve">
+    <value>Název nesmí být prázdný!</value>
+  </data>
+  <data name="ErrorInvalidYearFormat" xml:space="preserve">
+    <value>Rok musí být 4-ciferné číslo!</value>
+  </data>
+  <data name="ErrorYearFuture" xml:space="preserve">
+    <value>Rok nemůže být v budoucnosti!</value>
+  </data>
+  <data name="ErrorDuplicatePlaylistName" xml:space="preserve">
+    <value>Playlist s tímto názvem již existuje!</value>
+  </data>
+  <data name="ErrorFileNotFound" xml:space="preserve">
+    <value>Soubor {0} nebyl nalezen!</value>
+  </data>
+  <data name="ErrorInvalidPath" xml:space="preserve">
+    <value>Cesta nemůže být prázdná ani NULL!</value>
   </data>
 </root>

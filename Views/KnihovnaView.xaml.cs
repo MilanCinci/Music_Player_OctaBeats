@@ -55,8 +55,7 @@ namespace Hudebni_Prehravac_OctaBeats.Views
                 if (dep is ListBoxItem && DataContext is KnihovnaViewModel vm)
                 {
                     // Pokud jde o jednoduché kliknutí na položku, označíme událost jako vyřízenou.
-                    // ListBoxItem se neoznačí, ale událost probublá dál pro ContextMenu (u pravého tlačítka).
-
+                    // ListBoxItem se neoznačí, ale událost probublá dál pro ContextMenu (u pravého tlačítka)
                     if(vm.VybranyPlaylist != null && e.RightButton == MouseButtonState.Pressed)
                     {
                         MessageBox.Show("V playlistech není povoleno kontextové menu. Pokud chcete editovat složení playlistu, " +
@@ -79,10 +78,10 @@ namespace Hudebni_Prehravac_OctaBeats.Views
         /// <param name="e">eventArgs</param>
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ListBox listBox && listBox.SelectedItem != null)
+            if (sender is ListBox lb && lb.SelectedItem != null)
             {
                 // Zajištění, že označený prvek bude vždy viditelný na obrazovce
-                listBox.ScrollIntoView(listBox.SelectedItem);
+                lb.ScrollIntoView(lb.SelectedItem);         
             }
         }
 
@@ -107,6 +106,26 @@ namespace Hudebni_Prehravac_OctaBeats.Views
                     }
                 }
             }
+        }
+
+        public void PosunFocusNaSkladbu(Song skladba)
+        {
+            // 1. Nastavíme prvek jako vybraný v datech
+            listboxSongs.SelectedItem = skladba;
+
+            // 2. Musíme zajistit, aby WPF vygenerovalo vizuální prvek
+            listboxSongs.ScrollIntoView(skladba);
+
+            // 3. Vynutíme focus na vizuální kontejner
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var container = (ListBoxItem)listboxSongs.ItemContainerGenerator.ContainerFromItem(skladba);
+                if (container != null)
+                {
+                    container.Focus();
+                    Keyboard.Focus(container); // Fyzický focus klávesnice pro "tečkovaný rámeček"
+                }
+            }), System.Windows.Threading.DispatcherPriority.Render);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using System;
@@ -22,6 +23,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     public class PlaylistViewModel : BaseViewModel, IDataErrorInfo
     {
         private readonly IPlaylistService _playlistService;
+        private readonly ILokalizaceService _lokalizaceService;
 
         /// <summary>
         /// Seznam vytvořených playlistů
@@ -48,7 +50,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 novyNazevPlaylistu = value;
                 OnPropertyChanged();
             }
-        }
+        }     
 
         /// <summary>
         /// Aktuální index pro nepojmenované playlisty
@@ -58,7 +60,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Výchozí název pro nepojmenované playlisty
         /// </summary>
-        private static string vychoziNazev = "New playlist";
+        private static string VychoziNazev = "New playlist";
 
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddPlaylistCommand { get; }
@@ -79,13 +81,14 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                         {
                             if (Playlisty.Any(playlist => playlist.Nazev.Equals(NovyNazevPlaylistu, StringComparison.OrdinalIgnoreCase)))
                             {
-                                result = $"Playlist s názvem '{NovyNazevPlaylistu}' již existuje!";
+                                result = _lokalizaceService["ErrorDuplicatePlaylistName"];
                             }
                         }
-                        break;
+                        return result;
                 }
 
-                return result;
+                // Pokud není detekována žádná chyba, tak použijeme lokalizaci
+                return _lokalizaceService[columnName];
             }
         }
 
@@ -98,9 +101,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
         /// <param name="playlistService">Servis pro obsluhu metod playlistů</param>
-        public PlaylistViewModel(IPlaylistService playlistService)
+        /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace</param>
+        public PlaylistViewModel(IPlaylistService playlistService, ILokalizaceService lokalizaceService)
         {
             _playlistService = playlistService;
+            _lokalizaceService = lokalizaceService;
 
             _ = InicializujAsync();
 
@@ -172,7 +177,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             // Nastavení výchozího názvu playlistu
             if (String.IsNullOrWhiteSpace(NovyNazevPlaylistu))
             {
-                NovyNazevPlaylistu = $"{vychoziNazev}{indexPlaylistu}";
+                NovyNazevPlaylistu = $"{VychoziNazev}{indexPlaylistu}";
                 indexPlaylistu++;
             }
 
@@ -240,7 +245,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 OnPropertyChanged(nameof(Playlisty));
 
                 // Hledání aktuálního indexu u uložených playlistů jako "New playlist" 
-                List<PlayList> hledanePlaylisty = Playlisty.Where(playlist => playlist.Nazev.StartsWith(vychoziNazev, StringComparison.OrdinalIgnoreCase))
+                List<PlayList> hledanePlaylisty = Playlisty.Where(playlist => playlist.Nazev.StartsWith(VychoziNazev, StringComparison.OrdinalIgnoreCase))
                                                             .ToList();
                 int maxIndex = 0;
 
@@ -267,6 +272,14 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 MessageBox.Show($"Nastala chyba při synchronizaci playlistů: {ex.Message} !");
             }
+        }
+
+        /// <summary>
+        /// Metoda slouží k refreshnutí prvků ve View, aby se správně přeložily
+        /// </summary>
+        public void RefreshLokalizace()
+        {
+            OnPropertyChanged("Item[]");
         }
 
         /// <summary>

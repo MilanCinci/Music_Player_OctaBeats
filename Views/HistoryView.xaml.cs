@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Hudebni_Prehravac_OctaBeats.Views
 {
     /// <summary>
-    /// View, které je vázané na NastaveniViewModel
+    /// View, které je vázané na HistoryViewModel
     /// </summary>
-    public partial class NastaveniView : UserControl
+    public partial class HistoryView : UserControl
     {
-        public NastaveniView()
+        public HistoryView()
         {
             InitializeComponent();
         }

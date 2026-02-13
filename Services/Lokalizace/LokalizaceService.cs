@@ -44,5 +44,12 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Lokalizace
         {
             return _resourceManager.GetString(key, AktualniJazyk) ?? key;
         }
+
+        /// <summary>
+        /// Indexer pro získání správných překladů pomocí vstupního klíče
+        /// </summary>
+        /// <param name="key">Klíč, podle kterého budeme překládat</param>
+        /// <returns>Vrací přeložený text na správný jazyk</returns>
+        public string this[string key] => Translate(key);
     }
 }

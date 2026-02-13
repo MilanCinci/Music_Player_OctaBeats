@@ -4,9 +4,9 @@ using Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
@@ -16,6 +16,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     public class KnihovnaViewModel : BaseViewModel
     {
         private readonly IKnihovnaService _knihovnaService;
+
+        private bool potlacVyber;
+
 
         private ObservableCollection<Song>? skladby;
         /// <summary>
@@ -104,9 +107,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 vybranaSkladba = value;
                 OnPropertyChanged();
 
-                if (value != null)
+                if (value != null && !potlacVyber)
                 {
-                    // Skladba se spustí jen pokud od posledního výběru uběhlo aspoň 200ms
                     DateTime nyni = DateTime.Now;
                     if ((nyni - posledniVyber).TotalMilliseconds > 200)
                     {
@@ -156,7 +158,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             catch (Exception ex)
             {
-                MessageBox.Show($"Nepodařilo se načíst knihovnu: {ex.Message} !");
+                MessageBox.Show($"Nepodařilo se načíst knihovnu: {ex.Message} !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -290,7 +292,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 // Používáme MessageBox pro potvrzení
                 DialogResult vysledekDiaOkna = MessageBox.Show(
                     $"Opravdu chcete vymazat skladbu '{skladbaKeSmazani.Nazev}' ?",
-                    "Potvrdit smazání",
+                    "Confirm",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
 
@@ -324,6 +326,19 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 MessageBox.Show(ex.Message, "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        public void NastavVybranouSkladbu(Song? skladba)
+        {
+            if (skladba == null)
+                return;
+
+            potlacVyber = true;
+
+            VybranaSkladba = VyfiltrovaneSkladby
+                .FirstOrDefault(s => s.CestaKSouboru == skladba.CestaKSouboru);
+
+            potlacVyber = false;
         }
     }
 }

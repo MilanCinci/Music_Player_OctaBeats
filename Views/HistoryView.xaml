@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="Hudebni_Prehravac_OctaBeats.Views.HistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:conv="clr-namespace:Hudebni_Prehravac_OctaBeats.Models.Conventers"
+             mc:Ignorable="d" 
+             MinWidth="200" 
+             MinHeight="200" BorderBrush="Gray" BorderThickness="1">
+
+    <UserControl.Resources>
+        <conv:ByteToImageConverter x:Key="ByteToImageConverter"/>
+    </UserControl.Resources>
+
+    <Grid Margin="5,5,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding [History]}" FontSize="20" FontWeight="Bold" Margin="10,5,10,10"/>
+
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Historie}"
+                 SelectedItem="{Binding VybranyZaznam}"
+                 HorizontalContentAlignment="Stretch"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 d:ItemsSource="{d:SampleData ItemCount=5}">
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+
+                                <MenuItem Header="Vymaž z historie"
+Command="{Binding PlacementTarget.Tag.DataContext.RemoveSelectedHistoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="🗑️" VerticalAlignment="Center"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                                <MenuItem Header="Vymaž celou historii"
+    Command="{Binding PlacementTarget.Tag.DataContext.RemoveAllHistoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="❌" VerticalAlignment="Center"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                                <Separator />
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,14,0" CornerRadius="4">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding Song.PrebalAlba, Converter={StaticResource ByteToImageConverter}, 
+                                           TargetNullValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png'}"
+                                            Stretch="UniformToFill"/>
+                            </Border.Background>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Song.Nazev}" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock Text="{Binding Song.Interpret}" Foreground="Gray" FontSize="11"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,0">
+                            <TextBlock Text="{Binding DatumPrehrani, StringFormat=\{0:HH:mm\}}" 
+                                       FontSize="11" FontWeight="Bold" HorizontalAlignment="Right"/>
+                            <TextBlock Text="{Binding DatumPrehrani, StringFormat=\{0:dd.MM.\}}" 
+                                       FontSize="11" Foreground="Gray" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

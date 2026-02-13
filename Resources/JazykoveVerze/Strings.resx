@@ -117,17 +117,44 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+    <comment>MenuItem Napoveda</comment>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+    <comment>Obecne Pridat</comment>
+  </data>
+  <data name="AddSong" xml:space="preserve">
+    <value>Add Song</value>
+    <comment>MenuItem Knihovna</comment>
+  </data>
   <data name="AppTitle" xml:space="preserve">
     <value>Music Player OctaBeats</value>
+    <comment>Nadpis aplikace</comment>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+    <comment>Menu aplikace</comment>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+    <comment>MenuItem Napoveda</comment>
   </data>
   <data name="History" xml:space="preserve">
     <value>History</value>
+    <comment>Menu aplikace</comment>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
+    <comment>MenuItem Nastaveni</comment>
   </data>
   <data name="Library" xml:space="preserve">
     <value>Library</value>
+    <comment>Menu aplikace</comment>
   </data>
   <data name="Pause" xml:space="preserve">
     <value>Pause</value>
@@ -135,16 +162,115 @@
   <data name="Play" xml:space="preserve">
     <value>Play</value>
   </data>
-  <data name="Playlist" xml:space="preserve">
-    <value>Playlist</value>
+  <data name="Playlists" xml:space="preserve">
+    <value>Playlists</value>
+    <comment>PlaylistView playlisty</comment>
+  </data>
+  <data name="RefreshChanges" xml:space="preserve">
+    <value>Refresh Changes</value>
+    <comment>MenuItem Knihovna</comment>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+    <comment>Obecne Odstranit</comment>
+  </data>
+  <data name="RemoveAllHistory" xml:space="preserve">
+    <value>Remove All History</value>
+    <comment>MenuItem Historie</comment>
+  </data>
+  <data name="RemoveSelectedHistory" xml:space="preserve">
+    <value>Remove Selected History</value>
+    <comment>MenuItem Historie</comment>
+  </data>
+  <data name="RemoveSong" xml:space="preserve">
+    <value>Remove Song</value>
+    <comment>MenuItem Knihovna</comment>
   </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>
+    <comment>Tooltip text</comment>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
+    <comment>Menu aplikace</comment>
+  </data>
+  <data name="Songs" xml:space="preserve">
+    <value>Songs</value>
+    <comment>Nadpis Skladby</comment>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+    <comment>PrehravacView zdroj</comment>
   </data>
   <data name="Stop" xml:space="preserve">
     <value>Stop</value>
+  </data>
+  <data name="ShowLibrary" xml:space="preserve">
+    <value>Show Library</value>
+    <comment>PlaylistView Zobrazit celou knihovnu</comment>
+  </data>
+  <data name="PlaylistName" xml:space="preserve">
+    <value>Name</value>
+    <comment>PlaylistEditorDialogView nazev playlistu</comment>
+  </data>
+  <data name="PlaylistEditorTitle" xml:space="preserve">
+    <value>Playlist Editor</value>
+    <comment>Nadpis PlaylistEditorDialogView</comment>
+  </data>
+  <data name="SongMetadataTitle" xml:space="preserve">
+    <value>Metadata Editor</value>
+    <comment>Nadpis SongMetadataEditorView</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+    <comment>Obecny Nazev</comment>
+  </data>
+  <data name="Artist" xml:space="preserve">
+    <value>Artist</value>
+    <comment>Obecny Interpret</comment>
+  </data>
+  <data name="Album" xml:space="preserve">
+    <value>Album</value>
+    <comment>Obecne Album</comment>
+  </data>
+  <data name="ReleaseYear" xml:space="preserve">
+    <value>Release Year</value>
+    <comment>Obecny Rok vydani</comment>
+  </data>
+  <data name="Genre" xml:space="preserve">
+    <value>Genre</value>
+    <comment>Obecny Zanr</comment>
+  </data>
+  <data name="GettingStarted" xml:space="preserve">
+    <value>Getting Started</value>
+    <comment>MenuItem Napoveda</comment>
+  </data>
+  <data name="AlbumCover" xml:space="preserve">
+    <value>Album Cover</value>
+    <comment>Obecny Prebal alba</comment>
+  </data>
+  <data name="ErrorNameEmpty" xml:space="preserve">
+    <value>Error Name Empty</value>
+    <comment>Chyba empty name</comment>
+  </data>
+  <data name="ErrorInvalidYearFormat" xml:space="preserve">
+    <value>Error Invalid Year Format</value>
+    <comment>Chyba invalid year format</comment>
+  </data>
+  <data name="ErrorYearFuture" xml:space="preserve">
+    <value>Error Year Future</value>
+    <comment>Chyba year in future</comment>
+  </data>
+  <data name="ErrorDuplicatePlaylistName" xml:space="preserve">
+    <value>Error Duplicate Playlist Name</value>
+    <comment>Chyba duplicate playlist name</comment>
+  </data>
+  <data name="ErrorFileNotFound" xml:space="preserve">
+    <value>File {0} not found!</value>
+    <comment>Chyba file not found</comment>
+  </data>
+  <data name="ErrorInvalidPath" xml:space="preserve">
+    <value>Error Invalid Path</value>
+    <comment>Chyba invalid path</comment>
   </data>
 </root>

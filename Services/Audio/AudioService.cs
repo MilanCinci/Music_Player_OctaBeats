@@ -1,4 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
+using Hudebni_Prehravac_OctaBeats.ViewModels;
 using NAudio.Wave;
 using System;
 using System.IO;
@@ -18,6 +20,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         private bool manualStop;
         private string? currentFilePath;
         private readonly object _audioLock = new object();
+        private readonly ILokalizaceService _lokalizaceService;
 
         /// <summary>
         /// Aktuální hlasitost skladby
@@ -55,6 +58,15 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         public event Action<string>? SouborNenalezen;
 
         /// <summary>
+        /// Parametrický konstruktor pro inicializaci
+        /// </summary>
+        /// <param name="lokalizaceService">Servis pro obsluhu</param>
+        public AudioService(ILokalizaceService lokalizaceService)
+        {
+            _lokalizaceService = lokalizaceService;
+        }
+
+        /// <summary>
         /// Metoda slouží ke spuštění přehrávání vybrané skladby
         /// </summary>
         /// <param name="filePath">Cesta k souboru skladby</param>
@@ -73,7 +85,8 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                 // Kontrola existence souboru ještě před spuštěním asynchronního vlákna
                 if (!File.Exists(filePath))
                 {
-                    throw new FileNotFoundException($"Soubor '{filePath}' nebyl nalezen!", filePath);
+                    string zprava = String.Format(_lokalizaceService["ErrorFileNotFound"], filePath);
+                    throw new FileNotFoundException(zprava, filePath);
                 }
 
                 // Všechna inicializace se provádí na pozadí
@@ -99,7 +112,6 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
 
                             output.PlaybackStopped += (s, e) =>
                             {
-                                // Kontrola, zda skladba skončila přirozeně (není to manuální Stop)
                                 if (!manualStop && reader != null &&
                                     reader.CurrentTime >= reader.TotalTime.Subtract(TimeSpan.FromMilliseconds(200)))
                                 {
@@ -112,7 +124,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
 
                         catch (Exception)
                         {
-                            // Pokud selže inicializace (např. poškozený soubor), uvolníme zdroje a pošleme chybu dál
+                            // Pokud selže inicializace (např. poškozený soubor), uvolní se využívané zdroje
                             ReleaseResources();
                             throw;
                         }
@@ -123,15 +135,16 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
             }
 
             catch (FileNotFoundException)
-            {
-                // Signalizace pro MainViewModel, že soubor neexistuje a je potřeba provést refresh
+            {              
                 SouborNenalezen?.Invoke(filePath);
+                return;
             }
 
             catch (Exception ex)
             {
                 ReleaseResources();
-                SpravaSouboru.LogError(ex, "Audio výstup selhal", nameof(AudioService));
+                SpravaSouboru.LogError(ex, $"Error occurred while playing a song!", nameof(AudioService));
+                throw;
             }
         }
 
@@ -149,9 +162,10 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                 }
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception();
+                SpravaSouboru.LogError(ex, "Error occurred while pausing a song!", nameof(AudioService));
+                throw;
             }
         }
 
@@ -168,9 +182,10 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                 }
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception();
+                SpravaSouboru.LogError(ex, "Error occurred while stopping a song!", nameof(AudioService));
+                throw;
             }
         }       
 
@@ -190,9 +205,10 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                 isPaused = false;
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception();
+                SpravaSouboru.LogError(ex, "Error occurred while resuming a song!", nameof(AudioService));
+                throw;
             }
         }
 
@@ -210,9 +226,10 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                 }
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception();
+                SpravaSouboru.LogError(ex, "Error occurred while seeking to position!", nameof(AudioService));
+                throw;
             }
         }
 

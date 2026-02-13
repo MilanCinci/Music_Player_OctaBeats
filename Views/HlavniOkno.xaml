@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:Hudebni_Prehravac_OctaBeats.Views"
-        Title="OctaBeats"
+        Title= "{Binding NastaveniJazykVM[AppTitle]}"
         Width="1200"
         Height="750">
 
@@ -21,62 +21,60 @@
             <ColumnDefinition Width="280" MinWidth="150"/>
         </Grid.ColumnDefinitions>
 
-        <Menu Grid.Row="0"
-              Grid.ColumnSpan="5"
-              Background="#222"
-              Foreground="White">
-            <MenuItem Header="Soubor">
-                <MenuItem Header="Ukončit" Command="{Binding ExitCommand}" Foreground="Black"/>
-                <MenuItem Header="Přidej skladbu" Command="{Binding AddSongCommand}" Foreground="Black"/>
-                <MenuItem Header="Smaž vybranou skladbu" Command="{Binding RemoveSongCommand}" Foreground="Black"/>
-                <MenuItem Header="Synchronizovat změny" Command="{Binding RefreshChangesCommand}" Foreground="Black" ToolTip="Znovu načte hudební složku a playlisty">
+        <Menu Grid.Row="0" Grid.ColumnSpan="5" Background="#222" Foreground="White">
+            <MenuItem Header="{Binding NastaveniJazykVM[File]}">
+                <MenuItem Header="{Binding NastaveniJazykVM[Exit]}" Command="{Binding ExitCommand}" Foreground="Black"/>
+            </MenuItem>
+
+            <MenuItem Header="{Binding NastaveniJazykVM[Library]}">
+                <MenuItem Header="{Binding NastaveniJazykVM[AddSong]}" Command="{Binding AddSongCommand}" Foreground="Black"/>
+                <MenuItem Header="{Binding NastaveniJazykVM[RemoveSong]}" Command="{Binding RemoveSongCommand}" Foreground="Black"/>
+                <MenuItem Header="{Binding NastaveniJazykVM[RefreshChanges]}" Command="{Binding RefreshChangesCommand}" Foreground="Black">
                     <MenuItem.Icon>
                         <TextBlock Text="🔄" VerticalAlignment="Center"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="Nastavení">
-                <MenuItem Header="Jazyk" Command="{Binding OpenSettingsCommand}"/>
+
+            <MenuItem Header="{Binding NastaveniJazykVM[History]}">
+                <MenuItem Header="{Binding NastaveniJazykVM[RemoveSelectedHistory]}" Command="{Binding HistoryVM.RemoveSelectedHistoryCommand}" Foreground="Black"/>
+                <MenuItem Header="{Binding NastaveniJazykVM[RemoveAllHistory]}" Command="{Binding HistoryVM.RemoveAllHistoryCommand}" Foreground="Black"/>
             </MenuItem>
-            <MenuItem Header="Nápověda">
-                <MenuItem Header="O aplikaci"/>
+
+            <MenuItem Header="{Binding NastaveniJazykVM[Settings]}">
+                <MenuItem Header="{Binding NastaveniJazykVM[Language]}" Command="{Binding OpenSettingsLanguageCommand}" Foreground="Black"/>
+            </MenuItem>
+
+            <MenuItem Header="{Binding NastaveniJazykVM[Help]}">
+                <MenuItem Header="{Binding NastaveniJazykVM[GettingStarted]}" Foreground="Black"/>
+                <MenuItem Header="{Binding NastaveniJazykVM[About]}" Foreground="Black"/>
             </MenuItem>
         </Menu>
 
-        <GridSplitter Grid.Row="1" Grid.Column="1" 
-                      Width="4" 
-                      HorizontalAlignment="Center" 
-                      VerticalAlignment="Stretch" 
-                      Background="#DDD"/>
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Gray" Padding="10">
+            <views:HistoryView DataContext="{Binding HistoryVM}"/>
+        </Border>
 
-        <Border Grid.Row="1" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Padding="12">
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="#DDD"/>
+
+        <Border Grid.Row="1" Grid.Column="2" BorderBrush="Gray" BorderThickness="1,1,1,0" Padding="12">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
-                <TextBlock Text="Skladby" FontSize="20" Margin="10,5,10,15" FontWeight="Bold"/>
-
-                <views:KnihovnaView Grid.Row="1" DataContext="{Binding KnihovnaVM}" />
+                <TextBlock Text="{Binding NastaveniJazykVM[Songs]}" FontSize="20" Margin="10,5,10,15" FontWeight="Bold"/>
+                <views:KnihovnaView Grid.Row="1" DataContext="{Binding KnihovnaVM}"/>
             </Grid>
         </Border>
 
-        <GridSplitter Grid.Row="1" Grid.Column="3" 
-                      Width="4" 
-                      HorizontalAlignment="Center" 
-                      VerticalAlignment="Stretch" 
-                      Background="#DDD"/>
+        <GridSplitter Grid.Row="1" Grid.Column="3" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="#DDD"/>
 
         <Border Grid.Row="1" Grid.Column="4" BorderBrush="Gray" BorderThickness="1,0,0,0">
             <views:PlaylistView DataContext="{Binding PlaylistVM}"/>
         </Border>
 
-        <Border Grid.Row="2" Grid.ColumnSpan="5"
-        Background="#181818" 
-        BorderBrush="#282828" 
-        BorderThickness="0,1,0,0" 
-        Padding="15,10">
+        <Border Grid.Row="2" Grid.ColumnSpan="5" Background="#181818" BorderBrush="#282828" BorderThickness="0,1,0,0" Padding="15,10">
             <views:PrehravacView DataContext="{Binding PrehravacVM}"/>
         </Border>
 

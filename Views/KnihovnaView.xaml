@@ -36,7 +36,7 @@
                      IsEnabled="{Binding VybranyPlaylist, Converter={StaticResource NullToBoolConverter}}"
                      ToolTip="Vyhledávání"/>
 
-            <!-- ComboBox má minimální šířku -->
+            <!-- Typ vyhledávání combobox -->
             <ComboBox Grid.Column="1"
                       MinWidth="120"
                       Height="28"
@@ -53,7 +53,7 @@
         </Grid>
 
         <!-- Seznam skladeb -->
-        <ListBox Grid.Row="1"
+        <ListBox x:Name="listboxSongs" Grid.Row="1"
                  ItemsSource="{Binding VyfiltrovaneSkladby}"
                  SelectedItem="{Binding VybranaSkladba}"
                  HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown" SelectionChanged="ListBox_SelectionChanged" MouseDoubleClick="ListBox_MouseDoubleClick">
@@ -81,9 +81,9 @@
                                 <Separator />
 
                                 <MenuItem Header="Smazat z knihovny"
-          Command="{Binding PlacementTarget.Tag.DataContext.RemoveSongCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+          Command="{Binding PlacementTarget.Tag.DataContext.RemoveSelectedHistoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
           Foreground="Red" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                    
+
                                     <MenuItem.Icon>
                                         <TextBlock Text="🗑️" VerticalAlignment="Center"/>
                                     </MenuItem.Icon>

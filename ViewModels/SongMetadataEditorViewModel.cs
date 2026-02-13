@@ -1,5 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,6 +21,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     /// </summary>
     public class SongMetadataEditorViewModel : BaseViewModel, IDataErrorInfo
     {
+        private readonly ILokalizaceService _lokalizaceService;
+
         // Vlastnosti pro vazbu v XAML
         public string Nazev { get; set; }
         public string Interpret { get; set; }
@@ -61,27 +64,28 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     case nameof(Nazev):
                         if (String.IsNullOrWhiteSpace(Nazev))
                         {
-                            result = "Název skladby nesmí být prázdný!";
+                            result = _lokalizaceService["ErrorNameEmpty"];                           
                         }
-                        break;
+                        return result;
 
                     case nameof(RokVydani):
                         if (!String.IsNullOrEmpty(RokVydani))
                         {
                             if (!uint.TryParse(RokVydani, out _) || RokVydani.Length != 4)                               
                             {
-                                result = "Rok musí být 4-ciferné číslo!";
+                                result = _lokalizaceService["ErrorInvalidYearFormat"];
                             }
 
                             else if (int.Parse(RokVydani) > DateTime.Now.Year)
                             {
-                                result = "Rok nemůže být v budoucnosti!";
-                            }
+                                result = _lokalizaceService["ErrorYearFuture"];
+                            }                           
                         }
-                        break;
+                        return result;
                 }
 
-                return result;
+                // Pokud není detekována žádná chyba, tak použijeme lokalizaci
+                return _lokalizaceService![columnName];
             }
         }
 
@@ -89,8 +93,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
         /// <param name="song">Skladba, kterou chceme editovat</param>
-        public SongMetadataEditorViewModel(Song song)
+        /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace</param>
+        public SongMetadataEditorViewModel(Song song, ILokalizaceService lokalizaceService)
         {
+            _lokalizaceService = lokalizaceService;
+
             // Načtení stávajících dat
             Nazev = song.Nazev ?? Path.GetFileNameWithoutExtension(song.CestaKSouboru);
             Interpret = song.Interpret ?? "Unknown";
@@ -102,7 +109,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             PotvrditCommand = new RelayCommand(_ =>
             {
-                if (JeValidni()) ZavritDialog?.Invoke(true);
+                if (JeValidni())
+                {
+                    ZavritDialog?.Invoke(true);
+                }
             });
 
             VybratPrebalCommand = new RelayCommand(_ => VyberNovyPrebal());

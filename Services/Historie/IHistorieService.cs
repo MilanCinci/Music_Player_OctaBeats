@@ -17,17 +17,32 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// Metoda slouží k přidání skladby do historie přehrávání
         /// </summary>
         /// <param name="song">Přehraná skladba</param>
+        /// <returns>Vrací Task</returns>
         Task Add(Song song);
+
+        /// <summary>
+        /// Metoda slouží k odstranění konkrétního záznamu historie
+        /// </summary>
+        /// <param name="historie">Záznam historie, kterou chceme smazat</param>
+        /// <returns>Vrací Task</returns>
+        Task Delete(HistoriePrehravani historie);
+
+        /// <summary>
+        /// Metoda slouží k vymazání celé historie přehrávání
+        /// </summary>
+        /// <returns>Vrací Task</returns>
+        Task ClearAll();
 
         /// <summary>
         /// Metoda slouží k načtení uložené historie přehrávání
         /// </summary>
         /// <returns>Vrací kolekci načtené historie přehrávání</returns>
-        Task<ObservableCollection<HistoriePrehravani>>? Load();
+        Task<ObservableCollection<HistoriePrehravani>> Load();
 
         /// <summary>
         /// Metoda slouží k uložení historie přehrávání
         /// </summary>
+        /// <returns>Vrací Task</returns>
         Task Save();
     }
 }

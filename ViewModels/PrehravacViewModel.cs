@@ -4,6 +4,7 @@ using Hudebni_Prehravac_OctaBeats.Persistence;
 using Hudebni_Prehravac_OctaBeats.Services;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
+using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly IAudioService _audioService;
         private readonly IHistorieService _historieService;
         private readonly INastaveniAudiaService _nastaveniAudiaService;
+        private readonly ILokalizaceService _lokalizaceService;
         private bool uzivatelPosouvaSlider;
         private readonly DispatcherTimer _timerUlozeniHlasitosti;
 
@@ -143,6 +145,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand NextCommand { get; }
         public ICommand PreviousCommand { get; }
 
+        // Delegování indexeru na službu, která je už implementována v ILokalizaceService
+        public string this[string key] => _lokalizaceService[key];
+
         /// <summary>
         /// Časovač pro časovou osu
         /// </summary>
@@ -156,11 +161,13 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public PrehravacViewModel(
             IAudioService audioService,
             IHistorieService historieService,
-            INastaveniAudiaService nastaveniAudiaService)
+            INastaveniAudiaService nastaveniAudiaService,
+            ILokalizaceService lokalizaceService)
         {
             _audioService = audioService;
             _historieService = historieService;
             _nastaveniAudiaService = nastaveniAudiaService;
+            _lokalizaceService = lokalizaceService;
 
             // Výchozí hlasitost
             hlasitost = VychoziHlasitost * 100;
@@ -312,12 +319,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 CelkovaDelka = _audioService.CelkovyCas.TotalSeconds;
                 AktualniCas = _audioService.AktualniCas.TotalSeconds;
 
-                _ = _historieService.Add(AktualniSkladba);
+                await _historieService.Add(AktualniSkladba);
             }
 
             catch (Exception ex)
             {
-                SpravaSouboru.LogError(ex, $"Chyba při spuštění skladby ve třídě {nameof(PrehravacViewModel)}");
+                SpravaSouboru.LogError(ex, $"Error occured while trying to play a song!", nameof(PrehravacViewModel));
             }
         }
 
@@ -468,6 +475,14 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public void RefreshAktualniSkladbu()
         {
             OnPropertyChanged(nameof(AktualniSkladba));
+        }
+
+        /// <summary>
+        /// Metoda slouží k refreshnutí prvků ve View, aby se správně přeložily
+        /// </summary>
+        public void RefreshLokalizace()
+        {
+            OnPropertyChanged("Item[]");
         }
     }
 }

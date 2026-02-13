@@ -29,5 +29,12 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Lokalizace
         /// <param name="key">Klíč prvku, který chceme přeložit</param>
         /// <returns>Vrací přeložený prvek</returns>
         string Translate(string key);
+
+        /// <summary>
+        /// Indexer pro získání správných překladů pomocí vstupního klíče
+        /// </summary>
+        /// <param name="key">Klíč, podle kterého budeme překládat</param>
+        /// <returns>Vrací přeložený text na správný jazyk</returns>
+        string this[string key] { get; }
     }
 }

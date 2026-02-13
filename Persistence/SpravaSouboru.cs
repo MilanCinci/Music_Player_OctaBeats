@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 namespace Hudebni_Prehravac_OctaBeats.Persistence
 {
     /// <summary>
-    /// Třída sloužící ke správě souborů
+    /// Třída sloužící ke správě operací se soubory
     /// </summary>
     public static class SpravaSouboru
     {
@@ -25,27 +25,36 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
         {
             if (String.IsNullOrEmpty(cesta))
             {
-                throw new ArgumentException("Cesta pro uložení souboru nemůže být prázdná ani NULL!");
+                throw new ArgumentException();
             }
 
             if (data == null)
             {
-                throw new ArgumentNullException("Data nemůžou být NULL!");
+                throw new ArgumentNullException();
             }
 
-            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
+            try
             {
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            });
+                var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                });
 
-            string? adresar = Path.GetDirectoryName(cesta);
-            if (!String.IsNullOrEmpty(adresar))
-            {
-                Directory.CreateDirectory(adresar);
+                string? adresar = Path.GetDirectoryName(cesta);
+                if (!String.IsNullOrEmpty(adresar))
+                {
+                    Directory.CreateDirectory(adresar);
+                }
+
+                await File.WriteAllTextAsync(cesta, json);
             }
 
-            await File.WriteAllTextAsync(cesta, json);
+            catch (Exception ex)
+            {
+                LogError(ex, "Error occurred while saving to JSON!", nameof(SpravaSouboru));
+                throw;
+            }
         }
 
         /// <summary>
@@ -69,13 +78,13 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
 
             catch (JsonException ex)
             {
-                LogError(ex, "Čtení z JSON souboru");
+                LogError(ex, "Error occurred while reading from JSON!", nameof(SpravaSouboru));
                 return new T();
             }
 
             catch(IOException ex)
             {
-                LogError(ex, "Čtení z JSON souboru");
+                LogError(ex, "Error occurred while reading from JSON!", nameof(SpravaSouboru));
                 throw;
             }
         }
@@ -84,13 +93,14 @@ namespace Hudebni_Prehravac_OctaBeats.Persistence
         /// Metoda slouží k logování chyb do error logu
         /// </summary>
         /// <param name="ex">Název chyby, která nastala</param>
-        /// <param name="kontext">Kontext chyby, kdy vznikla</param>
+        /// <param name="doplnek">Doplňující informace o chybě</param>
+        /// <param name="nazevMetody">Název metody, kterou výjimku zachytila</param>
         public static void LogError(Exception ex, string doplnek = "", [CallerMemberName] string nazevMetody = "")
         {
             try
             {
                 string cestaLogu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OctaBeats", "error_log.txt");
-                string zprava = $"[{DateTime.Now}] Metoda: {nazevMetody} | Info: {doplnek}\nChyba: {ex.Message}";
+                string zprava = $"[{DateTime.Now}] Method: {nazevMetody} | Info: {doplnek}\nError: {ex.Message}\n";
 
                 File.AppendAllText(cestaLogu, zprava);
             }

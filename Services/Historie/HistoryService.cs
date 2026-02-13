@@ -1,7 +1,9 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Persistence;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,12 +12,25 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
 {
     public class HistoryService : IHistorieService
     {
-        private static readonly string CestaKSouboru =
-            Environment.ExpandEnvironmentVariables(@"%AppData%\OctaBeats\DataFiles\historie.json");
+        /// <summary>
+        /// Cesta k souboru s historií přehrávání
+        /// </summary>
+        private static readonly string CestaKSouboru = Environment.ExpandEnvironmentVariables(@"%AppData%\OctaBeats\DataFiles\historie.json");
 
+        /// <summary>
+        /// Semafor pro řízení přístupu k souboru historie
+        /// </summary>
         private readonly SemaphoreSlim _fileSemaphore = new SemaphoreSlim(1, 1);
 
-        private ObservableCollection<HistoriePrehravani> historie = new ObservableCollection<HistoriePrehravani>();
+        /// <summary>
+        /// Limit, kolik může být v historii skladeb
+        /// </summary>
+        private const int LimitHistorie = 50;
+
+        /// <summary>
+        /// Seznam historie přehrávání
+        /// </summary>
+        public ObservableCollection<HistoriePrehravani> MojeHistorie { get; } = new ObservableCollection<HistoriePrehravani>();
 
         /// <summary>
         /// Metoda slouží k načtení uložené historie přehrávání
@@ -23,55 +38,119 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <returns>Vrací kolekci načtené historie přehrávání</returns>
         public async Task<ObservableCollection<HistoriePrehravani>> Load()
         {
-            historie = await SpravaSouboru
-                .NahrajZeSouboru<ObservableCollection<HistoriePrehravani>>(CestaKSouboru) ?? new ObservableCollection<HistoriePrehravani>();
+            try
+            {
+                var nactenaData = await SpravaSouboru.NahrajZeSouboru<List<HistoriePrehravani>>(CestaKSouboru);
 
-            return historie;
+                if (nactenaData != null)
+                {
+                    MojeHistorie.Clear();
+                    foreach (HistoriePrehravani polozka in nactenaData)
+                    {
+                        MojeHistorie.Add(polozka);
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, $"Chyba při načítání historie", nameof(HistoryService));
+            }
+
+            return MojeHistorie;
         }
 
         /// <summary>
         /// Metoda slouží k přidání skladby do historie přehrávání
         /// </summary>
         /// <param name="song">Přehraná skladba</param>
+        /// <returns>Vrací Task</returns>
         public async Task Add(Song song)
         {
             if (song == null)
-                throw new ArgumentNullException(nameof(song));
-
-            historie.Insert(0, new HistoriePrehravani
             {
-                Song = song,
-                DatumPrehrani = DateTime.Now
+                return;
+            }
+
+            HistoriePrehravani novyZaznam = new HistoriePrehravani(song, DateTime.Now);
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                // Přidání nového záznamu historie na začátek seznamu
+                MojeHistorie.Insert(0, novyZaznam);
+
+                // Pokud se přesáhne limit, začnou se mazat skladby od konce
+                if (MojeHistorie.Count > LimitHistorie)
+                {
+                    MojeHistorie.RemoveAt(MojeHistorie.Count - 1);
+                }
             });
 
-            await SaveInternal();
+            // Uložení kopie historie na pozadí, aby se zachovala konzistence vláken
+            List<HistoriePrehravani> copy = MojeHistorie.ToList();
+            await Task.Run(() => SaveCopy(copy));
         }
 
+        /// <summary>
+        /// Metoda slouží k odstranění konkrétního záznamu historie
+        /// </summary>
+        /// <param name="historie">Záznam historie, kterou chceme smazat</param>
+        /// <returns>Vrací Task</returns>
+        public async Task Delete(HistoriePrehravani historie)
+        {
+            if(historie == null)
+            {
+                return;
+            }
+
+            bool byloOdstraneno = false;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                byloOdstraneno = MojeHistorie.Remove(historie);
+            });
+
+            if(byloOdstraneno)
+            {
+                await Save();
+            }
+        } 
+
+        /// <summary>
+        /// Metoda slouží k vymazání celé historie přehrávání
+        /// </summary>
+        /// <returns>Vrací Task</returns>
+        public async Task ClearAll()
+        {
+            MojeHistorie.Clear();
+            await Save();
+        }
+      
         /// <summary>
         /// Metoda slouží k uložení historie přehrávání
         /// </summary>
+        /// <returns>Vrací Task</returns>
         public async Task Save()
         {
-            await SaveInternal();
+            await SaveCopy(MojeHistorie.ToList());
         }
 
         /// <summary>
-        /// Pomocná metoda pro asynchronní uložení historie
+        /// Metoda slouží k asynchronnímu uložení kopie historie
         /// </summary>
-        /// <returns>Vrací task</returns>
-        private async Task SaveInternal()
+        /// <param name="data">Historie, kterou chceme uložit</param>
+        /// <returns>Vrací Task</returns>
+        private async Task SaveCopy(List<HistoriePrehravani> data)
         {
             await _fileSemaphore.WaitAsync();
-
             try
             {
-                var snapshot = historie.ToList();
-                await SpravaSouboru.UlozDoSouboru(CestaKSouboru, snapshot);
-            }
+                string? adresar = Path.GetDirectoryName(CestaKSouboru);
+                if (adresar != null && !Directory.Exists(adresar))
+                {
+                    Directory.CreateDirectory(adresar!);
+                }
 
-            catch (Exception ex)
-            {
-                SpravaSouboru.LogError(ex, $"Chyba při zápisu historie ve třídě {nameof(HistoryService)}");
+                await SpravaSouboru.UlozDoSouboru(CestaKSouboru, data);
             }
 
             finally

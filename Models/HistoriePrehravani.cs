@@ -14,7 +14,7 @@ namespace Hudebni_Prehravac_OctaBeats.Models
         /// <summary>
         /// Skladba v historii přehrávání
         /// </summary>
-        public required Song Song { get; set; }
+        public Song Song { get; set; }
 
         /// <summary>
         /// Datum a čas posledního přehrání
