@@ -3,6 +3,7 @@ using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Persistence;
 using Hudebni_Prehravac_OctaBeats.Services;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
+using Hudebni_Prehravac_OctaBeats.Services.Dialog;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
@@ -24,6 +25,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly IHistorieService _historieService;
         private readonly INastaveniAudiaService _nastaveniAudiaService;
         private readonly ILokalizaceService _lokalizaceService;
+        private readonly IDialogService _dialogService;
         private bool uzivatelPosouvaSlider;
         private readonly DispatcherTimer _timerUlozeniHlasitosti;
 
@@ -73,8 +75,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
-        private string zdrojPrehravani;
-        public string ZdrojPrehravani
+        private string? zdrojPrehravani;
+        public string? ZdrojPrehravani
         {
             get => zdrojPrehravani;
             set
@@ -158,16 +160,21 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         /// <param name="audioService">Servis pro obsluhu metod audia</param>
         /// <param name="historieService">Servis pro obsluhu metod historie přehrávání</param>
+        /// <param name="nastaveniAudiaService">Servis pro obsluhu metod nastavení audia</param>
+        /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace aplikace</param>
+        /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
         public PrehravacViewModel(
             IAudioService audioService,
             IHistorieService historieService,
             INastaveniAudiaService nastaveniAudiaService,
-            ILokalizaceService lokalizaceService)
+            ILokalizaceService lokalizaceService,
+            IDialogService dialogService)
         {
             _audioService = audioService;
             _historieService = historieService;
             _nastaveniAudiaService = nastaveniAudiaService;
             _lokalizaceService = lokalizaceService;
+            _dialogService = dialogService;
 
             // Výchozí hlasitost
             hlasitost = VychoziHlasitost * 100;
@@ -236,7 +243,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             catch (Exception ex)
             {
-                SpravaSouboru.LogError(ex, $"Chyba při načítání nastavení audia ve třídě {nameof(PrehravacViewModel)}");
+                SpravaSouboru.LogError(ex, "Error occurred while initializing audio settings!", nameof(InicializujAsync));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -246,8 +254,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="sekundy">Čas (v sekundách), o kolik se má skladba posunout</param>
         public void Seek(double sekundy)
         {
-            _audioService.Seek(TimeSpan.FromSeconds(sekundy));
-            IsPlaying = true;
+            try
+            {
+                _audioService.Seek(TimeSpan.FromSeconds(sekundy));
+                IsPlaying = true;
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(Seek));
+                _dialogService.ShowError(ex.Message);
+            }
         }
 
         /// <summary>
@@ -263,7 +280,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                                             AktualniSkladba.CestaKSouboru == vybrana.CestaKSouboru;
                 ZdrojPrehravani = nazevZdroje;
                 Playlist.Clear();
-                foreach (var s in skladby)
+                foreach (Song s in skladby)
                 {
                     Playlist.Add(s);
                 }
@@ -294,7 +311,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             catch (Exception ex)
             {
-                SpravaSouboru.LogError(ex, $"Chyba při nastavování playlistu ve třídě {nameof(PrehravacViewModel)}");
+                SpravaSouboru.LogError(ex, "Error occurred while setting a playlist!", nameof(SetPlaylist));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -324,7 +342,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             catch (Exception ex)
             {
-                SpravaSouboru.LogError(ex, $"Error occured while trying to play a song!", nameof(PrehravacViewModel));
+                SpravaSouboru.LogError(ex, "", nameof(Play));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -333,8 +352,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void Pause()
         {
-            IsPlaying = false;
-            _audioService.Pause();
+            try
+            {
+                IsPlaying = false;
+                _audioService.Pause();
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(Pause));
+                _dialogService.ShowError(ex.Message);
+            }
         }
 
         /// <summary>
@@ -342,20 +370,29 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void Next()
         {
-            if (Playlist.Count == 0 || AktualniSkladba == null)
+            try
             {
-                return;
+                if (Playlist.Count == 0 || AktualniSkladba == null)
+                {
+                    return;
+                }
+
+                aktualniIndex++;
+
+                if (aktualniIndex >= Playlist.Count)
+                {
+                    aktualniIndex = 0;
+                }
+
+                AktualniSkladba = Playlist[aktualniIndex];
+                Play();
             }
 
-            aktualniIndex++;
-
-            if (aktualniIndex >= Playlist.Count)
+            catch (Exception ex)
             {
-                aktualniIndex = 0;
+                SpravaSouboru.LogError(ex, "Error occurred while starting the next song!", nameof(Next));
+                _dialogService.ShowError(ex.Message);
             }
-
-            AktualniSkladba = Playlist[aktualniIndex];
-            Play();
         }
 
         /// <summary>
@@ -368,15 +405,24 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 return;
             }
 
-            aktualniIndex--;
-
-            if (aktualniIndex < 0)
+            try
             {
-                aktualniIndex = Playlist.Count - 1;
+                aktualniIndex--;
+
+                if (aktualniIndex < 0)
+                {
+                    aktualniIndex = Playlist.Count - 1;
+                }
+
+                AktualniSkladba = Playlist[aktualniIndex];
+                Play();
             }
 
-            AktualniSkladba = Playlist[aktualniIndex];
-            Play();
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while starting the previous song!", nameof(Previous));
+                _dialogService.ShowError(ex.Message);
+            }
         }
 
         /// <summary>
@@ -386,9 +432,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             App.Current.Dispatcher.BeginInvoke(() =>
             {
-                if (Playlist.Count > 1)
+                try
                 {
-                    Next();
+                    if (Playlist.Count > 1)
+                    {
+                        Next();
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    SpravaSouboru.LogError(ex, "", nameof(OnUkonceniSkladby));
                 }
             });
         }
@@ -398,8 +452,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public void ZacatekPosunu()
         {
-            uzivatelPosouvaSlider = true;
-            _audioService.Pause();
+            try
+            {
+                uzivatelPosouvaSlider = true;
+                _audioService.Pause();
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(ZacatekPosunu));
+                _dialogService.ShowError(ex.Message);
+            }
         }
 
         /// <summary>
@@ -407,8 +470,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public void KonecPosunu()
         {
-            uzivatelPosouvaSlider = false;
-            _audioService.Resume();
+            try
+            {
+                uzivatelPosouvaSlider = false;
+                _audioService.Resume();
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(KonecPosunu));
+                _dialogService.ShowError(ex.Message);
+            }
         }
 
         /// <summary>
@@ -417,33 +489,45 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="skladba">Vybraná skladba, kterou chceme smazat</param>
         public void OdstranSkladbuZFronty(Song skladba)
         {
-            if (skladba == null) return;
-
-            // Najdeme skladbu ve frontě, která má stejnou cestu k souboru
-            var songVeFronte = Playlist.FirstOrDefault(s => s.CestaKSouboru == skladba.CestaKSouboru);
-
-            if (songVeFronte != null)
+            if (skladba == null)
             {
-                // Pokud je to zrovna ta, co hraje, stopneme ji
-                if (AktualniSkladba != null && AktualniSkladba.CestaKSouboru == songVeFronte.CestaKSouboru)
-                {
-                    _audioService.Stop();
-                    AktualniSkladba = null;
-                    IsPlaying = false;
-                }
+                return;
+            }
 
-                // Odstraníme nalezenou instanci z kolekce
-                Playlist.Remove(songVeFronte);
+            try
+            {
+                // Najdeme skladbu ve frontě, která má stejnou cestu k souboru
+                Song? songVeFronte = Playlist.FirstOrDefault(s => s.CestaKSouboru == skladba.CestaKSouboru);
 
-                // Přepočítáme index aktuální skladby
-                if (AktualniSkladba != null)
+                if (songVeFronte != null)
                 {
-                    aktualniIndex = Playlist.IndexOf(AktualniSkladba);
+                    // Pokud je to zrovna ta, co hraje, stopneme ji
+                    if (AktualniSkladba != null && AktualniSkladba.CestaKSouboru == songVeFronte.CestaKSouboru)
+                    {
+                        _audioService.Stop();
+                        AktualniSkladba = null;
+                        IsPlaying = false;
+                    }
+
+                    Playlist.Remove(songVeFronte);
+
+                    // Přepočítání indexu aktuální skladby
+                    if (AktualniSkladba != null)
+                    {
+                        aktualniIndex = Playlist.IndexOf(AktualniSkladba);
+                    }
+
+                    else
+                    {
+                        aktualniIndex = -1;
+                    }
                 }
-                else
-                {
-                    aktualniIndex = -1;
-                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while removing the song from the playback queue!", nameof(OdstranSkladbuZFronty));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -458,14 +542,23 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 return;
             }
 
-            if (smazanyPlaylist.Nazev == ZdrojPrehravani)
+            try
             {
-                _audioService.Stop();
-                AktualniSkladba = null;
-                IsPlaying = false;
-                Playlist.Clear();
-                ZdrojPrehravani = String.Empty;
-                aktualniIndex = -1;
+                if (smazanyPlaylist.Nazev == ZdrojPrehravani)
+                {
+                    _audioService.Stop();
+                    AktualniSkladba = null;
+                    IsPlaying = false;
+                    Playlist.Clear();
+                    ZdrojPrehravani = String.Empty;
+                    aktualniIndex = -1;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while clearing the playback queue!", nameof(VymazFrontuPrehravani));
+                _dialogService.ShowError(ex.Message);
             }
         }
 

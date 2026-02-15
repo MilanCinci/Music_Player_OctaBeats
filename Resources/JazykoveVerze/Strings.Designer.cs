@@ -133,6 +133,24 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error Cannot Delete File.
+        /// </summary>
+        public static string ErrorCannotDeleteFile {
+            get {
+                return ResourceManager.GetString("ErrorCannotDeleteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File &apos;{0}&apos; is corrupted!.
+        /// </summary>
+        public static string ErrorCorruptedFile {
+            get {
+                return ResourceManager.GetString("ErrorCorruptedFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Duplicate Playlist Name.
         /// </summary>
         public static string ErrorDuplicatePlaylistName {
@@ -142,7 +160,7 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File {0} not found!.
+        ///   Looks up a localized string similar to File &apos;{0}&apos; not found!.
         /// </summary>
         public static string ErrorFileNotFound {
             get {
@@ -169,11 +187,47 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New album cover cannot be loaded: {0}.
+        /// </summary>
+        public static string ErrorLoadingAlbumCover {
+            get {
+                return ResourceManager.GetString("ErrorLoadingAlbumCover", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load metadata: {0}.
+        /// </summary>
+        public static string ErrorMetadataNotLoaded {
+            get {
+                return ResourceManager.GetString("ErrorMetadataNotLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Name Empty.
         /// </summary>
         public static string ErrorNameEmpty {
             get {
                 return ResourceManager.GetString("ErrorNameEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to download the album cover: {0}.
+        /// </summary>
+        public static string ErrorSavingAlbumCover {
+            get {
+                return ResourceManager.GetString("ErrorSavingAlbumCover", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File format &apos;{0}&apos; is not supported!.
+        /// </summary>
+        public static string ErrorUnsupportedFileFormat {
+            get {
+                return ResourceManager.GetString("ErrorUnsupportedFileFormat", resourceCulture);
             }
         }
         
@@ -237,6 +291,24 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string History {
             get {
                 return ResourceManager.GetString("History", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File &apos;{0}&apos; does not exist! The library and playlists have been updated.
+        /// </summary>
+        public static string InfoFileNotFoundRefreshData {
+            get {
+                return ResourceManager.GetString("InfoFileNotFoundRefreshData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Info Success Download Album Cover.
+        /// </summary>
+        public static string InfoSuccessDownloadAlbumCover {
+            get {
+                return ResourceManager.GetString("InfoSuccessDownloadAlbumCover", resourceCulture);
             }
         }
         
@@ -309,6 +381,33 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Playlists {
             get {
                 return ResourceManager.GetString("Playlists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete History.
+        /// </summary>
+        public static string QuestionDeleteHistory {
+            get {
+                return ResourceManager.GetString("QuestionDeleteHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Item From History.
+        /// </summary>
+        public static string QuestionDeleteItemFromHistory {
+            get {
+                return ResourceManager.GetString("QuestionDeleteItemFromHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you really want to delete song &apos;{0}&apos; ?.
+        /// </summary>
+        public static string QuestionDeleteItemFromLibrary {
+            get {
+                return ResourceManager.GetString("QuestionDeleteItemFromLibrary", resourceCulture);
             }
         }
         
@@ -417,6 +516,24 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Stop {
             get {
                 return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning Album Cover Null.
+        /// </summary>
+        public static string WarningAlbumCoverNull {
+            get {
+                return ResourceManager.GetString("WarningAlbumCoverNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Song with the name &apos;{0}&apos; already exists in folder {1}!.
+        /// </summary>
+        public static string WarningFileAlreadyExists {
+            get {
+                return ResourceManager.GetString("WarningFileAlreadyExists", resourceCulture);
             }
         }
     }

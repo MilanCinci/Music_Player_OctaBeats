@@ -1,5 +1,7 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services.Dialog;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using System;
 using System.Collections.Generic;
@@ -22,6 +24,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     public class SongMetadataEditorViewModel : BaseViewModel, IDataErrorInfo
     {
         private readonly ILokalizaceService _lokalizaceService;
+        private readonly IDialogService _dialogService;
 
         // Vlastnosti pro vazbu v XAML
         public string Nazev { get; set; }
@@ -30,7 +33,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public string RokVydani { get; set; }
         public string Zanr { get; set; }
         public string Delka { get; set; }
-
         private byte[]? prebalAlba;
         public byte[]? PrebalAlba
         {
@@ -38,7 +40,14 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             set { prebalAlba = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Maximální šířka přebalu alba (v px)
+        /// </summary>
         private const int MaxSirkaObrazku = 600;
+
+        /// <summary>
+        /// Maximální výška přebalu alba (v px)
+        /// </summary>
         private const int MaxVyskaObrazku = 600;
 
         /* Příkazy pro obsluhu jednotlivých metod */
@@ -94,9 +103,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         /// <param name="song">Skladba, kterou chceme editovat</param>
         /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace</param>
-        public SongMetadataEditorViewModel(Song song, ILokalizaceService lokalizaceService)
+        /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
+        public SongMetadataEditorViewModel(Song song, ILokalizaceService lokalizaceService, IDialogService dialogService)
         {
             _lokalizaceService = lokalizaceService;
+            _dialogService = dialogService;
 
             // Načtení stávajících dat
             Nazev = song.Nazev ?? Path.GetFileNameWithoutExtension(song.CestaKSouboru);
@@ -125,27 +136,28 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void VyberNovyPrebal()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            try
             {
-                Title = "Select album cover",
-                Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
-                Multiselect = false
-            };
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Title = "Select album cover",
+                    Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
+                    Multiselect = false
+                };
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                try
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     byte[] data = File.ReadAllBytes(openFileDialog.FileName);
 
-                    // Zmenšíme obrázek na max 600x600 px před uložením do vlastnosti
+                    // Zmenšení obrázku na max 600x600 px před uložením do vlastnosti
                     PrebalAlba = ZmensiObrazek(data, MaxSirkaObrazku, MaxVyskaObrazku);
                 }
+            }
 
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"Chyba při načítání přebalu: {ex.Message} !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while loading the new album cover!", nameof(VyberNovyPrebal));
+                _dialogService.ShowError(String.Format(_lokalizaceService["ErrorLoadingAlbumCover"], ex.Message));
             }
         }
 
@@ -156,26 +168,28 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             if(PrebalAlba == null)
             {
-                throw new NullReferenceException("Přebal alba není k dispozici v metadatech, nelze jej stáhnout!");
+                _dialogService.ShowWarning(_lokalizaceService["WarningAlbumCoverNull"]);
+                return;
             }
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog
+            try
             {
-                Title = "Save album cover",
-                FileName = $"{Album} - Cover art",
-                Filter = "Image JPG (*.jpg)|*.jpg|Image PNG (*.png)|*.png",
-                DefaultExt = "jpg",
-                AddExtension = true // Automaticky přidá .jpg, pokud ho uživatel nenapíše
-            };
-
-            if(saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                try
+                SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
+                    Title = "Save album cover",
+                    FileName = $"{Album} - Cover art",
+                    Filter = "Image JPG (*.jpg)|*.jpg|Image PNG (*.png)|*.png",
+                    DefaultExt = "jpg",
+                    AddExtension = true // Automaticky přidá .jpg, pokud ho uživatel nenapíše
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+
                     string ext = Path.GetExtension(saveFileDialog.FileName).ToLower();
                     byte[]? dataToSave = PrebalAlba;
 
-                    // Pokud uživatel vybral PNG, musíme JPG v paměti překódovat na PNG
+                    // Pokud uživatel vybral PNG, musí se JPG v paměti překódovat na PNG
                     if (ext == ".png")
                     {
                         using (var ms = new MemoryStream(PrebalAlba))
@@ -192,45 +206,59 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     }
 
                     File.WriteAllBytes(saveFileDialog.FileName, dataToSave);
-                    System.Windows.MessageBox.Show("Přebal alba byl úspěšně uložen", "Úspěch", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _dialogService.ShowInfo(_lokalizaceService["InfoSuccessDownloadAlbumCover"]);
                 }
+            }
 
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"Chyba při ukládání přebalu: {ex.Message} !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while downloading the album cover!", nameof(StahniPrebal));
+                _dialogService.ShowError(String.Format(_lokalizaceService["ErrorSavingAlbumCover"], ex.Message));
             }
         }
 
         /// <summary>
         /// Metoda slouží ke změně velikosti přebalu v paměti, aby nebyl zbytečně obsáhlý
         /// </summary>
+        /// <param name="data">Přebal, který chceme zmenšit</param>
+        /// <param name="maxSirka">Maximální šířka přebalu</param>
+        /// <param name="maxVyska">Maximální výška přebalu</param>
+        /// <returns>Vrací zmenšený obrázek</returns>
         private byte[] ZmensiObrazek(byte[] data, uint maxSirka, uint maxVyska)
         {
-            using (var ms = new MemoryStream(data))
+            try
             {
-                var bitmap = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-
-                // Vypočítání poměru, zda je potřeba přebal zmenšovat, aby nezabíral tolik místa
-                double ratioX = (double)maxSirka / bitmap.PixelWidth;
-                double ratioY = (double)maxVyska / bitmap.PixelHeight;
-                double ratio = Math.Min(ratioX, ratioY);
-
-                // Pokud je přebal už teď menší než požadované maximum, nemusíme ho zmenšovat
-                if (ratio >= 1)
+                using (var ms = new MemoryStream(data))
                 {
-                    return data;
-                }
+                    var bitmap = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
 
-                var resized = new TransformedBitmap(bitmap, new ScaleTransform(ratio, ratio));
+                    // Vypočítání poměru, zda je potřeba přebal zmenšovat, aby nezabíral tolik místa
+                    double ratioX = (double)maxSirka / bitmap.PixelWidth;
+                    double ratioY = (double)maxVyska / bitmap.PixelHeight;
+                    double ratio = Math.Min(ratioX, ratioY);
 
-                using (var outMs = new MemoryStream())
-                {
-                    var encoder = new JpegBitmapEncoder { QualityLevel = 90 };
-                    encoder.Frames.Add(BitmapFrame.Create(resized));
-                    encoder.Save(outMs);
-                    return outMs.ToArray();
+                    // Pokud je přebal už teď menší než požadované maximum, nemusíme ho zmenšovat
+                    if (ratio >= 1)
+                    {
+                        return data;
+                    }
+
+                    var resized = new TransformedBitmap(bitmap, new ScaleTransform(ratio, ratio));
+
+                    using (var outMs = new MemoryStream())
+                    {
+                        var encoder = new JpegBitmapEncoder { QualityLevel = 90 };
+                        encoder.Frames.Add(BitmapFrame.Create(resized));
+                        encoder.Save(outMs);
+                        return outMs.ToArray();
+                    }
                 }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while resizing the album cover!", nameof(ZmensiObrazek));
+                throw;
             }
         }
 

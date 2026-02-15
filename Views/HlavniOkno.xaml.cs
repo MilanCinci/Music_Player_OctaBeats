@@ -22,9 +22,6 @@ namespace Hudebni_Prehravac_OctaBeats.Views
     {
         public HlavniOkno()
         {
-            /* TODO Předělat to, aby Load a Save nastavení bylo asynchronní.
-                    Pomocí klávesové zkratky, odfocusovat vybraný záznam z historie
-                    Dodělat Nastavení */
             InitializeComponent();
             this.DataContext = new MainViewModel();
         }

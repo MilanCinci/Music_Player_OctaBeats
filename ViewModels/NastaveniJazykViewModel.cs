@@ -1,5 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Services.Dialog;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     public class NastaveniJazykViewModel : BaseViewModel
     {
         private readonly ILokalizaceService _lokalizaceService;
+        private readonly IDialogService _dialogService;
 
         /// <summary>
         /// Seznam dostupných jazykových verzí
@@ -47,9 +49,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
         /// <param name="lokalizaceService">Servis pro obsluhu metod nastavení jazykových verzí aplikace</param>
-        public NastaveniJazykViewModel(ILokalizaceService lokalizaceService)
+        /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
+        public NastaveniJazykViewModel(ILokalizaceService lokalizaceService, IDialogService dialogService)
         {
             _lokalizaceService = lokalizaceService;
+            _dialogService = dialogService;
            
             DostupneJazyky = new ObservableCollection<Language>
             {
@@ -57,7 +61,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 new Language { Nazev = "English", Kod = "en-US" }
             };
 
-            VybranyJazyk = DostupneJazyky.First(jazyk => jazyk.Kod.Equals(Properties.Settings.Default.Language, StringComparison.OrdinalIgnoreCase));
+            VybranyJazyk = DostupneJazyky.FirstOrDefault(jazyk => jazyk.Kod.Equals(Properties.Settings.Default.Language, StringComparison.OrdinalIgnoreCase));
 
             PotvrditCommand = new RelayCommand(_ =>
             {              
@@ -71,14 +75,22 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="cultureCode">Kód jazyka, na který chceme přeložit</param>
         public void ZmenJazyk(string cultureCode)
         {
-            _lokalizaceService.ChangeLanguage(cultureCode);
+            try
+            {
+                _lokalizaceService.ChangeLanguage(cultureCode);
 
-            // Nastavení a následné uložení aktuálně zvoleného jazyku uživatelem
-            Properties.Settings.Default.Language = cultureCode;
-            Properties.Settings.Default.Save();
+                // Nastavení a následné uložení aktuálně zvoleného jazyku uživatelem
+                Properties.Settings.Default.Language = cultureCode;
+                Properties.Settings.Default.Save();
 
-            // Vyvolání aktualizace GUI prvků v XAML pomocí Indexeru[]
-            OnPropertyChanged("Item[]");
+                // Vyvolání aktualizace GUI prvků v XAML pomocí Indexeru[]
+                OnPropertyChanged("Item[]");
+            }
+
+            catch (Exception ex)
+            {
+                _dialogService.ShowError(ex.Message);
+            }
         }
     }
 }

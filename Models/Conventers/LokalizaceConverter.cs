@@ -14,13 +14,13 @@ namespace Hudebni_Prehravac_OctaBeats.Models.Conventers
     /// </summary>
     public class LokalizaceConverter : IValueConverter
     {
-        public ILokalizaceService LokalizaceService { get; set; }
+        public ILokalizaceService? LokalizaceService { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (parameter == null)
+            if (parameter == null || LokalizaceService == null)
             {
-                throw new Exception("Nastala chyba při konvertování lokalizace!");
+                throw new Exception("Error occurred while converting localization!");
             }
 
             return LokalizaceService.Translate(parameter.ToString()!);

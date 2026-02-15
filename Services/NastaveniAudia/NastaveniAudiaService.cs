@@ -1,5 +1,6 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Persistence;
+using Microsoft.VisualBasic.Logging;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -27,10 +28,10 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
                 return await SpravaSouboru.NahrajZeSouboru<NastaveniAudio>(NastaveniAudio.CestaKSouboru) ?? new NastaveniAudio();
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                //TODO
-                return new NastaveniAudio();
+                SpravaSouboru.LogError(ex, "", nameof(Load));
+                throw;
             }
         }
 
@@ -38,6 +39,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
         /// Metoda slouží k uložení aktuálního nastavení audia
         /// </summary>
         /// <param name="nastaveniAudia">Aktuální nastavení audia, které chceme uložit</param>
+        /// <returns>Vrací Task</returns>
         public async Task Save(NastaveniAudio nastaveniAudia)
         {
             try
@@ -52,9 +54,9 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
                 await SpravaSouboru.UlozDoSouboru(NastaveniAudio.CestaKSouboru, nastaveniAudia);
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                //TODO
+                SpravaSouboru.LogError(ex, "", nameof(Save));
             }
         }
     }

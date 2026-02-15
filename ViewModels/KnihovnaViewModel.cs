@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Linq;
 using System.Windows.Forms;
+using Hudebni_Prehravac_OctaBeats.Services.Dialog;
+using Hudebni_Prehravac_OctaBeats.Persistence;
+using System.Windows;
+using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
@@ -16,9 +20,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     public class KnihovnaViewModel : BaseViewModel
     {
         private readonly IKnihovnaService _knihovnaService;
-
+        private readonly ILokalizaceService _lokalizaceService;
+        private readonly IDialogService _dialogService;
         private bool potlacVyber;
-
 
         private ObservableCollection<Song>? skladby;
         /// <summary>
@@ -128,24 +132,38 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
         /// <param name="knihovnaService">Servis pro obsluhu metod knihovny skladeb</param>
-        public KnihovnaViewModel(IKnihovnaService knihovnaService)
+        /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace aplikace</param>
+        /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
+        public KnihovnaViewModel(IKnihovnaService knihovnaService, ILokalizaceService lokalizaceService, IDialogService dialogService)
         {
+            _lokalizaceService = lokalizaceService;
             _knihovnaService = knihovnaService;
+            _dialogService = dialogService;
+
             AddSongCommand = new AsyncRelayCommand(PridejSkladbuDoKnihovny);
             RemoveSongCommand = new RelayCommand(
                  param => OdeberVybranouSkladbuZKnihovny(param),
                  param => VybranyPlaylist == null && (param is Song || VybranaSkladba != null)
             );
-            EditMetadataCommand = new RelayCommand(param => { if (param is Song s) SkladbaEditacePozadovana?.Invoke(s); });
+            EditMetadataCommand = new RelayCommand(param => 
+            {
+                if (param is Song song)
+                {
+                    SkladbaEditacePozadovana?.Invoke(song);
+                }
+            });
 
             // Výchozí typ vyhledávání
             VybranyTypVyhledavani = TypVyhledavani.Nazev;
+
+            // Asynchronní inicializace knihovny
             _ = InicializujAsync();
         }
 
         /// <summary>
-        /// Pomocná motoda pro asynchronní načtení knihovny skladeb
+        /// Metoda slouží k asynchronnímu načtení knihovny skladeb
         /// </summary>
+        /// <returns>Vrací Task</returns>
         public async Task InicializujAsync()
         {
             try
@@ -158,7 +176,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             catch (Exception ex)
             {
-                MessageBox.Show($"Nepodařilo se načíst knihovnu: {ex.Message} !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SpravaSouboru.LogError(ex, "Error occurred while initializing the library!", nameof(InicializujAsync));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -172,25 +191,32 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 return;
             }
 
-            VyfiltrovaneSkladby.Clear();
-
-            if (VybranyPlaylist != null)
+            try
             {
-                vyhledavanyText = String.Empty;
-                OnPropertyChanged(nameof(VyhledavanyText));
-                foreach (var s in VybranyPlaylist.Skladby)
+                VyfiltrovaneSkladby.Clear();
+
+                if (VybranyPlaylist != null)
                 {
-                    VyfiltrovaneSkladby.Add(s);
+                    vyhledavanyText = String.Empty;
+                    OnPropertyChanged(nameof(VyhledavanyText));
+                    foreach (Song skladba in VybranyPlaylist.Skladby)
+                    {
+                        VyfiltrovaneSkladby.Add(skladba);
+                    }
+                }
+
+                else if (Skladby != null)
+                {
+                    Vyfiltruj();
                 }
             }
 
-            else if (Skladby != null)
+            catch (Exception ex)
             {
-                Vyfiltruj();
+                SpravaSouboru.LogError(ex, "Error occurred while changing the source of the playback history!", nameof(PrepnoutZdrojSkladeb));
+                _dialogService.ShowError(ex.Message);
             }
         }
-
-        //TODO Dodělat tady to mazání, aby se nedělal focus při pravým kliknutí
 
         /// <summary>
         /// Metoda slouží k vyfiltrování skladeb podle zvoleného kritéria
@@ -210,34 +236,50 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 return;
             }
 
-            foreach (var s in Skladby)
+            try
             {
-                if (String.IsNullOrWhiteSpace(VyhledavanyText))
+                foreach (Song skladba in Skladby)
                 {
-                    VyfiltrovaneSkladby.Add(s);
-                    continue;
+                    if (String.IsNullOrWhiteSpace(VyhledavanyText))
+                    {
+                        VyfiltrovaneSkladby.Add(skladba);
+                        continue;
+                    }
+
+                    bool shoda = false;
+
+                    switch (VybranyTypVyhledavani)
+                    {
+                        case TypVyhledavani.Nazev:
+                            shoda = skladba.Nazev.Contains(VyhledavanyText, StringComparison.OrdinalIgnoreCase);
+                            break;
+
+                        case TypVyhledavani.Interpret:
+                            if (skladba.Interpret != null)
+                            {
+                                shoda = skladba.Interpret.Contains(VyhledavanyText, StringComparison.OrdinalIgnoreCase);
+                            }
+                            break;
+
+                        case TypVyhledavani.Zanr:
+                            if (skladba.Zanr != null)
+                            {
+                                shoda = skladba.Zanr.Contains(VyhledavanyText, StringComparison.OrdinalIgnoreCase);
+                            }
+                            break;
+                    }
+
+                    if (shoda)
+                    {
+                        VyfiltrovaneSkladby.Add(skladba);
+                    }
                 }
+            }
 
-                bool shoda = false;
-
-                switch (VybranyTypVyhledavani)
-                {
-                    case TypVyhledavani.Nazev:
-                        shoda = s.Nazev.Contains(VyhledavanyText, StringComparison.OrdinalIgnoreCase);
-                        break;
-
-                    case TypVyhledavani.Interpret:
-                        if (s.Interpret != null)
-                        {
-                            shoda = s.Interpret.Contains(VyhledavanyText, StringComparison.OrdinalIgnoreCase);
-                        }
-                        break;
-                }
-
-                if (shoda)
-                {
-                    VyfiltrovaneSkladby.Add(s);
-                }
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while filtering songs!", nameof(Vyfiltruj));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -257,31 +299,39 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <returns>Vrací Task</returns>
         public async Task PridejSkladbuDoKnihovny()
         {
-            OpenFileDialog fileDialog = new OpenFileDialog
+            try
             {
-                Title = "Select music files to copy",
-                Multiselect = true,
-                Filter = "Music files (*.mp3;*.wav;*.flac)|*.mp3;*.wav;*.flac"
-            };
+                OpenFileDialog fileDialog = new OpenFileDialog
+                {
+                    Title = "Select music files to copy",
+                    Multiselect = true,
+                    Filter = "Music files (*.mp3;*.wav;*.flac)|*.mp3;*.wav;*.flac"
+                };
 
-            if (fileDialog.ShowDialog() == DialogResult.OK)
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    await _knihovnaService.CopySongsToMyMusic(fileDialog.FileNames);
+                    Skladby = await _knihovnaService.Load()!;
+                    PrepnoutZdrojSkladeb();
+                }
+            }
+
+            catch (Exception ex)
             {
-                await _knihovnaService.CopySongsToMyMusic(fileDialog.FileNames);
-                Skladby = await _knihovnaService.Load()!;
-                PrepnoutZdrojSkladeb();
+                SpravaSouboru.LogError(ex, "", nameof(PridejSkladbuDoKnihovny));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
         /// <summary>
-        /// Metoda slouží k odebrání skladby ze složky MyMusic.
-        /// Podporuje smazání vybrané skladby i skladby předané parametrem (pravý klik).
+        /// Metoda slouží k odebrání skladby ze složky MyMusic. Jako vstup používá <paramref name="parameter"/>
         /// </summary>
+        /// <param name="parameter">Objekt představující vybranou skladbu</param>
         public void OdeberVybranouSkladbuZKnihovny(object? parameter)
         {
-            // Získáme skladbu: buď z parametru (ContextMenu), nebo aktuálně vybranou.
+            // Získání skladby z parametru ContextMenu nebo vybraná skladba
             Song? skladbaKeSmazani = parameter as Song ?? VybranaSkladba;
 
-            // Pokud nemáme ani jedno, nemáme co mazat.
             if (skladbaKeSmazani == null)
             {
                 return;
@@ -289,56 +339,66 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             try
             {
-                // Používáme MessageBox pro potvrzení
-                DialogResult vysledekDiaOkna = MessageBox.Show(
-                    $"Opravdu chcete vymazat skladbu '{skladbaKeSmazani.Nazev}' ?",
-                    "Confirm",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
+                string zprava = String.Format(_lokalizaceService["QuestionDeleteItemFromLibrary"], skladbaKeSmazani.Nazev);
+                MessageBoxResult vysledekDiaOkna = _dialogService.ShowConfirmation(zprava);
 
-                if (vysledekDiaOkna == DialogResult.Yes)
+                if (vysledekDiaOkna == MessageBoxResult.Yes)
                 {
-                    // 1. Signál pro přehrávač a playlisty, aby přestaly soubor používat
+                    // Signál pro přehrávač a playlisty, aby přestaly soubor používat
                     SkladbaSmazana?.Invoke(skladbaKeSmazani);
 
-                    // 2. Fyzické smazání z disku
+                    // Fyzické smazání z MyMusic
                     bool uspesneSmazano = _knihovnaService.DeleteSongFromMyMusic(skladbaKeSmazani.CestaKSouboru);
 
                     if (uspesneSmazano)
                     {
-                        // 3. Odstranění z kolekcí v UI
                         Skladby?.Remove(skladbaKeSmazani);
                         VyfiltrovaneSkladby?.Remove(skladbaKeSmazani);
 
-                        // 4. Pokud smazaná skladba byla ta vybraná (přehrávaná), vynulujeme výběr
+                        // Pokud smazaná skladba byla ta vybraná (přehrávaná), vynulujeme výběr
                         if (VybranaSkladba == skladbaKeSmazani)
                         {
                             VybranaSkladba = null;
                         }
                     }
+
                     else
                     {
-                        MessageBox.Show("Soubor se nepodařilo smazat. Možná je používán jiným programem/procesem!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        _dialogService.ShowWarning(_lokalizaceService["ErrorCannotDeleteFile"]);
                     }
                 }
             }
+
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SpravaSouboru.LogError(ex, "Error occurred while deleting the song from the library!", nameof(OdeberVybranouSkladbuZKnihovny));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Metoda slouží k nastavení skladby na aktuálně vybranou
+        /// </summary>
+        /// <param name="skladba">Skladba, která se má nastavit jako aktuálně vybraná skladba</param>
         public void NastavVybranouSkladbu(Song? skladba)
         {
-            if (skladba == null)
+            if (skladba == null || VyfiltrovaneSkladby == null)
+            {
                 return;
+            }
 
-            potlacVyber = true;
+            try
+            {
+                potlacVyber = true;
+                VybranaSkladba = VyfiltrovaneSkladby.FirstOrDefault(s => s.CestaKSouboru == skladba.CestaKSouboru);
+                potlacVyber = false;
+            }
 
-            VybranaSkladba = VyfiltrovaneSkladby
-                .FirstOrDefault(s => s.CestaKSouboru == skladba.CestaKSouboru);
-
-            potlacVyber = false;
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while setting the currently selected song!", nameof(NastavVybranouSkladbu));
+                _dialogService.ShowError(ex.Message);
+            }
         }
     }
 }

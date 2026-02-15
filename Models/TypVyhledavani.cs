@@ -9,6 +9,7 @@ namespace Hudebni_Prehravac_OctaBeats.Models
     public enum TypVyhledavani
     {
         Nazev,
-        Interpret
+        Interpret,
+        Zanr
     }
 }

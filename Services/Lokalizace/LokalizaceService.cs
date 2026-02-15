@@ -1,4 +1,5 @@
-﻿using Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze;
+﻿using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Lokalizace
     public class LokalizaceService : ILokalizaceService
     {
         /// <summary>
-        /// Obslužná třída pro definování jazykových resources
+        /// Obslužná třída pro definování jazykových zdrojů
         /// </summary>
         private readonly ResourceManager _resourceManager = Resources.JazykoveVerze.Strings.ResourceManager;
 
@@ -31,8 +32,17 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Lokalizace
         /// <param name="cultureCode">Kód jazyka, na který chceme aplikaci přeložit</param>
         public void ChangeLanguage(string cultureCode)
         {
-            AktualniJazyk = new CultureInfo(cultureCode);
-            CultureInfo.CurrentUICulture = AktualniJazyk;
+            try
+            {
+                AktualniJazyk = new CultureInfo(cultureCode);
+                CultureInfo.CurrentUICulture = AktualniJazyk;
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while changing the current language!", nameof(ChangeLanguage));
+                throw;
+            }
         }
 
         /// <summary>
@@ -42,7 +52,16 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Lokalizace
         /// <returns>Vrací přeložený prvek</returns>
         public string Translate(string key)
         {
-            return _resourceManager.GetString(key, AktualniJazyk) ?? key;
+            try
+            {
+                return _resourceManager.GetString(key, AktualniJazyk) ?? key;
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while translating a specified key!", nameof(Translate));
+                throw;
+            }
         }
 
         /// <summary>

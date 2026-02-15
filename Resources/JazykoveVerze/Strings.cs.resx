@@ -232,9 +232,48 @@
     <value>Playlist s tímto názvem již existuje!</value>
   </data>
   <data name="ErrorFileNotFound" xml:space="preserve">
-    <value>Soubor {0} nebyl nalezen!</value>
+    <value>Soubor '{0}' nebyl nalezen!</value>
   </data>
   <data name="ErrorInvalidPath" xml:space="preserve">
     <value>Cesta nemůže být prázdná ani NULL!</value>
+  </data>
+  <data name="QuestionDeleteItemFromHistory" xml:space="preserve">
+    <value>Opravdu chcete smazat tento záznam z historie přehrávání?</value>
+  </data>
+  <data name="QuestionDeleteHistory" xml:space="preserve">
+    <value>Opravdu chcete smazat celou historii přehrávání?</value>
+  </data>
+  <data name="WarningFileAlreadyExists" xml:space="preserve">
+    <value>Skladba s názvem '{0}' už ve složce {1} existuje!</value>
+  </data>
+  <data name="QuestionDeleteItemFromLibrary" xml:space="preserve">
+    <value>Opravdu chcete vymazat skladbu '{0}' ?</value>
+  </data>
+  <data name="ErrorCannotDeleteFile" xml:space="preserve">
+    <value>Soubor se nepodařilo smazat. Možná je používán jiným programem/procesem!</value>
+  </data>
+  <data name="ErrorUnsupportedFileFormat" xml:space="preserve">
+    <value>Formát souboru '{0}' není podporován!</value>
+  </data>
+  <data name="ErrorCorruptedFile" xml:space="preserve">
+    <value>Soubor '{0}' je poškozen!</value>
+  </data>
+  <data name="ErrorMetadataNotLoaded" xml:space="preserve">
+    <value>Nepodařilo se načíst metadata: {0}</value>
+  </data>
+  <data name="ErrorLoadingAlbumCover" xml:space="preserve">
+    <value>Nový přebal alba nemohl být uložen: {0}</value>
+  </data>
+  <data name="ErrorSavingAlbumCover" xml:space="preserve">
+    <value>Přebal alba se nepodařilo stáhnout: {0}</value>
+  </data>
+  <data name="WarningAlbumCoverNull" xml:space="preserve">
+    <value>Přebal alba není k dispozici v metadatech, nelze jej stáhnout!</value>
+  </data>
+  <data name="InfoSuccessDownloadAlbumCover" xml:space="preserve">
+    <value>Přebal alba byl úspěšně stažen</value>
+  </data>
+  <data name="InfoFileNotFoundRefreshData" xml:space="preserve">
+    <value>Soubor '{0}' neexistuje! Knihovna a playlisty byly aktualizovány</value>
   </data>
 </root>

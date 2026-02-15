@@ -1,9 +1,12 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services.Dialog;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -13,6 +16,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     {
         private readonly IHistorieService _historieService;
         private readonly ILokalizaceService _lokalizaceService;
+        private readonly IDialogService _dialogService;
 
         /// <summary>
         /// Přímé odkazování na seznam historie v HistorieService
@@ -42,10 +46,15 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Parametrický konstruktor pro inicializaci
         /// </summary>
         /// <param name="historieService">Servis pro obsluhu metod historie</param>
-        public HistoryViewModel(IHistorieService historieService, ILokalizaceService lokalizaceService)
+        /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace aplikace</param>
+        /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
+        public HistoryViewModel(IHistorieService historieService, ILokalizaceService lokalizaceService, IDialogService dialogService)
         {
             _historieService = historieService;
             _lokalizaceService = lokalizaceService;
+            _dialogService = dialogService;
+
+            // Asynchronní inicializace historie přehrávání
             _ = InicializujAsync();
 
             RemoveSelectedHistoryCommand = new AsyncRelayCommand(OdstranVybranyPrvekHistorie, () => VybranyZaznam != null);
@@ -68,8 +77,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             if(_historieService != null)
             {
-                await _historieService.Load();
-                OnPropertyChanged(nameof(Historie));
+                try
+                {
+                    await _historieService.Load();
+                    OnPropertyChanged(nameof(Historie));
+                }
+
+                catch (Exception ex)
+                {
+                    SpravaSouboru.LogError(ex, "Error occurred while initializing the playback history!", nameof(InicializujAsync));
+                    _dialogService.ShowError(ex.Message);
+                }
             }
         }
 
@@ -79,12 +97,20 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <returns>Vrací Task</returns>
         private async Task OdstranVybranyPrvekHistorie()
         {
-            DialogResult vysledekDiaOkna = MessageBox.Show("Opravdu chcete smazat tento záznam z historie přehrávání?", "Confirm",
-                                            MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (VybranyZaznam != null && vysledekDiaOkna == DialogResult.Yes)
+            try
             {
-                await _historieService.Delete(VybranyZaznam);
-                VybranyZaznam = null;
+                MessageBoxResult vysledekDiaOkna = _dialogService.ShowConfirmation(_lokalizaceService["QuestionDeleteItemFromHistory"]);
+                if (VybranyZaznam != null && vysledekDiaOkna == MessageBoxResult.Yes)
+                {
+                    await _historieService.Delete(VybranyZaznam);
+                    VybranyZaznam = null;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(OdstranVybranyPrvekHistorie));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -94,13 +120,21 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <returns>Vrací Task</returns>
         private async Task OdstranCelouHistorii()
         {
-            DialogResult vysledekDiaOkna = MessageBox.Show("Opravdu chcete smazat celou historii přehrávání?", "Confirm",
-                                            MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (vysledekDiaOkna == DialogResult.Yes)
+            try
             {
-                await _historieService.ClearAll();
-                VybranyZaznam = null;
-                OnPropertyChanged(nameof(Historie));
+                MessageBoxResult vysledekDiaOkna = _dialogService.ShowConfirmation(_lokalizaceService["QuestionDeleteHistory"]);
+                if (vysledekDiaOkna == MessageBoxResult.Yes)
+                {
+                    await _historieService.ClearAll();
+                    VybranyZaznam = null;
+                    OnPropertyChanged(nameof(Historie));
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(OdstranCelouHistorii));
+                _dialogService.ShowError(ex.Message);
             }
         }
     }

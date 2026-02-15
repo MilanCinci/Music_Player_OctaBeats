@@ -22,6 +22,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services
         /// Metoda slouží k uložení aktuálního nastavení audia
         /// </summary>
         /// <param name="nastaveniAudia">Aktuální nastavení audia, které chceme uložit</param>
+        /// <returns>Vrací Task</returns>
         Task Save(NastaveniAudio nastaveniAudia);
     }
 }

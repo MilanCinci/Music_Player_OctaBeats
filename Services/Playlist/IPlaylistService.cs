@@ -23,6 +23,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
         /// Metoda slouží k uložení playlistů
         /// </summary>
         /// <param name="playlisty">Seznam playlistů, který chceme uložit</param>
+        /// <returns>Vrací Task</returns>
         Task Save(ObservableCollection<PlayList> playlisty);
     }
 }

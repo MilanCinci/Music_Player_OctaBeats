@@ -1,5 +1,7 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services.Dialog;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using Hudebni_Prehravac_OctaBeats.Services.Playlist;
@@ -24,6 +26,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     {
         private readonly IPlaylistService _playlistService;
         private readonly ILokalizaceService _lokalizaceService;
+        private readonly IDialogService _dialogService;
 
         /// <summary>
         /// Seznam vytvořených playlistů
@@ -102,11 +105,14 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         /// <param name="playlistService">Servis pro obsluhu metod playlistů</param>
         /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace</param>
-        public PlaylistViewModel(IPlaylistService playlistService, ILokalizaceService lokalizaceService)
+        /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
+        public PlaylistViewModel(IPlaylistService playlistService, ILokalizaceService lokalizaceService, IDialogService dialogService)
         {
             _playlistService = playlistService;
             _lokalizaceService = lokalizaceService;
+            _dialogService = dialogService;
 
+            // Asynchronní inicializace playlistů
             _ = InicializujAsync();
 
             AddPlaylistCommand = new AsyncRelayCommand(AddPlaylist, () => JeValidni());
@@ -134,32 +140,41 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 return;
             }
 
-            bool celkovaZmena = false;
-
-            foreach (PlayList playlist in Playlisty)
+            try
             {
-                if (playlist != null)
-                {
-                    bool zmenaCest = playlist.CestyKSkladbam.Remove(odstranenaSkladba.CestaKSouboru);
-                    Song? songInPlaylist = playlist.Skladby.FirstOrDefault(s => s.CestaKSouboru == odstranenaSkladba.CestaKSouboru);
-                    bool zmenaSkladeb = false;
-                    if (songInPlaylist != null)
-                    {
-                        zmenaSkladeb = playlist.Skladby.Remove(songInPlaylist);
-                    }
+                bool celkovaZmena = false;
 
-                    // Pokud došlo k jakékoliv změně v tomto playlistu, tak si ji zapamatujeme pro následné uložení
-                    if (zmenaCest || zmenaSkladeb)
+                foreach (PlayList playlist in Playlisty)
+                {
+                    if (playlist != null)
                     {
-                        celkovaZmena = true;
+                        bool zmenaCest = playlist.CestyKSkladbam.Remove(odstranenaSkladba.CestaKSouboru);
+                        Song? songInPlaylist = playlist.Skladby.FirstOrDefault(s => s.CestaKSouboru == odstranenaSkladba.CestaKSouboru);
+                        bool zmenaSkladeb = false;
+                        if (songInPlaylist != null)
+                        {
+                            zmenaSkladeb = playlist.Skladby.Remove(songInPlaylist);
+                        }
+
+                        // Pokud došlo k jakékoliv změně v tomto playlistu, tak si ji zapamatujeme pro následné uložení
+                        if (zmenaCest || zmenaSkladeb)
+                        {
+                            celkovaZmena = true;
+                        }
                     }
+                }
+
+                // Uložení pouze v případě, když se provedou změny v nějakém playlistu
+                if (celkovaZmena)
+                {
+                    await _playlistService.Save(Playlisty);
                 }
             }
 
-            // Uložení pouze v případě, když se provedou změny v nějakém playlistu
-            if (celkovaZmena)
+            catch (Exception ex)
             {
-                await _playlistService.Save(Playlisty);
+                SpravaSouboru.LogError(ex, "Error occurred while removing song from a playlist!", nameof(RemoveSongFromPlaylist));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -174,24 +189,33 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 return;
             }
 
-            // Nastavení výchozího názvu playlistu
-            if (String.IsNullOrWhiteSpace(NovyNazevPlaylistu))
+            try
             {
-                NovyNazevPlaylistu = $"{VychoziNazev}{indexPlaylistu}";
-                indexPlaylistu++;
+                // Nastavení výchozího názvu playlistu
+                if (String.IsNullOrWhiteSpace(NovyNazevPlaylistu))
+                {
+                    NovyNazevPlaylistu = $"{VychoziNazev}{indexPlaylistu}";
+                    indexPlaylistu++;
+                }
+
+                PlayList novyPlaylist = new PlayList
+                {
+                    Nazev = NovyNazevPlaylistu,
+                    Skladby = new ObservableCollection<Song>()
+                };
+
+                Playlisty.Add(novyPlaylist);
+
+                NovyNazevPlaylistu = String.Empty;
+
+                await _playlistService.Save(Playlisty);
             }
 
-            PlayList novyPlaylist = new PlayList
+            catch (Exception ex)
             {
-                Nazev = NovyNazevPlaylistu,
-                Skladby = new ObservableCollection<Song>()
-            };
-
-            Playlisty.Add(novyPlaylist);
-
-            NovyNazevPlaylistu = String.Empty;
-
-            await _playlistService.Save(Playlisty);
+                SpravaSouboru.LogError(ex, "Error occurred while adding a new playlist!", nameof(AddPlaylist));
+                _dialogService?.ShowError(ex.Message);
+            }
         }
 
         /// <summary>
@@ -200,12 +224,21 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <returns>Vrací Task</returns>
         private async Task RemovePlaylist()
         {
-            if (VybranyPlaylist != null && Playlisty != null)
+            try
             {
-                PlaylistSmazan?.Invoke(VybranyPlaylist);
-                Playlisty.Remove(VybranyPlaylist);                
-                VybranyPlaylist = null;
-                await _playlistService.Save(Playlisty);                
+                if (VybranyPlaylist != null && Playlisty != null)
+                {
+                    PlaylistSmazan?.Invoke(VybranyPlaylist);
+                    Playlisty.Remove(VybranyPlaylist);
+                    VybranyPlaylist = null;
+                    await _playlistService.Save(Playlisty);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while removing the selected playlist!", nameof(RemovePlaylist));
+                _dialogService.ShowError(ex.Message);
             }
         }
 
@@ -218,7 +251,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             try
             {
                 Playlisty = await _playlistService.Load()! ?? new ObservableCollection<PlayList>();
-                MetadataService metadata = new MetadataService();
+                MetadataService metadata = new MetadataService(_lokalizaceService);
 
                 foreach (PlayList playlist in Playlisty)
                 {
@@ -251,10 +284,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                 foreach (PlayList playlist in hledanePlaylisty)
                 {
-                    var shoda = Regex.Match(playlist.Nazev, @"\d+$");
+                    // Regulární výraz pro hledání čísla na konci názvu playlistu
+                    Match shoda = Regex.Match(playlist.Nazev, @"\d+$");
 
                     if (shoda.Success)
                     {
+                        // Hledání nejvyššího indexu uložených playlistů, aby se poté správně indexovalo
                         if (int.TryParse(shoda.Value, out int index))
                         {
                             if (index > maxIndex)
@@ -270,7 +305,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             catch (Exception ex)
             {
-                MessageBox.Show($"Nastala chyba při synchronizaci playlistů: {ex.Message} !");
+                SpravaSouboru.LogError(ex, "Error occurred while initializing playlists!", nameof(InicializujAsync));
+                _dialogService.ShowError(ex.Message);
             }
         }
 

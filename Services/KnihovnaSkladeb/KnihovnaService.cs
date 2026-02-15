@@ -1,6 +1,8 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services.Dialog;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
+using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using System;
 using System.Collections.ObjectModel;
@@ -17,6 +19,8 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
     public class KnihovnaService : IKnihovnaService
     {
         private readonly IMetadataService _metadataService;
+        private readonly IDialogService _dialogService;
+        private readonly ILokalizaceService _lokalizaceService;
 
         /// <summary>
         /// Pole podporovaných hudebních formátů přehrávače
@@ -27,11 +31,15 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
         };
 
         /// <summary>
-        /// Bezparametrický konstruktor pro inicializaci
+        /// Parametrický konstruktor pro inicializaci
         /// </summary>
-        public KnihovnaService()
+        /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace aplikace</param>
+        /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
+        public KnihovnaService(ILokalizaceService lokalizaceService, IDialogService dialogService)
         {
-            _metadataService = new MetadataService();
+            _lokalizaceService = lokalizaceService;
+            _dialogService = dialogService;
+            _metadataService = new MetadataService(_lokalizaceService);
         }
 
         /// <summary>
@@ -47,6 +55,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
         {
             ObservableCollection<Song> skladby = new ObservableCollection<Song>();
 
+            // Pokud adresář neexistuje, vrátí se prázdný seznam skladeb
             if (!Directory.Exists(CestaKSouboru))
             {
                 return skladby;
@@ -88,6 +97,11 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
         /// <returns>Vrací Task</returns>
         public async Task CopySongsToMyMusic(string[] vybraneSoubory)
         {
+            if(vybraneSoubory == null || vybraneSoubory.Length == 0)
+            {
+                return;
+            }
+
             string cilovaSlozka = CestaKSouboru;
 
             foreach (string zdroj in vybraneSoubory)
@@ -100,7 +114,8 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
                     // Pokud soubor už existuje, zobrazí se upozornění
                     if (File.Exists(cil))
                     {
-                        MessageBox.Show($"Skladba s názvem '{nazevSouboru} už ve složce {cilovaSlozka} existuje!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        string zprava = String.Format(_lokalizaceService["WarningFileAlreadyExists"], nazevSouboru, cilovaSlozka);
+                        _dialogService.ShowWarning(zprava);
                         continue;
                     }
 
@@ -114,7 +129,8 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
 
                 catch (Exception ex)
                 {
-                    SpravaSouboru.LogError(ex, $"Chyba při kopírování vybraných skladeb do MyMusic ve třídě {nameof(KnihovnaService)}");
+                    SpravaSouboru.LogError(ex, "Error occurred while copying songs to MyMusic folder!", nameof(CopySongsToMyMusic));
+                    throw;
                 }
             }
         }
@@ -128,7 +144,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
         {
             if(String.IsNullOrEmpty(cestaVybraneSkladby))
             {
-                throw new ArgumentException("Cesta není správná, nic nebylo smazáno!");
+                throw new ArgumentException(_lokalizaceService["ErrorInvalidPath"]);
             }
 
             try
@@ -140,9 +156,10 @@ namespace Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb
                 }
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                SpravaSouboru.LogError(ex, $"Nastala chyba při mazání skladby z MyMusic ve třídě {nameof(KnihovnaService)}");
+                SpravaSouboru.LogError(ex, "Error occurred while deleting the song from MyMusic folder!", nameof(DeleteSongFromMyMusic));
+                throw;
             }
 
             return false;

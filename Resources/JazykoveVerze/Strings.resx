@@ -266,11 +266,63 @@
     <comment>Chyba duplicate playlist name</comment>
   </data>
   <data name="ErrorFileNotFound" xml:space="preserve">
-    <value>File {0} not found!</value>
+    <value>File '{0}' not found!</value>
     <comment>Chyba file not found</comment>
   </data>
   <data name="ErrorInvalidPath" xml:space="preserve">
     <value>Error Invalid Path</value>
     <comment>Chyba invalid path</comment>
+  </data>
+  <data name="QuestionDeleteItemFromHistory" xml:space="preserve">
+    <value>Delete Item From History</value>
+    <comment>Otazka delete item from history</comment>
+  </data>
+  <data name="QuestionDeleteHistory" xml:space="preserve">
+    <value>Delete History</value>
+    <comment>Otazka delete history</comment>
+  </data>
+  <data name="WarningFileAlreadyExists" xml:space="preserve">
+    <value>Song with the name '{0}' already exists in folder {1}!</value>
+    <comment>Upozorneni file already exists</comment>
+  </data>
+  <data name="QuestionDeleteItemFromLibrary" xml:space="preserve">
+    <value>Do you really want to delete song '{0}' ?</value>
+    <comment>Otazka delete item from library</comment>
+  </data>
+  <data name="ErrorCannotDeleteFile" xml:space="preserve">
+    <value>Error Cannot Delete File</value>
+    <comment>Chyba cannot delete file</comment>
+  </data>
+  <data name="ErrorUnsupportedFileFormat" xml:space="preserve">
+    <value>File format '{0}' is not supported!</value>
+    <comment>Chyba unsuported file format</comment>
+  </data>
+  <data name="ErrorCorruptedFile" xml:space="preserve">
+    <value>File '{0}' is corrupted!</value>
+    <comment>Chyba corrupted file</comment>
+  </data>
+  <data name="ErrorMetadataNotLoaded" xml:space="preserve">
+    <value>Failed to load metadata: {0}</value>
+    <comment>Chyba metadata not loaded</comment>
+  </data>
+  <data name="ErrorLoadingAlbumCover" xml:space="preserve">
+    <value>New album cover cannot be loaded: {0}</value>
+    <comment>Chyba loading album cover</comment>
+  </data>
+  <data name="ErrorSavingAlbumCover" xml:space="preserve">
+    <value>Failed to download the album cover: {0}</value>
+    <comment>Chyba saving album cover</comment>
+  </data>
+  <data name="WarningAlbumCoverNull" xml:space="preserve">
+    <value>Warning Album Cover Null</value>
+    <comment>Upozorneni album cover null</comment>
+  </data>
+  <data name="InfoSuccessDownloadAlbumCover" xml:space="preserve">
+    <value>Info Success Download Album Cover</value>
+    <comment>Info success download album cover</comment>
+  </data>
+  <data name="InfoFileNotFoundRefreshData" xml:space="preserve">
+    <value>File '{0}' does not exist! The library and playlists have been updated</value>
+    <comment>Info file not found refresh data</comment>
   </data>
 </root>

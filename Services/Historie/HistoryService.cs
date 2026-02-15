@@ -54,7 +54,8 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
 
             catch (Exception ex)
             {
-                SpravaSouboru.LogError(ex, $"Chyba při načítání historie", nameof(HistoryService));
+                SpravaSouboru.LogError(ex, "Error occurred while loading the playback history!", nameof(Load));
+                throw;
             }
 
             return MojeHistorie;
@@ -72,23 +73,32 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
                 return;
             }
 
-            HistoriePrehravani novyZaznam = new HistoriePrehravani(song, DateTime.Now);
-
-            App.Current.Dispatcher.Invoke(() =>
+            try
             {
-                // Přidání nového záznamu historie na začátek seznamu
-                MojeHistorie.Insert(0, novyZaznam);
+                HistoriePrehravani novyZaznam = new HistoriePrehravani(song, DateTime.Now);
 
-                // Pokud se přesáhne limit, začnou se mazat skladby od konce
-                if (MojeHistorie.Count > LimitHistorie)
+                App.Current.Dispatcher.Invoke(() =>
                 {
-                    MojeHistorie.RemoveAt(MojeHistorie.Count - 1);
-                }
-            });
+                    // Přidání nového záznamu historie na začátek seznamu
+                    MojeHistorie.Insert(0, novyZaznam);
 
-            // Uložení kopie historie na pozadí, aby se zachovala konzistence vláken
-            List<HistoriePrehravani> copy = MojeHistorie.ToList();
-            await Task.Run(() => SaveCopy(copy));
+                    // Pokud se přesáhne limit, začnou se mazat skladby od konce
+                    if (MojeHistorie.Count > LimitHistorie)
+                    {
+                        MojeHistorie.RemoveAt(MojeHistorie.Count - 1);
+                    }
+                });
+
+                // Uložení kopie historie na pozadí, aby se zachovala konzistence vláken
+                List<HistoriePrehravani> copy = MojeHistorie.ToList();
+                await Task.Run(() => SaveCopy(copy));
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while adding the song to the playback history!", nameof(Add));
+                throw;
+            }
         }
 
         /// <summary>
@@ -103,15 +113,24 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
                 return;
             }
 
-            bool byloOdstraneno = false;
-            App.Current.Dispatcher.Invoke(() =>
+            try
             {
-                byloOdstraneno = MojeHistorie.Remove(historie);
-            });
+                bool byloOdstraneno = false;
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    byloOdstraneno = MojeHistorie.Remove(historie);
+                });
 
-            if(byloOdstraneno)
+                if (byloOdstraneno)
+                {
+                    await Save();
+                }
+            }
+
+            catch (Exception ex)
             {
-                await Save();
+                SpravaSouboru.LogError(ex, "Error occurred while removing the selected song from the playback history!", nameof(Delete));
+                throw;
             }
         } 
 
@@ -121,8 +140,17 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <returns>Vrací Task</returns>
         public async Task ClearAll()
         {
-            MojeHistorie.Clear();
-            await Save();
+            try
+            {
+                MojeHistorie.Clear();
+                await Save();
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while clearing the playback history!", nameof(ClearAll));
+                throw;
+            }
         }
       
         /// <summary>
@@ -131,7 +159,16 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <returns>Vrací Task</returns>
         public async Task Save()
         {
-            await SaveCopy(MojeHistorie.ToList());
+            try
+            {
+                await SaveCopy(MojeHistorie.ToList());
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while saving the playback history!", nameof(Save));
+                throw;
+            }
         }
 
         /// <summary>
@@ -151,6 +188,11 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
                 }
 
                 await SpravaSouboru.UlozDoSouboru(CestaKSouboru, data);
+            }
+
+            catch(Exception)
+            {
+                throw;
             }
 
             finally

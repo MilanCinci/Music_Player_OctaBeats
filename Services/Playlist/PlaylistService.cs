@@ -34,7 +34,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                SpravaSouboru.LogError(ex, "", nameof(Load));
                 throw;
             }
         }
@@ -43,16 +43,26 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
         /// Metoda slouží k uložení playlistů
         /// </summary>
         /// <param name="playlisty">Seznam playlistů, který chceme uložit</param>
+        /// <returns>Vrací Task</returns>
         public async Task Save(ObservableCollection<PlayList> playlisty)
         {
-            var adresar = Path.GetDirectoryName(CestaKSouboru);
-
-            if (!Directory.Exists(adresar))
+            try
             {
-                Directory.CreateDirectory(adresar!);
+                var adresar = Path.GetDirectoryName(CestaKSouboru);
+
+                if (!Directory.Exists(adresar))
+                {
+                    Directory.CreateDirectory(adresar!);
+                }
+
+                await SpravaSouboru.UlozDoSouboru(CestaKSouboru, playlisty);
             }
 
-            await SpravaSouboru.UlozDoSouboru(CestaKSouboru, playlisty);
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(Save));
+                throw;
+            }
         }
     }
 }

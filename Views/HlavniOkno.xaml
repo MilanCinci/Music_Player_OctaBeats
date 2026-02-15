@@ -23,7 +23,7 @@
 
         <Menu Grid.Row="0" Grid.ColumnSpan="5" Background="#222" Foreground="White">
             <MenuItem Header="{Binding NastaveniJazykVM[File]}">
-                <MenuItem Header="{Binding NastaveniJazykVM[Exit]}" Command="{Binding ExitCommand}" Foreground="Black"/>
+                <MenuItem Header="{Binding NastaveniJazykVM[Exit]}" Command="{Binding ExitAppCommand}" Foreground="Black"/>
             </MenuItem>
 
             <MenuItem Header="{Binding NastaveniJazykVM[Library]}">

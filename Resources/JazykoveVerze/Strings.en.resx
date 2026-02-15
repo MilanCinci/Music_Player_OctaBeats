@@ -232,9 +232,48 @@
     <value>Playlist with this name already exists!</value>
   </data>
   <data name="ErrorFileNotFound" xml:space="preserve">
-    <value>File {0} not found!</value>
+    <value>File '{0}' not found!</value>
   </data>
   <data name="ErrorInvalidPath" xml:space="preserve">
-    <value>Path cannot be empty nor NULL!</value>
+    <value>File path cannot be empty or NULL!</value>
+  </data>
+  <data name="QuestionDeleteItemFromHistory" xml:space="preserve">
+    <value>Do you really want to delete this item from the playback history?</value>
+  </data>
+  <data name="QuestionDeleteHistory" xml:space="preserve">
+    <value>Do you really want to clear the playback history?</value>
+  </data>
+  <data name="WarningFileAlreadyExists" xml:space="preserve">
+    <value>Song with the name '{0}' already exists in folder {1}!</value>
+  </data>
+  <data name="QuestionDeleteItemFromLibrary" xml:space="preserve">
+    <value>Do you really want to delete song '{0}' ?</value>
+  </data>
+  <data name="ErrorCannotDeleteFile" xml:space="preserve">
+    <value>The file cannot be deleted because it is currently being used by another process!</value>
+  </data>
+  <data name="ErrorUnsupportedFileFormat" xml:space="preserve">
+    <value>File format '{0}' is not supported!</value>
+  </data>
+  <data name="ErrorCorruptedFile" xml:space="preserve">
+    <value>File '{0}' is corrupted!</value>
+  </data>
+  <data name="ErrorMetadataNotLoaded" xml:space="preserve">
+    <value>Failed to load metadata: {0}</value>
+  </data>
+  <data name="ErrorLoadingAlbumCover" xml:space="preserve">
+    <value>New album cover cannot be loaded: {0}</value>
+  </data>
+  <data name="ErrorSavingAlbumCover" xml:space="preserve">
+    <value>Failed to download the album cover: {0}</value>
+  </data>
+  <data name="WarningAlbumCoverNull" xml:space="preserve">
+    <value>Album cover is not available in the metadata and cannot be downloaded!</value>
+  </data>
+  <data name="InfoSuccessDownloadAlbumCover" xml:space="preserve">
+    <value>Album cover was successfully downloaded</value>
+  </data>
+  <data name="InfoFileNotFoundRefreshData" xml:space="preserve">
+    <value>File '{0}' does not exist! The library and playlists have been updated</value>
   </data>
 </root>

@@ -56,7 +56,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand PridatCommand { get; }
         public ICommand OdebratCommand { get; }
         public ICommand PotvrditCommand { get; }
-        public ICommand ZrusitCommand { get; }
 
         // Implementace IDataErrorInfo pro validaci
         public string Error => String.Empty;
@@ -108,9 +107,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             _vsechnyPlaylisty = vsechnyPlaylisty;
             _puvodniNazev = playlist.Nazev;
 
-            // Do knihovny v editoru dáme pouze ty skladby, které se nenachází v aktuálně upravovaném playlistu
-            var cestyVPlaylistu = PlaylistSkladby.Select(s => s.CestaKSouboru).ToHashSet();
-            KnihovnaSkladby = new ObservableCollection<Song>(knihovna.Where(s => !cestyVPlaylistu.Contains(s.CestaKSouboru)));
+            // Do knihovny v editoru se přidají pouze ty skladby, které se nenachází v aktuálně upravovaném playlistu
+            var cestyVPlaylistu = PlaylistSkladby.Select(skladba => skladba.CestaKSouboru).ToHashSet();
+            KnihovnaSkladby = new ObservableCollection<Song>(knihovna.Where(skladba => !cestyVPlaylistu.Contains(skladba.CestaKSouboru)));
 
             NazevPlaylistu = playlist.Nazev;
 
@@ -118,9 +117,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 if (VybranaKnihovnaSkladba != null)
                 {
-                    // Přidáme skladbu do playlistu
                     PlaylistSkladby.Add(VybranaKnihovnaSkladba);
-                    // Odebereme ji z viditelného seznamu knihovny v editoru
                     KnihovnaSkladby.Remove(VybranaKnihovnaSkladba);
                 }
             });
@@ -129,14 +126,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 if (VybranaPlaylistSkladba != null)
                 {
-                    // Vrátíme skladbu zpět do seznamu knihovny v editoru
                     KnihovnaSkladby.Add(VybranaPlaylistSkladba);
-                    // Odebereme ji z playlistu
                     PlaylistSkladby.Remove(VybranaPlaylistSkladba);
                 }
             });
 
-            // Potvrzení vrátí true - data budeme přebírat v MainViewModelu
             PotvrditCommand = new RelayCommand(_ =>
             {
                 if (JeValidni())
@@ -149,6 +143,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k validaci, zda jsou všechna pole správně vyplněna
         /// </summary>
+        /// <returns>Vrací true, pokud je vše validní, jinak false</returns>
         private bool JeValidni()
         {
             return String.IsNullOrEmpty(this[nameof(NazevPlaylistu)]);
