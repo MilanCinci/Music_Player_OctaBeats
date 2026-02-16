@@ -11,6 +11,13 @@
         
         <lokCon:LokalizaceConverter x:Key="LokalizaceConv" LokalizaceService="{StaticResource LokalizaceService}"/>
 
+        <!-- Vlastní vzhled aplikace Světlý/Tmavý režim -->
+        <ResourceDictionary x:Key="AppTheme">
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Themes/LightTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
         <!-- Vlastní styl pro tlačítko s ikonkou -->
         <Style x:Key="ImageButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>

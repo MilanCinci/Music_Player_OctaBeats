@@ -18,8 +18,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Nadpis historie -->
         <TextBlock Text="{Binding [History]}" FontSize="20" FontWeight="Bold" Margin="10,5,10,10"/>
 
+        <!-- Seznam historie -->
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding Historie}"
                  SelectedItem="{Binding VybranyZaznam}"
@@ -29,6 +31,7 @@
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  d:ItemsSource="{d:SampleData ItemCount=5}">
 
+            <!-- ContextMenu nad ListboxItem -->
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox}}"/>
@@ -36,7 +39,7 @@
                         <Setter.Value>
                             <ContextMenu>
 
-                                <MenuItem Header="Vymaž z historie"
+                                <MenuItem Header="{Binding PlacementTarget.Tag.DataContext[RemoveSelectedHistory], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
 Command="{Binding PlacementTarget.Tag.DataContext.RemoveSelectedHistoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
 CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
 
@@ -45,7 +48,7 @@ CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={Relative
                                     </MenuItem.Icon>
                                 </MenuItem>
 
-                                <MenuItem Header="Vymaž celou historii"
+                                <MenuItem Header="{Binding PlacementTarget.Tag.DataContext[RemoveAllHistory], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
     Command="{Binding PlacementTarget.Tag.DataContext.RemoveAllHistoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
     CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                     <MenuItem.Icon>

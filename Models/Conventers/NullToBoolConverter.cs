@@ -15,7 +15,15 @@ namespace Hudebni_Prehravac_OctaBeats.Models.Conventers
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null;
+            bool isNull = value == null;
+
+            // Pokud v XAML je ConverterParameter=Inverse, logika se otočí
+            if (parameter?.ToString() == "Inverse")
+            {
+                return !isNull;
+            }
+
+            return isNull;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

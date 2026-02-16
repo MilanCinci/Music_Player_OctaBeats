@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 namespace Hudebni_Prehravac_OctaBeats.Views
 {
     /// <summary>
-    /// Interaction logic for NastaveniJazykView.xaml
+    /// View vázané na NastaveniJazykViewModel
     /// </summary>
     public partial class NastaveniJazykView : Window
     {

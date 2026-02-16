@@ -276,4 +276,19 @@
   <data name="InfoFileNotFoundRefreshData" xml:space="preserve">
     <value>File '{0}' does not exist! The library and playlists have been updated</value>
   </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>Show Details</value>
+  </data>
+  <data name="InfoPlaylistContext" xml:space="preserve">
+    <value>Context menu is not available in playlists. To edit composition, simply double-click the playlist. Song metadata can be edited in your library</value>
+  </data>
+  <data name="AppTheme" xml:space="preserve">
+    <value>App Theme</value>
+  </data>
+  <data name="LightTheme" xml:space="preserve">
+    <value>Light Theme</value>
+  </data>
+  <data name="DarkTheme" xml:space="preserve">
+    <value>Dark Theme</value>
+  </data>
 </root>

@@ -6,7 +6,7 @@
         Width="1200"
         Height="750">
 
-    <Grid>
+    <Grid Background="{DynamicResource PrimaryBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="26"/>
             <RowDefinition Height="*"/>
@@ -43,6 +43,10 @@
 
             <MenuItem Header="{Binding NastaveniJazykVM[Settings]}">
                 <MenuItem Header="{Binding NastaveniJazykVM[Language]}" Command="{Binding OpenSettingsLanguageCommand}" Foreground="Black"/>
+                <MenuItem Header="{Binding NastaveniJazykVM[AppTheme]}" Foreground="Black">
+                    <MenuItem Header="{Binding NastaveniJazykVM[LightTheme]}" Foreground="Black" Command="{Binding ChangeThemeCommand}" CommandParameter="False"/>
+                    <MenuItem Header="{Binding NastaveniJazykVM[DarkTheme]}" Foreground="Black" Command="{Binding ChangeThemeCommand}" CommandParameter="True"/>
+                </MenuItem>
             </MenuItem>
 
             <MenuItem Header="{Binding NastaveniJazykVM[Help]}">
@@ -55,26 +59,26 @@
             <views:HistoryView DataContext="{Binding HistoryVM}"/>
         </Border>
 
-        <GridSplitter Grid.Row="1" Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="#DDD"/>
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="{DynamicResource GridSplitterBrush}"/>
 
-        <Border Grid.Row="1" Grid.Column="2" BorderBrush="Gray" BorderThickness="1,1,1,0" Padding="12">
+        <Border Grid.Row="1" Grid.Column="2" BorderBrush="Gray" BorderThickness="1,0,1,0" Padding="12">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding NastaveniJazykVM[Songs]}" FontSize="20" Margin="10,5,10,15" FontWeight="Bold"/>
+                <TextBlock Text="{Binding NastaveniJazykVM[Songs]}" FontSize="20" Margin="10,5,10,15" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}"/>
                 <views:KnihovnaView Grid.Row="1" DataContext="{Binding KnihovnaVM}"/>
             </Grid>
         </Border>
 
-        <GridSplitter Grid.Row="1" Grid.Column="3" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="#DDD"/>
+        <GridSplitter Grid.Row="1" Grid.Column="3" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="{DynamicResource GridSplitterBrush}"/>
 
         <Border Grid.Row="1" Grid.Column="4" BorderBrush="Gray" BorderThickness="1,0,0,0">
             <views:PlaylistView DataContext="{Binding PlaylistVM}"/>
         </Border>
 
-        <Border Grid.Row="2" Grid.ColumnSpan="5" Background="#181818" BorderBrush="#282828" BorderThickness="0,1,0,0" Padding="15,10">
+        <Border Grid.Row="2" Grid.ColumnSpan="5" Background="{DynamicResource SecondaryBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="15,10">
             <views:PrehravacView DataContext="{Binding PrehravacVM}"/>
         </Border>
 

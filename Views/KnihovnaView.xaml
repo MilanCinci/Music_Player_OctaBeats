@@ -18,7 +18,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- VYHLEDÁVÁNÍ -->
         <Grid Grid.Row="0"
               Margin="0,0,0,10">
 
@@ -27,28 +26,28 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- TextBox se přizpůsobí -->
+            <!-- TextBox pro vyhledávání -->
             <TextBox Grid.Column="0"
                      MinWidth="120"
                      Height="28"
                      Margin="0,0,8,0"
                      Text="{Binding VyhledavanyText, UpdateSourceTrigger=PropertyChanged}"
                      IsEnabled="{Binding VybranyPlaylist, Converter={StaticResource NullToBoolConverter}}"
-                     ToolTip="Vyhledávání"/>
+                     Background="Transparent"
+                     Foreground="{DynamicResource PrimaryTextBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}"
+                     ToolTip="{Binding [Search]}" VerticalContentAlignment="Center" SelectionBrush="#FFE3FF85"/>
 
             <!-- Typ vyhledávání combobox -->
             <ComboBox Grid.Column="1"
                       MinWidth="120"
                       Height="28"
+                      BorderBrush="{DynamicResource BorderBrush}"
+                      ItemsSource="{Binding TypyVyhledavani}"
                       SelectedValue="{Binding VybranyTypVyhledavani}"
-                      SelectedValuePath="Tag"
-                      IsEnabled="{Binding VybranyPlaylist, Converter={StaticResource NullToBoolConverter}}">
-
-                <ComboBoxItem Content="Název"
-                              Tag="{x:Static typyVyhledavani:TypVyhledavani.Nazev}"/>
-
-                <ComboBoxItem Content="Interpret"
-                              Tag="{x:Static typyVyhledavani:TypVyhledavani.Interpret}"/>
+                      SelectedValuePath="Key"
+                      DisplayMemberPath="Value"
+                      IsEnabled="{Binding VybranyPlaylist, Converter={StaticResource NullToBoolConverter}}" VerticalContentAlignment="Center">
             </ComboBox>
         </Grid>
 
@@ -56,23 +55,20 @@
         <ListBox x:Name="listboxSongs" Grid.Row="1"
                  ItemsSource="{Binding VyfiltrovaneSkladby}"
                  SelectedItem="{Binding VybranaSkladba}"
+                 Background="Transparent"
+                 BorderBrush="{DynamicResource BorderBrush}"
                  HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown" SelectionChanged="ListBox_SelectionChanged" MouseDoubleClick="ListBox_MouseDoubleClick">
 
+            <!-- ContextMenu nad ListboxItem -->
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox}}"/>
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
-                                <MenuItem Header="Přehrát" 
-                                  FontWeight="Bold">
-                                </MenuItem>
-
-                                <Separator />
-
-                                <MenuItem Header="Zobraz informace"
-              Command="{Binding PlacementTarget.Tag.DataContext.EditMetadataCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem Header="{Binding PlacementTarget.Tag.DataContext[ShowDetails], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                        Command="{Binding PlacementTarget.Tag.DataContext.EditMetadataCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                     <MenuItem.Icon>
                                         <TextBlock Text="📝" VerticalAlignment="Center"/>
                                     </MenuItem.Icon>
@@ -80,10 +76,9 @@
 
                                 <Separator />
 
-                                <MenuItem Header="Smazat z knihovny"
-          Command="{Binding PlacementTarget.Tag.DataContext.RemoveSelectedHistoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-          Foreground="Red" CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-
+                                <MenuItem Header="{Binding PlacementTarget.Tag.DataContext[RemoveSong], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                        Command="{Binding PlacementTarget.Tag.DataContext.RemoveSongCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                     <MenuItem.Icon>
                                         <TextBlock Text="🗑️" VerticalAlignment="Center"/>
                                     </MenuItem.Icon>
@@ -102,6 +97,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
+                        <!-- Přebal alba -->
                         <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,14,0" CornerRadius="4">
                             <Border.Background>
                                 <ImageBrush ImageSource="{Binding PrebalAlba, Converter={StaticResource ByteToImageConverter}, 
@@ -111,10 +107,11 @@
                             </Border.Background>
                         </Border>
 
+                        <!-- Název, Interpret a Album -->
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Nazev}" FontWeight="SemiBold" FontSize="13"/>
-                            <TextBlock Text="{Binding Interpret}" Foreground="Gray" FontSize="11"/>
-                            <TextBlock Text="{Binding Album}" Foreground="Gray" FontSize="11" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding Nazev}" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="{Binding Interpret}" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            <TextBlock Text="{Binding Album}" FontSize="11" FontStyle="Italic" Foreground="{DynamicResource SecondaryTextBrush}"/>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

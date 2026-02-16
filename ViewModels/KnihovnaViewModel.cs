@@ -20,24 +20,18 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     public class KnihovnaViewModel : BaseViewModel
     {
         private readonly IKnihovnaService _knihovnaService;
-        private readonly ILokalizaceService _lokalizaceService;
-        private readonly IDialogService _dialogService;
+        public ILokalizaceService LokalizaceService { get; private set; }
+        public IDialogService DialogService { get; private set; }
         private bool potlacVyber;
 
         private ObservableCollection<Song>? skladby;
-        /// <summary>
-        /// Seznam skladeb
-        /// </summary>
         public ObservableCollection<Song>? Skladby
         {
             get => skladby;
             set { skladby = value; OnPropertyChanged(); }
         }
 
-        private ObservableCollection<Song>? vyfiltrovaneSkladby;
-        /// <summary>
-        /// Seznam vyfiltrovaných skladeb podle zadaných vyhledávacích kritérií
-        /// </summary>
+        private ObservableCollection<Song>? vyfiltrovaneSkladby;        
         public ObservableCollection<Song>? VyfiltrovaneSkladby
         {
             get => vyfiltrovaneSkladby;
@@ -123,6 +117,20 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        private ObservableCollection<KeyValuePair<TypVyhledavani, string>> typyVyhledavani;
+        public ObservableCollection<KeyValuePair<TypVyhledavani, string>> TypyVyhledavani
+        {
+            get => typyVyhledavani;
+            set 
+            { 
+                typyVyhledavani = value;
+                OnPropertyChanged(); 
+            }
+        }
+
+        // Delegování indexeru na službu, která je už implementována v ILokalizaceService
+        public string this[string key] => LokalizaceService[key];
+
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddSongCommand { get; }
         public ICommand RemoveSongCommand { get; }
@@ -136,10 +144,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="dialogService">Servis pro zobrazení příslušných dialogů</param>
         public KnihovnaViewModel(IKnihovnaService knihovnaService, ILokalizaceService lokalizaceService, IDialogService dialogService)
         {
-            _lokalizaceService = lokalizaceService;
+            LokalizaceService = lokalizaceService;
             _knihovnaService = knihovnaService;
-            _dialogService = dialogService;
-
+            DialogService = dialogService;
+           
             AddSongCommand = new AsyncRelayCommand(PridejSkladbuDoKnihovny);
             RemoveSongCommand = new RelayCommand(
                  param => OdeberVybranouSkladbuZKnihovny(param),
@@ -177,7 +185,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while initializing the library!", nameof(InicializujAsync));
-                _dialogService.ShowError(ex.Message);
+                DialogService.ShowError(ex.Message);
             }
         }
 
@@ -214,7 +222,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while changing the source of the playback history!", nameof(PrepnoutZdrojSkladeb));
-                _dialogService.ShowError(ex.Message);
+                DialogService.ShowError(ex.Message);
             }
         }
 
@@ -279,7 +287,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while filtering songs!", nameof(Vyfiltruj));
-                _dialogService.ShowError(ex.Message);
+                DialogService.ShowError(ex.Message);
             }
         }
 
@@ -319,7 +327,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "", nameof(PridejSkladbuDoKnihovny));
-                _dialogService.ShowError(ex.Message);
+                DialogService.ShowError(ex.Message);
             }
         }
 
@@ -330,7 +338,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public void OdeberVybranouSkladbuZKnihovny(object? parameter)
         {
             // Získání skladby z parametru ContextMenu nebo vybraná skladba
-            Song? skladbaKeSmazani = parameter as Song ?? VybranaSkladba;
+            var skladbaKeSmazani = parameter as Song ?? VybranaSkladba;
 
             if (skladbaKeSmazani == null)
             {
@@ -339,8 +347,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             try
             {
-                string zprava = String.Format(_lokalizaceService["QuestionDeleteItemFromLibrary"], skladbaKeSmazani.Nazev);
-                MessageBoxResult vysledekDiaOkna = _dialogService.ShowConfirmation(zprava);
+                string zprava = String.Format(LokalizaceService["QuestionDeleteItemFromLibrary"], skladbaKeSmazani.Nazev);
+                MessageBoxResult vysledekDiaOkna = DialogService.ShowConfirmation(zprava);
 
                 if (vysledekDiaOkna == MessageBoxResult.Yes)
                 {
@@ -364,7 +372,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                     else
                     {
-                        _dialogService.ShowWarning(_lokalizaceService["ErrorCannotDeleteFile"]);
+                        DialogService.ShowWarning(LokalizaceService["ErrorCannotDeleteFile"]);
                     }
                 }
             }
@@ -372,7 +380,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while deleting the song from the library!", nameof(OdeberVybranouSkladbuZKnihovny));
-                _dialogService.ShowError(ex.Message);
+                DialogService.ShowError(ex.Message);
             }
         }
 
@@ -397,8 +405,29 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while setting the currently selected song!", nameof(NastavVybranouSkladbu));
-                _dialogService.ShowError(ex.Message);
+                DialogService.ShowError(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Metoda slouží k refreshnutí prvků ve View, aby se správně přeložily
+        /// </summary>
+        public void RefreshLokalizace()
+        {
+            // Uložení aktuálně vybraného typu
+            TypVyhledavani puvodniTyp = VybranyTypVyhledavani;
+
+            // Vygenerování nové kolekci s korektními překlady
+            TypyVyhledavani = new ObservableCollection<KeyValuePair<TypVyhledavani, string>>
+            {
+                new KeyValuePair<TypVyhledavani, string>(TypVyhledavani.Nazev, LokalizaceService["Name"]),
+                new KeyValuePair<TypVyhledavani, string>(TypVyhledavani.Interpret, LokalizaceService["Artist"])
+            };
+
+            VybranyTypVyhledavani = puvodniTyp;
+
+            // Oznámení indexeru, aby změnil překlad
+            OnPropertyChanged("Item[]");
         }
     }
 }

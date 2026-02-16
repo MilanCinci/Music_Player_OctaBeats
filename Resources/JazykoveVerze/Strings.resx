@@ -325,4 +325,24 @@
     <value>File '{0}' does not exist! The library and playlists have been updated</value>
     <comment>Info file not found refresh data</comment>
   </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>Show Details</value>
+    <comment>ContextMenu KnihovnaView</comment>
+  </data>
+  <data name="InfoPlaylistContext" xml:space="preserve">
+    <value>Info Playlist Context</value>
+    <comment>Info playlist context</comment>
+  </data>
+  <data name="AppTheme" xml:space="preserve">
+    <value>App Theme</value>
+    <comment>MenuItem Nastaveni</comment>
+  </data>
+  <data name="LightTheme" xml:space="preserve">
+    <value>Light Theme</value>
+    <comment>MenuItem Nastaveni--Vzhled aplikace</comment>
+  </data>
+  <data name="DarkTheme" xml:space="preserve">
+    <value>Dark Theme</value>
+    <comment>MenuItem Nastaveni--Vzhled aplikace</comment>
+  </data>
 </root>

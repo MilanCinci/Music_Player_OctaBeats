@@ -25,8 +25,6 @@ namespace Hudebni_Prehravac_OctaBeats.Views
         public PlaylistView()
         {
             InitializeComponent();
-
-            IPlaylistService playlistService = new PlaylistService();
         }
 
         /// <summary>
@@ -38,8 +36,7 @@ namespace Hudebni_Prehravac_OctaBeats.Views
         {
             if (DataContext is PlaylistViewModel vm && vm.VybranyPlaylist != null)
             {
-                ((MainViewModel)Application.Current.MainWindow.DataContext)
-                    .UpravitPlaylist(vm.VybranyPlaylist);
+                ((MainViewModel)Application.Current.MainWindow.DataContext).UpravitPlaylist(vm.VybranyPlaylist);
                 lboxPlaylist.Items.Refresh();
             }
         }

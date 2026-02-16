@@ -45,6 +45,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand RemoveAllHistoryCommand { get; }
         public ICommand OpenSettingsLanguageCommand { get; }
         public ICommand ExitAppCommand { get; }
+        public ICommand ChangeThemeCommand { get; }
 
         /// <summary>
         /// ViewModel přehrávače
@@ -99,6 +100,13 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             // Načtení a nastavení jazyka z Application Properties
             string ulozenyJazyk = Properties.Settings.Default.Language;
             _lokalizaceService.ChangeLanguage(ulozenyJazyk);
+
+            // Načtení a nastavení vzhledu aplikace z Application Properties
+            bool jeTmavyRezim = Properties.Settings.Default.IsDarkMode;
+            ZmenVzhledAplikace(jeTmavyRezim);
+
+            // Prvotní načtení správně přeložených ComboboxItemů
+            KnihovnaVM.RefreshLokalizace();
 
             // Propojení playlistů s knihovnou
             PlaylistVM.PropertyChanged += (s, e) =>
@@ -156,6 +164,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             RemoveAllHistoryCommand = HistoryVM.RemoveAllHistoryCommand;
             OpenSettingsLanguageCommand = new RelayCommand(_ => OtevriNastaveniJazyka());
             ExitAppCommand = new RelayCommand(_ => UkonciAplikaci());
+            ChangeThemeCommand = new RelayCommand(vzhled => ZmenVzhledAplikace(vzhled));
         }
 
         /// <summary>
@@ -387,6 +396,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                         PlaylistVM.RefreshLokalizace();
                         PrehravacVM.RefreshLokalizace();
                         HistoryVM.RefreshLokalizace();
+                        KnihovnaVM.RefreshLokalizace();
                     }
 
                     dialog.Close();
@@ -410,12 +420,27 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             try
             {
-                // TODO Tady dodělat, aby se při "Synchronizovat změny" synchronizovala i fronta v PrehravacViewModel, pokud byla ovlivněna
-                // A ještě pár lokalizací, hlavně contextmenu a Info v playlistech
+                // TODO
+                // Doladit design přepínání mezi světlým a tmavým režimem
+                // Doladit celkově trochu design
                 // Pomocí klávesové zkratky, odfocusovat vybraný záznam z historie
 
                 // Načtení skladeb znovu do knihovny
                 await KnihovnaVM.InicializujAsync();
+
+                // Synchronizace fronty v přehrávači (odstranění neexistujících souborů z fronty)
+                if (PrehravacVM.Playlist != null && PrehravacVM.Playlist.Count > 0)
+                {
+                    // Nalezení skladeb ve frontě, které už fyzicky neexistují
+                    var neexistujiciVeFronte = PrehravacVM.Playlist
+                        .Where(skladba => !File.Exists(skladba.CestaKSouboru))
+                        .ToList();
+
+                    foreach (Song song in neexistujiciVeFronte)
+                    {
+                        PrehravacVM.OdstranSkladbuZFronty(song);
+                    }
+                }
 
                 // Procházení všech playlistů a odstranění z nich skladby, které již neexistují na disku
                 if (PlaylistVM.Playlisty != null)
@@ -471,6 +496,76 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while closing the application!", nameof(UkonciAplikaci));
+                _dialogService.ShowError(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k dynamickému přepnutí vzhledu aplikace
+        /// </summary>
+        /// <param name="vzhled">Vzhled aplikace, který jsem nově zvolili</param>
+        public void ZmenVzhledAplikace(object? vzhled)
+        {
+            if (vzhled == null)
+            {
+                return;
+            }
+
+            bool tmavyRezim = false;
+            if (vzhled is bool b)
+            {
+                tmavyRezim = b;
+            }
+
+            else if (vzhled is string s)
+            {
+                bool.TryParse(s, out tmavyRezim);
+            }
+
+            string motivPath = String.Empty;
+
+            if (tmavyRezim)
+            {
+                motivPath = "Resources/Themes/DarkTheme.xaml";
+            }
+
+            else
+            {
+                motivPath = "Resources/Themes/LightTheme.xaml";
+            }
+
+            try
+            {
+                var appResources = Application.Current.Resources.MergedDictionaries;
+
+                // Nalezení a odstranění stávajícího slovníku s motivem
+                var staryMotiv = appResources.FirstOrDefault(d => d.Source != null && d.Source.OriginalString.Contains("Theme.xaml"));
+
+                if (staryMotiv != null)
+                {
+                    appResources.Remove(staryMotiv);
+                }
+
+                // Přidáme nový slovník
+                appResources.Add(new ResourceDictionary 
+                {
+                    Source = new Uri(motivPath, UriKind.Relative) 
+                });
+
+                // Uložení nového volby vzhledu do Application Properties
+                Properties.Settings.Default.IsDarkMode = tmavyRezim;
+                Properties.Settings.Default.Save();
+
+                // Refresh lokalizace pro všechny ViewModely, aby se aktualizovaly barvy vázané na indexery
+                PlaylistVM.RefreshLokalizace();
+                KnihovnaVM.RefreshLokalizace();
+                PrehravacVM.RefreshLokalizace();
+                HistoryVM.RefreshLokalizace();
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while changing the app theme!", nameof(ZmenVzhledAplikace));
                 _dialogService.ShowError(ex.Message);
             }
         }

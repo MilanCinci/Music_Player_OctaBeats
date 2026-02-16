@@ -58,9 +58,8 @@ namespace Hudebni_Prehravac_OctaBeats.Views
                     // ListBoxItem se neoznačí, ale událost probublá dál pro ContextMenu (u pravého tlačítka)
                     if(vm.VybranyPlaylist != null && e.RightButton == MouseButtonState.Pressed)
                     {
-                        MessageBox.Show("V playlistech není povoleno kontextové menu. Pokud chcete editovat složení playlistu, " +
-                            "tak stačí dvakrát kliknout na vybraný playlist. Pokud chcete editovat metadata skladeb, tak to lze ve vaší knihovně",
-                            "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                        string zprava = vm["InfoPlaylistContext"];
+                        vm.DialogService.ShowInfo(zprava);
                     }
 
                     if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)

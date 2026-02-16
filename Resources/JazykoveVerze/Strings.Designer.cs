@@ -106,6 +106,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to App Theme.
+        /// </summary>
+        public static string AppTheme {
+            get {
+                return ResourceManager.GetString("AppTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Music Player OctaBeats.
         /// </summary>
         public static string AppTitle {
@@ -120,6 +129,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Artist {
             get {
                 return ResourceManager.GetString("Artist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dark Theme.
+        /// </summary>
+        public static string DarkTheme {
+            get {
+                return ResourceManager.GetString("DarkTheme", resourceCulture);
             }
         }
         
@@ -304,6 +322,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Info Playlist Context.
+        /// </summary>
+        public static string InfoPlaylistContext {
+            get {
+                return ResourceManager.GetString("InfoPlaylistContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Info Success Download Album Cover.
         /// </summary>
         public static string InfoSuccessDownloadAlbumCover {
@@ -327,6 +354,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Library {
             get {
                 return ResourceManager.GetString("Library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light Theme.
+        /// </summary>
+        public static string LightTheme {
+            get {
+                return ResourceManager.GetString("LightTheme", resourceCulture);
             }
         }
         
@@ -471,6 +507,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Details.
+        /// </summary>
+        public static string ShowDetails {
+            get {
+                return ResourceManager.GetString("ShowDetails", resourceCulture);
             }
         }
         

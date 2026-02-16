@@ -43,12 +43,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Maximální šířka přebalu alba (v px)
         /// </summary>
-        private const int MaxSirkaObrazku = 600;
+        private const int MaxSirkaObrazku = 1280;
 
         /// <summary>
         /// Maximální výška přebalu alba (v px)
         /// </summary>
-        private const int MaxVyskaObrazku = 600;
+        private const int MaxVyskaObrazku = 720;
 
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand PotvrditCommand { get; }
@@ -149,7 +149,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 {
                     byte[] data = File.ReadAllBytes(openFileDialog.FileName);
 
-                    // Zmenšení obrázku na max 600x600 px před uložením do vlastnosti
+                    // Zmenšení obrázku před uložením do vlastnosti
                     PrebalAlba = ZmensiObrazek(data, MaxSirkaObrazku, MaxVyskaObrazku);
                 }
             }

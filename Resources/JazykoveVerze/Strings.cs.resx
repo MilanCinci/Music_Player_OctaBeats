@@ -276,4 +276,19 @@
   <data name="InfoFileNotFoundRefreshData" xml:space="preserve">
     <value>Soubor '{0}' neexistuje! Knihovna a playlisty byly aktualizovány</value>
   </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>Zobraz informace</value>
+  </data>
+  <data name="InfoPlaylistContext" xml:space="preserve">
+    <value>V playlistech není povoleno kontextové menu. Pro úpravu složení stačí na playlist dvakrát kliknout. Metadata skladeb lze měnit v knihovně</value>
+  </data>
+  <data name="AppTheme" xml:space="preserve">
+    <value>Vzhled aplikace</value>
+  </data>
+  <data name="LightTheme" xml:space="preserve">
+    <value>Světlý režim</value>
+  </data>
+  <data name="DarkTheme" xml:space="preserve">
+    <value>Tmavý režim</value>
+  </data>
 </root>

@@ -17,6 +17,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Přebal alba, Název, Interpret a Zdroj přehrávání -->
         <Grid Margin="0,0,0,15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="86"/>
@@ -36,12 +37,12 @@
 
             <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="24,0,0,0">
                 <TextBlock x:Name="tblockNazev" Text="{Binding AktualniSkladba.Nazev}" 
-                   Foreground="White" FontWeight="Bold" FontSize="16"/>
+                   Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold" FontSize="16"/>
                 <TextBlock x:Name="tblockInterpret" Text="{Binding AktualniSkladba.Interpret}" 
-                   Foreground="#CCC" FontSize="13"/>
+                   Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13"/>
                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Visibility="{Binding AktualniSkladba, Converter={StaticResource NullToVisibilityConverter}}">
-                    <TextBlock Text="{Binding [Source]}" Foreground="#FF9D9D9D" FontSize="11"/>
-                    <TextBlock Text="{Binding ZdrojPrehravani}" Foreground="#FFE3FF85" FontSize="11"/>
+                    <TextBlock Text="{Binding [Source]}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11"/>
+                    <TextBlock Text="{Binding ZdrojPrehravani}" Foreground="{DynamicResource GreenTextBrush}" FontSize="11"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -58,15 +59,15 @@
             <TextBlock Text="{Binding AktualniCasText}"
                    VerticalAlignment="Center" Foreground="#FFFBFAFA"/>
 
-            <!-- Slider -->
+            <!-- Slider skladby -->
             <Slider Grid.Column="1"
-        Minimum="0"
-        Maximum="{Binding CelkovaDelka}"
-        Value="{Binding AktualniCas, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-        Style="{StaticResource SliderStyleSong}"
-        PreviewMouseLeftButtonDown="Slider_PreviewMouseLeftButtonDown"
-        PreviewMouseUp="Slider_PreviewMouseUp"
-        IsMoveToPointEnabled="True"/>
+                    Minimum="0"
+                    Maximum="{Binding CelkovaDelka}"
+                    Value="{Binding AktualniCas, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource SliderStyleSong}"
+                    PreviewMouseLeftButtonDown="Slider_PreviewMouseLeftButtonDown"
+                    PreviewMouseUp="Slider_PreviewMouseUp"
+                    IsMoveToPointEnabled="True"/>       
 
             <!-- Celkový čas -->
             <TextBlock Grid.Column="2"
@@ -83,11 +84,13 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Tlačítko Předchozí -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Command="{Binding PreviousCommand}" Style="{StaticResource ImageButtonStyle}" Margin="10,0">
                     <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Predchozi.png" Width="20" Height="20"/>
                 </Button>
 
+                <!-- Tlačítko Pauza/Přehrát -->
                 <Button Margin="10,0">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ImageButtonStyle}">
@@ -112,11 +115,13 @@
                     </Button.Style>
                 </Button>
 
+                <!-- Tlačítko Další -->
                 <Button Command="{Binding NextCommand}" Style="{StaticResource ImageButtonStyle}" Margin="10,0">
                     <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Dalsi.png" Width="20" Height="20"/>
                 </Button>
             </StackPanel>
 
+            <!-- Hlasitost -->
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
                 <Image Width="20" Height="20" Margin="0,0,8,0">
                     <Image.Style>
