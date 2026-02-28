@@ -27,22 +27,30 @@
             </Grid.ColumnDefinitions>
 
             <!-- TextBox pro vyhledávání -->
-            <TextBox Grid.Column="0"
+            <TextBox Grid.Column="0" Style="{StaticResource AppTextBox}"
                      MinWidth="120"
                      Height="28"
                      Margin="0,0,8,0"
+                     CaretBrush="{DynamicResource SecondaryTextBrush}"
                      Text="{Binding VyhledavanyText, UpdateSourceTrigger=PropertyChanged}"
                      IsEnabled="{Binding VybranyPlaylist, Converter={StaticResource NullToBoolConverter}}"
                      Background="Transparent"
                      Foreground="{DynamicResource PrimaryTextBrush}"
                      BorderBrush="{DynamicResource BorderBrush}"
-                     ToolTip="{Binding [Search]}" VerticalContentAlignment="Center" SelectionBrush="#FFE3FF85"/>
+                     ToolTip="{Binding [Search]}" 
+                     VerticalContentAlignment="Center" >
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="4"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
 
-            <!-- Typ vyhledávání combobox -->
+            <!-- ComboBox s typy vyhledávání -->
             <ComboBox Grid.Column="1"
                       MinWidth="120"
                       Height="28"
-                      BorderBrush="{DynamicResource BorderBrush}"
+                      Style="{StaticResource ModernComboBox}"
                       ItemsSource="{Binding TypyVyhledavani}"
                       SelectedValue="{Binding VybranyTypVyhledavani}"
                       SelectedValuePath="Key"
@@ -61,26 +69,29 @@
 
             <!-- ContextMenu nad ListboxItem -->
             <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox}}"/>
                     <Setter Property="ContextMenu">
                         <Setter.Value>
-                            <ContextMenu>
-                                <MenuItem Header="{Binding PlacementTarget.Tag.DataContext[ShowDetails], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                        Command="{Binding PlacementTarget.Tag.DataContext.EditMetadataCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <ContextMenu Style="{StaticResource ThemedContextMenu}">
+
+                                <!-- MenuItem Zobrazit informace -->
+                                <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding PlacementTarget.Tag.DataContext[ShowDetails], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  Command="{Binding PlacementTarget.Tag.DataContext.EditMetadataCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                     <MenuItem.Icon>
-                                        <TextBlock Text="📝" VerticalAlignment="Center"/>
+                                        <Image Source="/Resources/Obrazky/Ikona_Informace.png"
+                                               Style="{StaticResource MenuItemIconStyle}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
 
-                                <Separator />
-
-                                <MenuItem Header="{Binding PlacementTarget.Tag.DataContext[RemoveSong], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                        Command="{Binding PlacementTarget.Tag.DataContext.RemoveSongCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <!-- MenuItem Vymazat skladbu -->
+                                <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding PlacementTarget.Tag.DataContext[RemoveSong], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  Command="{Binding PlacementTarget.Tag.DataContext.RemoveSongCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                     <MenuItem.Icon>
-                                        <TextBlock Text="🗑️" VerticalAlignment="Center"/>
+                                        <Image Source="/Resources/Obrazky/Ikona_Vymazat.png"
+                                                Style="{StaticResource MenuItemIconStyle}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </ContextMenu>
@@ -91,7 +102,7 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="4">
+                    <Grid Margin="4, 2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
@@ -107,10 +118,15 @@
                             </Border.Background>
                         </Border>
 
-                        <!-- Název, Interpret a Album -->
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            
+                            <!-- Název skladby -->
                             <TextBlock Text="{Binding Nazev}" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}"/>
+
+                            <!-- Interpret -->
                             <TextBlock Text="{Binding Interpret}" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}"/>
+
+                            <!-- Album -->
                             <TextBlock Text="{Binding Album}" FontSize="11" FontStyle="Italic" Foreground="{DynamicResource SecondaryTextBrush}"/>
                         </StackPanel>
                     </Grid>

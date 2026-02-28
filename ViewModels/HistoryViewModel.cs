@@ -38,6 +38,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /* Příkazy pro obsluhu jednotlivých metod */
         public AsyncRelayCommand RemoveSelectedHistoryCommand { get; }
         public ICommand RemoveAllHistoryCommand { get; }
+        public ICommand ResetHistorySelectionCommand { get; }
 
         // Delegování indexeru na službu, která je už implementována v ILokalizaceService
         public string this[string key] => _lokalizaceService[key];
@@ -59,6 +60,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             RemoveSelectedHistoryCommand = new AsyncRelayCommand(OdstranVybranyPrvekHistorie, () => VybranyZaznam != null);
             RemoveAllHistoryCommand = new AsyncRelayCommand(OdstranCelouHistorii);
+            ResetHistorySelectionCommand = new RelayCommand(_ => VybranyZaznam = null);
         }
 
         /// <summary>

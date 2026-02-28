@@ -1,40 +1,76 @@
 ﻿<Window x:Class="Hudebni_Prehravac_OctaBeats.Views.NastaveniJazykView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
+        xmlns:conv="clr-namespace:Hudebni_Prehravac_OctaBeats.Models.Conventers"
         Title="{Binding [Settings]}" 
-        Height="280" Width="420"
+        Width="450" Height="320" 
         WindowStartupLocation="CenterScreen"
-        Background="#1A1A1A"
-        Foreground="White" MinHeight="220" MinWidth="360" MaxWidth="420" MaxHeight="280">
+        Background="{DynamicResource PrimaryBackgroundBrush}"
+        Foreground="{DynamicResource PrimaryTextBrush}" 
+        MinWidth="450" MinHeight="320"
+        WindowStyle="ThreeDBorderWindow" MaxWidth="600" MaxHeight="430" Icon="/Resources/Obrazky/Ikona_Zmenit_Jazyk.ico">
 
-    <Grid Margin="25">
+    <Window.Resources>
+        <conv:LanguageToFlagConverter x:Key="LanguageToFlagConverter"/>
+    </Window.Resources>
+    
+    <Grid Margin="30">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding [Language]}" 
-               FontSize="20" FontWeight="Bold" Margin="0,5,0,20" Foreground="#FFE3FF85"/>
-
-        <StackPanel Grid.Row="1" VerticalAlignment="Center">
-
-            <ComboBox ItemsSource="{Binding DostupneJazyky}"
-                  SelectedItem="{Binding VybranyJazyk}"
-                  DisplayMemberPath="Nazev"
-                  Height="36" 
-                  VerticalContentAlignment="Center" Margin="10,0,10,0"/>
+        <!-- Nadpis jazyk -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,25">
+            <TextBlock Text="{Binding [Language]}" 
+                       FontSize="22" FontWeight="SemiBold" 
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource PrimaryTextBrush}"/>
         </StackPanel>
 
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="0,15,0,0">
+
+            <!-- Text preferovaný jazyk -->
+            <TextBlock Text="{Binding [PreferredLanguage]}" 
+                       FontSize="13" Margin="10,0,0,8" 
+                       Foreground="{DynamicResource SecondaryTextBrush}"/>
+
+            <!-- ComboBox s jazyky -->
+            <ComboBox ItemsSource="{Binding DostupneJazyky}"
+                  SelectedItem="{Binding VybranyJazyk}"
+                  Height="40" 
+                  VerticalContentAlignment="Center" 
+                  Margin="0"
+                  Style="{StaticResource ModernComboBox}">
+
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+
+                        <!-- Vlajka -->
+                        <Image Width="26" Height="18" Margin="0,0,10,0" Stretch="UniformToFill">
+                            <Image.Source>
+                                <Binding Path="Nazev" Converter="{StaticResource LanguageToFlagConverter}"/>
+                            </Image.Source>
+                        </Image>
+
+                        <!-- Název jazyka -->
+                        <TextBlock Text="{Binding Nazev}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <!-- Tlačítko OK -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
             <Button Content="OK" 
                 Command="{Binding PotvrditCommand}"
-                Width="90" Height="32"
+                Style="{StaticResource AppButtonStyle}"
+                Width="105" Height="35"
                 IsDefault="True"
-                Background="#333" Foreground="White" BorderThickness="0"/>
+                Margin="0,20,0,0"/>
         </StackPanel>
     </Grid>
 </Window>

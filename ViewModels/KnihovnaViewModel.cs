@@ -11,6 +11,7 @@ using Hudebni_Prehravac_OctaBeats.Services.Dialog;
 using Hudebni_Prehravac_OctaBeats.Persistence;
 using System.Windows;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
+using System.IO;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
@@ -22,7 +23,16 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly IKnihovnaService _knihovnaService;
         public ILokalizaceService LokalizaceService { get; private set; }
         public IDialogService DialogService { get; private set; }
+
+        /// <summary>
+        /// Příznak signalizující potlačení výběru skladby, když uživatel rychle přepíná
+        /// </summary>
         private bool potlacVyber;
+
+        /// <summary>
+        /// Čas, kdy byla naposledy uživatelem vybrána nějaká skladba
+        /// </summary>
+        private DateTime posledniVyber = DateTime.MinValue;
 
         private ObservableCollection<Song>? skladby;
         public ObservableCollection<Song>? Skladby
@@ -36,9 +46,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             get => vyfiltrovaneSkladby;
             set { vyfiltrovaneSkladby = value; OnPropertyChanged(); }
-        }
-
-        private DateTime posledniVyber = DateTime.MinValue;
+        }      
 
         private string? vyhledavanyText;
         public string? VyhledavanyText
@@ -77,17 +85,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Akce pro vybranou skladbu
+        /// Událost pro vybranou skladbu
         /// </summary>
         public event Action<Song>? SkladbaVybrana;
 
         /// <summary>
-        /// Akce pro vymazanou skladbu
+        /// Událost pro vymazanou skladbu
         /// </summary>
         public event Action<Song>? SkladbaSmazana;
 
         /// <summary>
-        /// Akce pro editaci metadat skladby
+        /// Událost pro editaci metadat skladby
         /// </summary>
         public event Action<Song>? SkladbaEditacePozadovana;
 
@@ -108,6 +116,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 if (value != null && !potlacVyber)
                 {
                     DateTime nyni = DateTime.Now;
+
+                    // Kontrola, zda od posledního výběru nějaké skladby uživatelem uběhlo více než 200 ms
                     if ((nyni - posledniVyber).TotalMilliseconds > 200)
                     {
                         posledniVyber = nyni;
@@ -135,6 +145,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand AddSongCommand { get; }
         public ICommand RemoveSongCommand { get; }
         public ICommand EditMetadataCommand { get; }
+        public ICommand AddFolderCommand {  get; }
 
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
@@ -153,6 +164,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                  param => OdeberVybranouSkladbuZKnihovny(param),
                  param => VybranyPlaylist == null && (param is Song || VybranaSkladba != null)
             );
+
             EditMetadataCommand = new RelayCommand(param => 
             {
                 if (param is Song song)
@@ -160,6 +172,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     SkladbaEditacePozadovana?.Invoke(song);
                 }
             });
+
+            AddFolderCommand = new AsyncRelayCommand(PridejSlozkuDoKnihovny);
 
             // Výchozí typ vyhledávání
             VybranyTypVyhledavani = TypVyhledavani.Nazev;
@@ -311,7 +325,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 OpenFileDialog fileDialog = new OpenFileDialog
                 {
-                    Title = "Select music files to copy",
+                    Title = LokalizaceService["OpenFileTitle"],
                     Multiselect = true,
                     Filter = "Music files (*.mp3;*.wav;*.flac)|*.mp3;*.wav;*.flac"
                 };
@@ -319,6 +333,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     await _knihovnaService.CopySongsToMyMusic(fileDialog.FileNames);
+
+                    // Kompletní refresh dat po zkopírování
                     Skladby = await _knihovnaService.Load()!;
                     PrepnoutZdrojSkladeb();
                 }
@@ -332,12 +348,61 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
+        /// Metoda slouží k výběru celé složky a asynchronnímu překopírování všech nalezených skladeb
+        /// </summary>
+        /// <returns>Vrací Task</returns>
+        public async Task PridejSlozkuDoKnihovny()
+        {
+            try
+            {
+                using (var folderDialog = new FolderBrowserDialog())
+                {
+                    folderDialog.Description = LokalizaceService["OpenFolderTitle"];
+                    folderDialog.UseDescriptionForTitle = true;
+
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string vybranaCesta = folderDialog.SelectedPath;
+
+                        // Definice podporovaných přípon souborů
+                        string[] podporovanePripony = { ".mp3", ".wav", ".flac" };
+
+                        // Načtení souborů, které mají podporované formáty, ze složky
+                        string[] soubory = Directory.GetFiles(vybranaCesta, "*.*", SearchOption.AllDirectories)
+                            .Where(soubor => podporovanePripony.Contains(Path.GetExtension(soubor).ToLower()))
+                            .ToArray();
+
+                        if (soubory.Length > 0)
+                        {
+                            await _knihovnaService.CopySongsToMyMusic(soubory);
+
+                            // Kompletní refresh dat po zkopírování
+                            Skladby = await _knihovnaService.Load()!;
+                            PrepnoutZdrojSkladeb();
+                        }
+
+                        else
+                        {
+                            DialogService.ShowWarning(LokalizaceService["WarningNoMusicFoundInFolder"]);
+                        }
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(PridejSlozkuDoKnihovny));
+                DialogService.ShowError(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Metoda slouží k odebrání skladby ze složky MyMusic. Jako vstup používá <paramref name="parameter"/>
         /// </summary>
         /// <param name="parameter">Objekt představující vybranou skladbu</param>
         public void OdeberVybranouSkladbuZKnihovny(object? parameter)
         {
-            // Získání skladby z parametru ContextMenu nebo vybraná skladba
+            // Získání skladby z parametru ContextMenu
             var skladbaKeSmazani = parameter as Song ?? VybranaSkladba;
 
             if (skladbaKeSmazani == null)
@@ -363,7 +428,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                         Skladby?.Remove(skladbaKeSmazani);
                         VyfiltrovaneSkladby?.Remove(skladbaKeSmazani);
 
-                        // Pokud smazaná skladba byla ta vybraná (přehrávaná), vynulujeme výběr
+                        // Pokud smazaná skladba byla ta vybraná (přehrávaná), vynuluje se výběr
                         if (VybranaSkladba == skladbaKeSmazani)
                         {
                             VybranaSkladba = null;
@@ -425,6 +490,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             };
 
             VybranyTypVyhledavani = puvodniTyp;
+
+            if (VybranyPlaylist != null)
+            {
+                PrepnoutZdrojSkladeb();
+            }
 
             // Oznámení indexeru, aby změnil překlad
             OnPropertyChanged("Item[]");

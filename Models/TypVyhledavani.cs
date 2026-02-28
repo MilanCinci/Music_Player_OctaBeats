@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Hudebni_Prehravac_OctaBeats.Models
 {
+    /// <summary>
+    /// Enum pro definování jednotlivých typů vyhledávání
+    /// </summary>
     public enum TypVyhledavani
     {
         Nazev,

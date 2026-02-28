@@ -25,7 +25,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <summary>
         /// Limit, kolik může být v historii skladeb
         /// </summary>
-        private const int LimitHistorie = 50;
+        private const int LimitHistorie = 65;
 
         /// <summary>
         /// Seznam historie přehrávání
@@ -77,6 +77,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
             {
                 HistoriePrehravani novyZaznam = new HistoriePrehravani(song, DateTime.Now);
 
+                // Počkání na vykonání Insert na UI vlákně, kvůli zasahování do kolekce vytvořené na UI vlákně
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     // Přidání nového záznamu historie na začátek seznamu
@@ -104,7 +105,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <summary>
         /// Metoda slouží k odstranění konkrétního záznamu historie
         /// </summary>
-        /// <param name="historie">Záznam historie, kterou chceme smazat</param>
+        /// <param name="historie">Záznam historie, který chceme smazat</param>
         /// <returns>Vrací Task</returns>
         public async Task Delete(HistoriePrehravani historie)
         {
@@ -116,6 +117,8 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
             try
             {
                 bool byloOdstraneno = false;
+
+                // Počkání na vykonání Remove na UI vlákně, kvůli zasahování do kolekce vytvořené na UI vlákně
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     byloOdstraneno = MojeHistorie.Remove(historie);
@@ -178,7 +181,9 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <returns>Vrací Task</returns>
         private async Task SaveCopy(List<HistoriePrehravani> data)
         {
+            // Zapsání a kontrola přístupu při zápisu do konkrétního souboru
             await _fileSemaphore.WaitAsync();
+
             try
             {
                 string? adresar = Path.GetDirectoryName(CestaKSouboru);

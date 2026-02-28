@@ -24,6 +24,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Přebal alba -->
             <Border x:Name="borderImagePrebalAlba" Width="86" CornerRadius="8" BorderThickness="0" Grid.Column="0" Height="86">
                 <Border.Background>
                     <ImageBrush ImageSource="{Binding AktualniSkladba.PrebalAlba, 
@@ -36,10 +37,16 @@
             </Border>
 
             <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="24,0,0,0">
+                
+                <!-- Název skladby -->
                 <TextBlock x:Name="tblockNazev" Text="{Binding AktualniSkladba.Nazev}" 
                    Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold" FontSize="16"/>
+
+                <!-- Interpret -->
                 <TextBlock x:Name="tblockInterpret" Text="{Binding AktualniSkladba.Interpret}" 
                    Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13"/>
+
+                <!-- Zdroj přehrávání -->
                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Visibility="{Binding AktualniSkladba, Converter={StaticResource NullToVisibilityConverter}}">
                     <TextBlock Text="{Binding [Source]}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11"/>
                     <TextBlock Text="{Binding ZdrojPrehravani}" Foreground="{DynamicResource GreenTextBrush}" FontSize="11"/>
@@ -57,7 +64,7 @@
 
             <!-- Aktuální čas -->
             <TextBlock Text="{Binding AktualniCasText}"
-                   VerticalAlignment="Center" Foreground="#FFFBFAFA"/>
+                   VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
 
             <!-- Slider skladby -->
             <Slider Grid.Column="1"
@@ -73,7 +80,7 @@
             <TextBlock Grid.Column="2"
                    Text="{Binding CelkovaDelkaText}"
                    VerticalAlignment="Center"
-                   HorizontalAlignment="Right" Foreground="#FFFEFEFE"/>
+                   HorizontalAlignment="Right" Foreground="{DynamicResource PrimaryTextBrush}"/>
         </Grid>
 
         <!-- Ovládání -->
@@ -87,7 +94,7 @@
             <!-- Tlačítko Předchozí -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Command="{Binding PreviousCommand}" Style="{StaticResource ImageButtonStyle}" Margin="10,0">
-                    <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Predchozi.png" Width="20" Height="20"/>
+                    <Image Source="{DynamicResource IconPrev}" Width="20" Height="20"/>
                 </Button>
 
                 <!-- Tlačítko Pauza/Přehrát -->
@@ -97,7 +104,7 @@
                             <Setter Property="Command" Value="{Binding PlayCommand}"/>
                             <Setter Property="Content">
                                 <Setter.Value>
-                                    <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Prehrat.png" Width="20" Height="20"/>
+                                    <Image Source="{DynamicResource IconPlay}" Width="20" Height="20"/>
                                 </Setter.Value>
                             </Setter>
 
@@ -106,7 +113,7 @@
                                     <Setter Property="Command" Value="{Binding PauseCommand}"/>
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Pozastavit.png" Width="20" Height="20"/>
+                                            <Image Source="{DynamicResource IconPause}" Width="20" Height="20"/>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
@@ -117,34 +124,35 @@
 
                 <!-- Tlačítko Další -->
                 <Button Command="{Binding NextCommand}" Style="{StaticResource ImageButtonStyle}" Margin="10,0">
-                    <Image Source="pack://application:,,,/Resources/Obrazky/Ikona_Dalsi.png" Width="20" Height="20"/>
+                    <Image Source="{DynamicResource IconNext}" Width="20" Height="20"/>
                 </Button>
             </StackPanel>
 
-            <!-- Hlasitost -->
+            <!-- Ikona hlasitost -->
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
                 <Image Width="20" Height="20" Margin="0,0,8,0">
                     <Image.Style>
                         <Style TargetType="Image">
-                            <Setter Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_4.png"/>
+                            <Setter Property="Source" Value="{DynamicResource VolumeFrame4}"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Hlasitost, Converter={StaticResource VolumeRangeConverter}, ConverterParameter=1}" Value="True">
-                                    <Setter Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_1.png"/>
+                                    <Setter Property="Source" Value="{DynamicResource VolumeFrame1}"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Hlasitost, Converter={StaticResource VolumeRangeConverter}, ConverterParameter=2}" Value="True">
-                                    <Setter Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_2.png"/>
+                                    <Setter Property="Source" Value="{DynamicResource VolumeFrame2}"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Hlasitost, Converter={StaticResource VolumeRangeConverter}, ConverterParameter=3}" Value="True">
-                                    <Setter Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_3.png"/>
+                                    <Setter Property="Source" Value="{DynamicResource VolumeFrame3}"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Hlasitost, Converter={StaticResource VolumeRangeConverter}, ConverterParameter=5}" Value="True">
-                                    <Setter Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_5.png"/>
+                                    <Setter Property="Source" Value="{DynamicResource VolumeFrame5}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Image.Style>
                 </Image>
 
+                <!-- Slider hlasitosti -->
                 <Slider Width="100" 
                 Minimum="0" 
                 Maximum="100" 
@@ -153,8 +161,9 @@
                 Margin="0,0,10,0"
                 Style="{StaticResource SliderStyleVolume}"/>
 
+                <!-- Aktuální hodnota hlasitosti -->
                 <TextBlock Text="{Binding Hlasitost, StringFormat={}{0:0}%}" 
-                   Foreground="White" 
+                   Foreground="{DynamicResource PrimaryTextBrush}" 
                    VerticalAlignment="Center" 
                    Width="35"/>
             </StackPanel>

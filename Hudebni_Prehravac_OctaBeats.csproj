@@ -6,23 +6,113 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\Obrazky\Ikona_OctaBeats.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Obrazky\Ikona_App_Theme.png" />
     <None Remove="Resources\Obrazky\Ikona_Dalsi.png" />
+    <None Remove="Resources\Obrazky\Ikona_Dalsi_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Error_Image.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost._Frame_1.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost._Frame_2.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost._Frame_3.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost._Frame_4.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_1.png" />
+    <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_1_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_2.png" />
+    <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_2_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_3.png" />
+    <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_3_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_4.png" />
+    <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_4_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_5.png" />
+    <None Remove="Resources\Obrazky\Ikona_Hlasitost_Frame_5_Dark.png" />
+    <None Remove="Resources\Obrazky\Ikona_Informace.png" />
+    <None Remove="Resources\Obrazky\Ikona_Jazyk.png" />
+    <None Remove="Resources\Obrazky\Ikona_Metadata_Editor.ico" />
+    <None Remove="Resources\Obrazky\Ikona_OctaBeats.ico" />
+    <None Remove="Resources\Obrazky\Ikona_O_Nas.png" />
+    <None Remove="Resources\Obrazky\Ikona_Playlist_Editor.ico" />
     <None Remove="Resources\Obrazky\Ikona_Pozastavit.png" />
+    <None Remove="Resources\Obrazky\Ikona_Pozastavit_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Predchozi.png" />
+    <None Remove="Resources\Obrazky\Ikona_Predchozi_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Prehrat.png" />
+    <None Remove="Resources\Obrazky\Ikona_Prehrat_Dark.png" />
+    <None Remove="Resources\Obrazky\Ikona_Pridat.png" />
+    <None Remove="Resources\Obrazky\Ikona_Pridat_Soubor.png" />
+    <None Remove="Resources\Obrazky\Ikona_Sipka.png" />
+    <None Remove="Resources\Obrazky\Ikona_Sipka_Dark.png" />
+    <None Remove="Resources\Obrazky\Ikona_Svetly_Rezim.png" />
+    <None Remove="Resources\Obrazky\Ikona_Sync.png" />
+    <None Remove="Resources\Obrazky\Ikona_Tmavy_Rezim.png" />
+    <None Remove="Resources\Obrazky\Ikona_Ukoncit_Aplikaci.png" />
+    <None Remove="Resources\Obrazky\Ikona_Vymazat.png" />
+    <None Remove="Resources\Obrazky\Ikona_Vymazat_Vsechno.png" />
+    <None Remove="Resources\Obrazky\Ikona_Zmenit_Jazyk.ico" />
+    <None Remove="Resources\Obrazky\Vlajka_CZ.png" />
+    <None Remove="Resources\Obrazky\Vlajka_US.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Obrazky\Ikona_Dalsi_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_1_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_2_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_3_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_4_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_5_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Metadata_Editor.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_OctaBeats.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Playlist_Editor.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Pozastavit_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Predchozi_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Prehrat_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Sipka.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Sipka_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Svetly_Rezim.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Tmavy_Rezim.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Obrazky\Ikona_App_Theme.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Jazyk.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +120,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_5.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Informace.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_O_Nas.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Pozastavit.png">
@@ -83,6 +179,33 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_4.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Pridat.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Pridat_Soubor.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Sync.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Ukoncit_Aplikaci.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Vymazat.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Vymazat_Vsechno.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Zmenit_Jazyk.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Vlajka_CZ.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Vlajka_US.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

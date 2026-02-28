@@ -54,13 +54,13 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         void Seek(TimeSpan position);
 
         /// <summary>
-        /// Akce ukončení skladby
+        /// Událost ukončení skladby
         /// </summary>
         event Action? UkonceniSkladby;
 
         /// <summary>
-        /// Akce nenalezení souboru skladby
+        /// Událost nenalezení souboru skladby
         /// </summary>
-        public event Action<string>? SouborNenalezen;
+        event Action<string>? SouborNenalezen;
     }
 }

@@ -57,6 +57,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
             {
                 return await Task.Run(() =>
                 {
+                    // Vytvoření dočasného TagLib souboru, přes který se načtou tagy jednotlivých metadat
                     using (var soubor = TagLib.File.Create(cestaKSouboru))
                     {
                         byte[]? prebalAlba = null;
@@ -120,10 +121,13 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
                 {
                     await Task.Run(() =>
                     {
+                        // Vytvoření dočasného TagLib souboru, přes který se uloží jednotlivá metadata
                         using (var soubor = TagLib.File.Create(song.CestaKSouboru))
-                        {                          
+                        {                        
+                            // Tag s názvem skladby
                             soubor.Tag.Title = song.Nazev;
 
+                            // Tag s interprety
                             if (song.Interpret != null)
                             {
                                 if(song.Interpret.Equals(VychoziHodnotaNeznama, StringComparison.OrdinalIgnoreCase))
@@ -142,6 +146,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
                                 soubor.Tag.Performers = Array.Empty<string>();
                             }
                     
+                            // Tag s názvem alba
                             if(song.Album != null)
                             {
                                 if (song.Album.Equals(VychoziHodnotaNeznama, StringComparison.OrdinalIgnoreCase))
@@ -160,6 +165,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
                                 soubor.Tag.Album = String.Empty;
                             }
 
+                            // Tag s přebalem alba (obrázkem)
                             if (song.PrebalAlba != null)
                             {
                                 Picture picture = new Picture(new ByteVector(song.PrebalAlba))
@@ -175,6 +181,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
                                 soubor.Tag.Pictures = Array.Empty<Picture>();
                             }
 
+                            // Tag s rokem vydání
                             if (song.RokVydani != null)
                             {
                                 soubor.Tag.Year = (uint)song.RokVydani;
@@ -185,6 +192,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
                                 soubor.Tag.Year = VychoziRokVydani;
                             }
 
+                            // Tag s jednotlivými žánry
                             if(song.Zanr != null)
                             {
                                 soubor.Tag.Genres = new string[] { song.Zanr };

@@ -20,7 +20,7 @@ using System.Windows.Input;
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
     /// <summary>
-    /// ViewModel pro obsluhu metod playlist 
+    /// ViewModel pro obsluhu metod playlistů
     /// </summary>
     public class PlaylistViewModel : BaseViewModel, IDataErrorInfo
     {
@@ -96,7 +96,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Akce pro vymazaný playlist
+        /// Událost pro vymazaný playlist
         /// </summary>
         public event Action<PlayList>? PlaylistSmazan;
 
@@ -149,11 +149,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     if (playlist != null)
                     {
                         bool zmenaCest = playlist.CestyKSkladbam.Remove(odstranenaSkladba.CestaKSouboru);
-                        Song? songInPlaylist = playlist.Skladby.FirstOrDefault(s => s.CestaKSouboru == odstranenaSkladba.CestaKSouboru);
+                        Song? skladbaVPlaylistu = playlist.Skladby.FirstOrDefault(skladba => skladba.CestaKSouboru == odstranenaSkladba.CestaKSouboru);
                         bool zmenaSkladeb = false;
-                        if (songInPlaylist != null)
+                        if (skladbaVPlaylistu != null)
                         {
-                            zmenaSkladeb = playlist.Skladby.Remove(songInPlaylist);
+                            zmenaSkladeb = playlist.Skladby.Remove(skladbaVPlaylistu);
                         }
 
                         // Pokud došlo k jakékoliv změně v tomto playlistu, tak si ji zapamatujeme pro následné uložení
@@ -173,7 +173,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             catch (Exception ex)
             {
-                SpravaSouboru.LogError(ex, "Error occurred while removing song from a playlist!", nameof(RemoveSongFromPlaylist));
+                SpravaSouboru.LogError(ex, "Error occurred while removing the song from a playlist!", nameof(RemoveSongFromPlaylist));
                 _dialogService.ShowError(ex.Message);
             }
         }
@@ -205,7 +205,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 };
 
                 Playlisty.Add(novyPlaylist);
-
                 NovyNazevPlaylistu = String.Empty;
 
                 await _playlistService.Save(Playlisty);
@@ -321,6 +320,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k validaci, zda jsou všechna pole správně vyplněna
         /// </summary>
+        /// <returns>Vrací true, pokud jsou všechna pole validní, jinak false</returns>
         private bool JeValidni()
         {
             return String.IsNullOrEmpty(this[nameof(NovyNazevPlaylistu)]);

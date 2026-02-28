@@ -22,6 +22,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Metadata
         /// Metoda slouží k uložení metadat skladby
         /// </summary>
         /// <param name="song">skladba, u které chceme uložit metadata</param>
+        /// <returns>Vrací Task</returns>
         Task Save(Song song);
     }
 }

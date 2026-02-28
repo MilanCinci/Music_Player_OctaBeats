@@ -50,9 +50,14 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Playlist
             {
                 var adresar = Path.GetDirectoryName(CestaKSouboru);
 
+                if(adresar == null)
+                {
+                    return;
+                }
+
                 if (!Directory.Exists(adresar))
                 {
-                    Directory.CreateDirectory(adresar!);
+                    Directory.CreateDirectory(adresar);
                 }
 
                 await SpravaSouboru.UlozDoSouboru(CestaKSouboru, playlisty);

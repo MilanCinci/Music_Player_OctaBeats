@@ -50,6 +50,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private const int MaxVyskaObrazku = 720;
 
+        /// <summary>
+        /// Maximálního/minimální počet cifer pro rok vydání
+        /// </summary>
+        private const int MinimalniRok = 4;
+
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand PotvrditCommand { get; }
         public ICommand VybratPrebalCommand { get; }
@@ -57,7 +62,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand OdstranitPrebalCommand { get; }
 
         /// <summary>
-        /// Akce pro zavření dialogu
+        /// Událost pro zavření dialogu
         /// </summary>
         public event Action<bool>? ZavritDialog;
 
@@ -80,7 +85,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     case nameof(RokVydani):
                         if (!String.IsNullOrEmpty(RokVydani))
                         {
-                            if (!uint.TryParse(RokVydani, out _) || RokVydani.Length != 4)                               
+                            if (!uint.TryParse(RokVydani, out _) || RokVydani.Length != MinimalniRok)                               
                             {
                                 result = _lokalizaceService["ErrorInvalidYearFormat"];
                             }
@@ -140,7 +145,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog
                 {
-                    Title = "Select album cover",
+                    Title = _lokalizaceService["OpenFileAlbumCoverTitle"],
                     Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
                     Multiselect = false
                 };
@@ -176,7 +181,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
-                    Title = "Save album cover",
+                    Title = _lokalizaceService["SaveFileAlbumCoverTitle"],
                     FileName = $"{Album} - Cover art",
                     Filter = "Image JPG (*.jpg)|*.jpg|Image PNG (*.png)|*.png",
                     DefaultExt = "jpg",
@@ -185,7 +190,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-
                     string ext = Path.GetExtension(saveFileDialog.FileName).ToLower();
                     byte[]? dataToSave = PrebalAlba;
 
@@ -223,7 +227,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="data">Přebal, který chceme zmenšit</param>
         /// <param name="maxSirka">Maximální šířka přebalu</param>
         /// <param name="maxVyska">Maximální výška přebalu</param>
-        /// <returns>Vrací zmenšený obrázek</returns>
+        /// <returns>Vrací bajtové pole zmenšeného obrázku</returns>
         private byte[] ZmensiObrazek(byte[] data, uint maxSirka, uint maxVyska)
         {
             try
@@ -265,6 +269,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k validaci, zda jsou všechna pole správně vyplněna
         /// </summary>
+        /// <returns>Vrací true, pokud jsou všechna pole validní, jinak false</returns>
         private bool JeValidni()
         {
             return String.IsNullOrEmpty(this[nameof(Nazev)]) && String.IsNullOrEmpty(this[nameof(RokVydani)]);

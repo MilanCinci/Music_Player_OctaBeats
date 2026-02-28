@@ -79,6 +79,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Folder.
+        /// </summary>
+        public static string AddFolder {
+            get {
+                return ResourceManager.GetString("AddFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Song.
         /// </summary>
         public static string AddSong {
@@ -286,15 +295,6 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting Started.
-        /// </summary>
-        public static string GettingStarted {
-            get {
-                return ResourceManager.GetString("GettingStarted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Help.
         /// </summary>
         public static string Help {
@@ -376,6 +376,33 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open File Album Cover Title.
+        /// </summary>
+        public static string OpenFileAlbumCoverTitle {
+            get {
+                return ResourceManager.GetString("OpenFileAlbumCoverTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open File Title.
+        /// </summary>
+        public static string OpenFileTitle {
+            get {
+                return ResourceManager.GetString("OpenFileTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Folder Title.
+        /// </summary>
+        public static string OpenFolderTitle {
+            get {
+                return ResourceManager.GetString("OpenFolderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pause.
         /// </summary>
         public static string Pause {
@@ -417,6 +444,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Playlists {
             get {
                 return ResourceManager.GetString("Playlists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zvolte preferovaný jazyk aplikace:.
+        /// </summary>
+        public static string PreferredLanguage {
+            get {
+                return ResourceManager.GetString("PreferredLanguage", resourceCulture);
             }
         }
         
@@ -466,7 +502,7 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove All History.
+        ///   Looks up a localized string similar to Clear History.
         /// </summary>
         public static string RemoveAllHistory {
             get {
@@ -475,7 +511,7 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove Selected History.
+        ///   Looks up a localized string similar to Remove Song.
         /// </summary>
         public static string RemoveSelectedHistory {
             get {
@@ -489,6 +525,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string RemoveSong {
             get {
                 return ResourceManager.GetString("RemoveSong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save File Album Cover Title.
+        /// </summary>
+        public static string SaveFileAlbumCoverTitle {
+            get {
+                return ResourceManager.GetString("SaveFileAlbumCoverTitle", resourceCulture);
             }
         }
         
@@ -565,6 +610,33 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add To Playlist.
+        /// </summary>
+        public static string ToolTipAddToPlaylist {
+            get {
+                return ResourceManager.GetString("ToolTipAddToPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Playlist Name.
+        /// </summary>
+        public static string ToolTipEnterPlaylistName {
+            get {
+                return ResourceManager.GetString("ToolTipEnterPlaylistName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove From Playlist.
+        /// </summary>
+        public static string ToolTipRemoveFromPlaylist {
+            get {
+                return ResourceManager.GetString("ToolTipRemoveFromPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning Album Cover Null.
         /// </summary>
         public static string WarningAlbumCoverNull {
@@ -579,6 +651,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string WarningFileAlreadyExists {
             get {
                 return ResourceManager.GetString("WarningFileAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning No Music Found In Folder.
+        /// </summary>
+        public static string WarningNoMusicFoundInFolder {
+            get {
+                return ResourceManager.GetString("WarningNoMusicFoundInFolder", resourceCulture);
             }
         }
     }

@@ -124,7 +124,7 @@
     <value>Add</value>
   </data>
   <data name="AddSong" xml:space="preserve">
-    <value>Add song</value>
+    <value>Add Song</value>
   </data>
   <data name="AppTitle" xml:space="preserve">
     <value>Music player OctaBeats</value>
@@ -163,10 +163,10 @@
     <value>Delete</value>
   </data>
   <data name="RemoveAllHistory" xml:space="preserve">
-    <value>Remove All History</value>
+    <value>Clear History</value>
   </data>
   <data name="RemoveSelectedHistory" xml:space="preserve">
-    <value>Remove Selected History</value>
+    <value>Remove Song</value>
   </data>
   <data name="RemoveSong" xml:space="preserve">
     <value>Remove Song</value>
@@ -212,9 +212,6 @@
   </data>
   <data name="Genre" xml:space="preserve">
     <value>Genre</value>
-  </data>
-  <data name="GettingStarted" xml:space="preserve">
-    <value>Getting Started</value>
   </data>
   <data name="AlbumCover" xml:space="preserve">
     <value>Album Cover</value>
@@ -290,5 +287,35 @@
   </data>
   <data name="DarkTheme" xml:space="preserve">
     <value>Dark Theme</value>
+  </data>
+  <data name="WarningNoMusicFoundInFolder" xml:space="preserve">
+    <value>No music files where found in the selected folder!</value>
+  </data>
+  <data name="PreferredLanguage" xml:space="preserve">
+    <value>Choose your preferred app language:</value>
+  </data>
+  <data name="AddFolder" xml:space="preserve">
+    <value>Add Folder</value>
+  </data>
+  <data name="OpenFolderTitle" xml:space="preserve">
+    <value>Select Folder To Add</value>
+  </data>
+  <data name="OpenFileTitle" xml:space="preserve">
+    <value>Select Music Files To Add</value>
+  </data>
+  <data name="ToolTipAddToPlaylist" xml:space="preserve">
+    <value>Add To Playlist</value>
+  </data>
+  <data name="ToolTipRemoveFromPlaylist" xml:space="preserve">
+    <value>Remove From Playlist</value>
+  </data>
+  <data name="ToolTipEnterPlaylistName" xml:space="preserve">
+    <value>Enter Playlist Name</value>
+  </data>
+  <data name="OpenFileAlbumCoverTitle" xml:space="preserve">
+    <value>Select Album Cover</value>
+  </data>
+  <data name="SaveFileAlbumCoverTitle" xml:space="preserve">
+    <value>Save Album Cover</value>
   </data>
 </root>

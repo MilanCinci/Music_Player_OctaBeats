@@ -175,11 +175,11 @@
     <comment>Obecne Odstranit</comment>
   </data>
   <data name="RemoveAllHistory" xml:space="preserve">
-    <value>Remove All History</value>
+    <value>Clear History</value>
     <comment>MenuItem Historie</comment>
   </data>
   <data name="RemoveSelectedHistory" xml:space="preserve">
-    <value>Remove Selected History</value>
+    <value>Remove Song</value>
     <comment>MenuItem Historie</comment>
   </data>
   <data name="RemoveSong" xml:space="preserve">
@@ -240,10 +240,6 @@
   <data name="Genre" xml:space="preserve">
     <value>Genre</value>
     <comment>Obecny Zanr</comment>
-  </data>
-  <data name="GettingStarted" xml:space="preserve">
-    <value>Getting Started</value>
-    <comment>MenuItem Napoveda</comment>
   </data>
   <data name="AlbumCover" xml:space="preserve">
     <value>Album Cover</value>
@@ -344,5 +340,45 @@
   <data name="DarkTheme" xml:space="preserve">
     <value>Dark Theme</value>
     <comment>MenuItem Nastaveni--Vzhled aplikace</comment>
+  </data>
+  <data name="WarningNoMusicFoundInFolder" xml:space="preserve">
+    <value>Warning No Music Found In Folder</value>
+    <comment>Upozorneni no music found</comment>
+  </data>
+  <data name="PreferredLanguage" xml:space="preserve">
+    <value>Zvolte preferovaný jazyk aplikace:</value>
+    <comment>Text NastaveniJazykView</comment>
+  </data>
+  <data name="AddFolder" xml:space="preserve">
+    <value>Add Folder</value>
+    <comment>MenuItem Knihova</comment>
+  </data>
+  <data name="OpenFolderTitle" xml:space="preserve">
+    <value>Open Folder Title</value>
+    <comment>Nadpis dialogu KnihovnaViewModel</comment>
+  </data>
+  <data name="OpenFileTitle" xml:space="preserve">
+    <value>Open File Title</value>
+    <comment>Nadpis dialogu KnihovnaViewModel</comment>
+  </data>
+  <data name="ToolTipAddToPlaylist" xml:space="preserve">
+    <value>Add To Playlist</value>
+    <comment>Tooltip PlaylistEditorDialogView</comment>
+  </data>
+  <data name="ToolTipRemoveFromPlaylist" xml:space="preserve">
+    <value>Remove From Playlist</value>
+    <comment>Tooltip PlaylistEditorDialogView</comment>
+  </data>
+  <data name="ToolTipEnterPlaylistName" xml:space="preserve">
+    <value>Enter Playlist Name</value>
+    <comment>Tooltip PlaylistView</comment>
+  </data>
+  <data name="OpenFileAlbumCoverTitle" xml:space="preserve">
+    <value>Open File Album Cover Title</value>
+    <comment>Nadpis dialogu SongMetadataEditorViewModel</comment>
+  </data>
+  <data name="SaveFileAlbumCoverTitle" xml:space="preserve">
+    <value>Save File Album Cover Title</value>
+    <comment>Nadpis dialogu SongMetadaEditorViewModel</comment>
   </data>
 </root>

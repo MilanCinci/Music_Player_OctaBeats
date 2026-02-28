@@ -14,13 +14,37 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
     /// </summary>
     public class AudioService : IAudioService
     {
-        private IWavePlayer? output;
-        private AudioFileReader? reader;
-        private bool isPaused;
-        private bool manualStop;
-        private string? currentFilePath;
-        private readonly object _audioLock = new object();
         private readonly ILokalizaceService _lokalizaceService;
+
+        /// <summary>
+        /// Výstupní audio zařízení zajišťující samotné přehrávání zvuku
+        /// </summary>
+        private IWavePlayer? output;
+
+        /// <summary>
+        /// Čtečka audio souboru poskytující stream dat pro přehrávání
+        /// </summary>
+        private AudioFileReader? reader;
+
+        /// <summary>
+        /// Určuje, zda je přehrávání aktuálně pozastaveno
+        /// </summary>
+        private bool isPaused;
+
+        /// <summary>
+        /// Příznak indikující, že zastavení přehrávání bylo vyvoláno manuálně uživatelem
+        /// </summary>
+        private bool manualStop;
+
+        /// <summary>
+        /// Cesta k aktuálně přehrávanému souboru
+        /// </summary>
+        private string? currentFilePath;
+
+        /// <summary>
+        /// Mutex používaný pro zajištění thread-safe přístupu k audio zdrojům a přehrávači
+        /// </summary>
+        private readonly object _audioLock = new object();       
 
         /// <summary>
         /// Aktuální hlasitost skladby
@@ -48,12 +72,12 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         public TimeSpan CelkovyCas => reader?.TotalTime ?? TimeSpan.Zero;
 
         /// <summary>
-        /// Akce ukončení skladby
+        /// Událost ukončení skladby
         /// </summary>
         public event Action? UkonceniSkladby;
 
         /// <summary>
-        /// Akce nenalezení souboru skladby
+        /// Událost nenalezení souboru skladby
         /// </summary>
         public event Action<string>? SouborNenalezen;
 
@@ -89,7 +113,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                     throw new FileNotFoundException(zprava, filePath);
                 }
 
-                // Všechna inicializace se provádí na pozadí
+                // Veškerá inicializace provádí asynchronně na pozadí aplikace
                 await Task.Run(() =>
                 {
                     lock (_audioLock)

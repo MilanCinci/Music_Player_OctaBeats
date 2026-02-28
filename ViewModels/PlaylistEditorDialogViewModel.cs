@@ -2,6 +2,7 @@
 using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,6 +20,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
     {
         private readonly ILokalizaceService _lokalizaceService;
         private readonly IEnumerable<PlayList> _vsechnyPlaylisty;
+
+        /// <summary>
+        /// Původní název editovaného playlistu
+        /// </summary>
         private readonly string _puvodniNazev;
 
         /// <summary>
@@ -86,7 +91,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Akce pro uzavření dialogu
+        /// Událost pro uzavření dialogu
         /// </summary>
         public event Action<bool>? ZavritDialog;
 
@@ -98,7 +103,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <param name="playlist">Vybraný playlist k editaci</param>
         /// <param name="vsechnyPlaylisty">Všechny vytvořené playlisty</param>
         /// <param name="lokalizaceService">Servis pro obsluhu metod lokalizace</param>
-        public PlaylistEditorDialogViewModel(IEnumerable<Song> knihovna, IEnumerable<Song> stavajiciSkladby, PlayList playlist, 
+        public PlaylistEditorDialogViewModel(IEnumerable<Song> knihovna, IEnumerable<Song> stavajiciSkladby, PlayList playlist,
                     IEnumerable<PlayList> vsechnyPlaylisty, ILokalizaceService lokalizaceService)
         {
             _lokalizaceService = lokalizaceService;
@@ -113,21 +118,31 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             NazevPlaylistu = playlist.Nazev;
 
-            PridatCommand = new RelayCommand(_ =>
+            PridatCommand = new RelayCommand(parameter =>
             {
-                if (VybranaKnihovnaSkladba != null)
+                // Hromadné přidání vybraných skladeb
+                var vybraneSkladby = (parameter as IList)?.Cast<Song>().ToList();
+                if (vybraneSkladby != null && vybraneSkladby.Any())
                 {
-                    PlaylistSkladby.Add(VybranaKnihovnaSkladba);
-                    KnihovnaSkladby.Remove(VybranaKnihovnaSkladba);
+                    foreach (Song song in vybraneSkladby)
+                    {
+                        PlaylistSkladby.Add(song);
+                        KnihovnaSkladby.Remove(song);
+                    }
                 }
             });
 
-            OdebratCommand = new RelayCommand(_ =>
+            OdebratCommand = new RelayCommand(parameter =>
             {
-                if (VybranaPlaylistSkladba != null)
+                // Hromadné odebrání vybraných skladeb
+                var vybraneSkladby = (parameter as IList)?.Cast<Song>().ToList();
+                if (vybraneSkladby != null && vybraneSkladby.Any())
                 {
-                    KnihovnaSkladby.Add(VybranaPlaylistSkladba);
-                    PlaylistSkladby.Remove(VybranaPlaylistSkladba);
+                    foreach (Song song in vybraneSkladby)
+                    {
+                        KnihovnaSkladby.Add(song);
+                        PlaylistSkladby.Remove(song);
+                    }
                 }
             });
 
@@ -138,12 +153,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     ZavritDialog?.Invoke(true);
                 }
             });
-            }
+        }
 
         /// <summary>
         /// Metoda slouží k validaci, zda jsou všechna pole správně vyplněna
         /// </summary>
-        /// <returns>Vrací true, pokud je vše validní, jinak false</returns>
+        /// <returns>Vrací true, pokud jsou všechny pole validní, jinak false</returns>
         private bool JeValidni()
         {
             return String.IsNullOrEmpty(this[nameof(NazevPlaylistu)]);

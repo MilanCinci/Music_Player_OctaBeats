@@ -13,6 +13,9 @@ using System.Windows.Input;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
+    /// <summary>
+    /// ViewModel pro obsluhu metod nastavení jazyka aplikace
+    /// </summary>
     public class NastaveniJazykViewModel : BaseViewModel
     {
         private readonly ILokalizaceService _lokalizaceService;
@@ -41,7 +44,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public string this[string key] => _lokalizaceService[key];
 
         /// <summary>
-        /// Akce pro zavření dialogu
+        /// Událost pro zavření dialogu
         /// </summary>
         public event Action<bool>? ZavritDialog;
 
@@ -61,6 +64,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 new Language { Nazev = "English", Kod = "en-US" }
             };
 
+            // Nalezení aktuálně nastaveného jazyka aplikace v seznamu dostupných jazykových verzí
             VybranyJazyk = DostupneJazyky.FirstOrDefault(jazyk => jazyk.Kod.Equals(Properties.Settings.Default.Language, StringComparison.OrdinalIgnoreCase));
 
             PotvrditCommand = new RelayCommand(_ =>
@@ -70,7 +74,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Metoda slouží k změně jazykové verze aplikace
+        /// Metoda slouží ke změně jazykové verze aplikace
         /// </summary>
         /// <param name="cultureCode">Kód jazyka, na který chceme přeložit</param>
         public void ZmenJazyk(string cultureCode)
@@ -79,7 +83,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 _lokalizaceService.ChangeLanguage(cultureCode);
 
-                // Nastavení a následné uložení aktuálně zvoleného jazyku uživatelem
+                // Nastavení a následné uložení aktuálně zvoleného jazyka uživatelem
                 Properties.Settings.Default.Language = cultureCode;
                 Properties.Settings.Default.Save();
 

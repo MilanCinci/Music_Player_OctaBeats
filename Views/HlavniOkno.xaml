@@ -4,11 +4,11 @@
         xmlns:views="clr-namespace:Hudebni_Prehravac_OctaBeats.Views"
         Title= "{Binding NastaveniJazykVM[AppTitle]}"
         Width="1200"
-        Height="750">
+        Height="750" Icon="/Resources/Obrazky/Ikona_OctaBeats.ico">
 
     <Grid Background="{DynamicResource PrimaryBackgroundBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="26"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="192"/>
         </Grid.RowDefinitions>
@@ -21,47 +21,124 @@
             <ColumnDefinition Width="280" MinWidth="150"/>
         </Grid.ColumnDefinitions>
 
-        <Menu Grid.Row="0" Grid.ColumnSpan="5" Background="#222" Foreground="White">
-            <MenuItem Header="{Binding NastaveniJazykVM[File]}">
-                <MenuItem Header="{Binding NastaveniJazykVM[Exit]}" Command="{Binding ExitAppCommand}" Foreground="Black"/>
-            </MenuItem>
-
-            <MenuItem Header="{Binding NastaveniJazykVM[Library]}">
-                <MenuItem Header="{Binding NastaveniJazykVM[AddSong]}" Command="{Binding AddSongCommand}" Foreground="Black"/>
-                <MenuItem Header="{Binding NastaveniJazykVM[RemoveSong]}" Command="{Binding RemoveSongCommand}" Foreground="Black"/>
-                <MenuItem Header="{Binding NastaveniJazykVM[RefreshChanges]}" Command="{Binding RefreshChangesCommand}" Foreground="Black">
+        <!-- Vrchní lišta Menu -->
+        <Menu Style="{StaticResource ThemedMenu}" Grid.Row="0" Grid.ColumnSpan="5">
+            
+            <!-- MenuItem Soubor -->
+            <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[File]}">
+                
+                <!-- SubMenuItem Ukončit -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[Exit]}" Command="{Binding ExitAppCommand}">
                     <MenuItem.Icon>
-                        <TextBlock Text="🔄" VerticalAlignment="Center"/>
+                        <Image Source="/Resources/Obrazky/Ikona_Ukoncit_Aplikaci.png" 
+                               Style="{StaticResource MenuItemIconStyle}"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
 
-            <MenuItem Header="{Binding NastaveniJazykVM[History]}">
-                <MenuItem Header="{Binding NastaveniJazykVM[RemoveSelectedHistory]}" Command="{Binding HistoryVM.RemoveSelectedHistoryCommand}" Foreground="Black"/>
-                <MenuItem Header="{Binding NastaveniJazykVM[RemoveAllHistory]}" Command="{Binding HistoryVM.RemoveAllHistoryCommand}" Foreground="Black"/>
-            </MenuItem>
+            <!-- MenuItem Knihovna -->
+            <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[Library]}">
+                
+                <!-- SubMenuItem Přidat skladbu -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[AddSong]}" Command="{Binding AddSongCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Pridat.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
 
-            <MenuItem Header="{Binding NastaveniJazykVM[Settings]}">
-                <MenuItem Header="{Binding NastaveniJazykVM[Language]}" Command="{Binding OpenSettingsLanguageCommand}" Foreground="Black"/>
-                <MenuItem Header="{Binding NastaveniJazykVM[AppTheme]}" Foreground="Black">
-                    <MenuItem Header="{Binding NastaveniJazykVM[LightTheme]}" Foreground="Black" Command="{Binding ChangeThemeCommand}" CommandParameter="False"/>
-                    <MenuItem Header="{Binding NastaveniJazykVM[DarkTheme]}" Foreground="Black" Command="{Binding ChangeThemeCommand}" CommandParameter="True"/>
+                <!-- SubMenuItem Přidat složku -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[AddFolder]}" Command="{Binding KnihovnaVM.AddFolderCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Pridat_Soubor.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <!-- SubMenuItem Vymazat skladbu -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[RemoveSong]}" Command="{Binding RemoveSongCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Vymazat.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <!-- SubMenuItem Synchronizovat změny -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[RefreshChanges]}" Command="{Binding RefreshChangesCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Sync.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
 
-            <MenuItem Header="{Binding NastaveniJazykVM[Help]}">
-                <MenuItem Header="{Binding NastaveniJazykVM[GettingStarted]}" Foreground="Black"/>
-                <MenuItem Header="{Binding NastaveniJazykVM[About]}" Foreground="Black"/>
+            <!-- MenuItem Historie -->
+            <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[History]}">
+
+                <!-- SubMenuItem Vymazat skladbu -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[RemoveSelectedHistory]}" Command="{Binding HistoryVM.RemoveSelectedHistoryCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Vymazat.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+
+                <!-- SubMenuItem Vyčistit historii -->
+                </MenuItem>
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[RemoveAllHistory]}" Command="{Binding HistoryVM.RemoveAllHistoryCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Vymazat_Vsechno.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+
+            <!-- MenuItem Nastavení -->
+            <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[Settings]}">
+
+                <!-- SubMenuItem Jazyk -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[Language]}" Command="{Binding OpenSettingsLanguageCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Jazyk.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                
+                <!-- SubMenuItem Vzhled aplikace -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[AppTheme]}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_App_Theme.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+
+                    <!-- SubMenuItem Světlý režim -->
+                    <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[LightTheme]}" Command="{Binding ChangeThemeCommand}" CommandParameter="False">
+                        <MenuItem.Icon>
+                            <Image Source="/Resources/Obrazky/Ikona_Svetly_Rezim.png" Style="{StaticResource MenuItemIconStyle}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <!-- SubMenuItem Tmavý režim -->
+                    <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[DarkTheme]}" Command="{Binding ChangeThemeCommand}" CommandParameter="True">
+                        <MenuItem.Icon>
+                            <Image Source="/Resources/Obrazky/Ikona_Tmavy_Rezim.png" Style="{StaticResource MenuItemIconStyle}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+            </MenuItem>
+
+            <!-- MenuItem Nápověda -->
+            <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[Help]}">
+
+                <!-- SubMenuItem O aplikaci -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[About]}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_O_Nas.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
 
-        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Gray" Padding="10">
+        <!-- View History -->
+        <Border Grid.Row="1" Grid.Column="0" Padding="10">
             <views:HistoryView DataContext="{Binding HistoryVM}"/>
         </Border>
 
-        <GridSplitter Grid.Row="1" Grid.Column="1" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="{DynamicResource GridSplitterBrush}"/>
+        <GridSplitter Grid.Row="1" Grid.Column="1"/>
 
-        <Border Grid.Row="1" Grid.Column="2" BorderBrush="Gray" BorderThickness="1,0,1,0" Padding="12">
+        <!-- View Knihovna -->
+        <Border Grid.Row="1" Grid.Column="2" BorderBrush="{DynamicResource BorderBrush}" Padding="12">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -72,12 +149,14 @@
             </Grid>
         </Border>
 
-        <GridSplitter Grid.Row="1" Grid.Column="3" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Focusable="False" Background="{DynamicResource GridSplitterBrush}"/>
+        <GridSplitter Grid.Row="1" Grid.Column="3"/>
 
-        <Border Grid.Row="1" Grid.Column="4" BorderBrush="Gray" BorderThickness="1,0,0,0">
+        <!-- View Playlist -->
+        <Border Grid.Row="1" Grid.Column="4" BorderBrush="{DynamicResource BorderBrush}">
             <views:PlaylistView DataContext="{Binding PlaylistVM}"/>
         </Border>
 
+        <!-- View Přehrávač -->
         <Border Grid.Row="2" Grid.ColumnSpan="5" Background="{DynamicResource SecondaryBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="15,10">
             <views:PrehravacView DataContext="{Binding PrehravacVM}"/>
         </Border>

@@ -26,8 +26,27 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly INastaveniAudiaService _nastaveniAudiaService;
         private readonly ILokalizaceService _lokalizaceService;
         private readonly IDialogService _dialogService;
+
+        /// <summary>
+        /// Příznak označující aktivní posun slideru uživatelem
+        /// </summary>
         private bool uzivatelPosouvaSlider;
+
+        /// <summary>
+        /// Časovač pro definování intervalu, kdy se má uložit nová hlasitost do souboru
+        /// </summary>
         private readonly DispatcherTimer _timerUlozeniHlasitosti;
+
+        /// <summary>
+        /// Cesta ke skladbě, která byla naposledy přehrána.
+        /// Využívá se u kontroly, aby se neuložila do historie právě pozastavená skladba
+        /// </summary>
+        private string? posledniHranaCesta;
+
+        /// <summary>
+        /// Časovač pro časovou osu
+        /// </summary>
+        private readonly DispatcherTimer _casovac;
 
         /// <summary>
         /// Konstanta pro výchozí hlasitost skladby
@@ -61,6 +80,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             get => hlasitost;
             set
             {
+                // Předání hlasitosti do AudiaService
                 if (Math.Abs(hlasitost - value) > 0.1)
                 {
                     hlasitost = value;
@@ -148,12 +168,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand PreviousCommand { get; }
 
         // Delegování indexeru na službu, která je už implementována v ILokalizaceService
-        public string this[string key] => _lokalizaceService[key];
-
-        /// <summary>
-        /// Časovač pro časovou osu
-        /// </summary>
-        private readonly DispatcherTimer _casovac;
+        public string this[string key] => _lokalizaceService[key];       
 
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
@@ -232,6 +247,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             try
             {
                 NastaveniAudio? ulozeneNastaveni = await _nastaveniAudiaService.Load();
+                IsPlaying = true;
 
                 if (ulozeneNastaveni != null)
                 {
@@ -280,18 +296,19 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                                             AktualniSkladba.CestaKSouboru == vybrana.CestaKSouboru;
                 ZdrojPrehravani = nazevZdroje;
                 Playlist.Clear();
-                foreach (Song s in skladby)
+                foreach (Song skladba in skladby)
                 {
-                    Playlist.Add(s);
+                    Playlist.Add(skladba);
                 }
 
+                // Pokud je vybraná skladba NULL, tak se zastaví celé přehrávání
                 if (vybrana == null)
                 {
                     AktualniSkladba = null;
                     _audioService.Stop();
                     return;
                 }
-               
+                
                 Song? hledanaSkldaba = Playlist.FirstOrDefault(s => s.CestaKSouboru == vybrana.CestaKSouboru);
                 if(hledanaSkldaba == null)
                 {
@@ -317,7 +334,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Metoda slouží ke spuštění aktuální skladby
+        /// Metoda slouží ke spuštění aktuální skladby a zapsání do historie přehrávání
         /// </summary>
         private async void Play()
         {
@@ -328,6 +345,13 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             try
             {
+                bool jeToNovaSkladba = AktualniSkladba.CestaKSouboru != posledniHranaCesta;
+                if (jeToNovaSkladba)
+                {
+                    await _historieService.Add(AktualniSkladba);
+                    posledniHranaCesta = AktualniSkladba.CestaKSouboru;
+                }
+
                 IsPlaying = true;
 
                 await _audioService.Play(AktualniSkladba.CestaKSouboru);
@@ -336,8 +360,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                 CelkovaDelka = _audioService.CelkovyCas.TotalSeconds;
                 AktualniCas = _audioService.AktualniCas.TotalSeconds;
-
-                await _historieService.Add(AktualniSkladba);
             }
 
             catch (Exception ex)
@@ -379,6 +401,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                 aktualniIndex++;
 
+                // Když jsme na konci fronty přehrávání, tak se index přesune na první skladbu
                 if (aktualniIndex >= Playlist.Count)
                 {
                     aktualniIndex = 0;
@@ -406,9 +429,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
 
             try
-            {
+            {               
                 aktualniIndex--;
 
+                // Když jsme na začátku fronty přehrávání, tak se index přesune na poslední skladbu
                 if (aktualniIndex < 0)
                 {
                     aktualniIndex = Playlist.Count - 1;
@@ -430,6 +454,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private void OnUkonceniSkladby()
         {
+            // Přepnutí vykonání na UI vlákno, kvůli tomu, aby se aktualizoval UI Binding u AktualniSkladba
             App.Current.Dispatcher.BeginInvoke(() =>
             {
                 try

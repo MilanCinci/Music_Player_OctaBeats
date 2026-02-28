@@ -163,10 +163,10 @@
     <value>Odstranit</value>
   </data>
   <data name="RemoveAllHistory" xml:space="preserve">
-    <value>Vymaž celou historii</value>
+    <value>Vyčistit historii</value>
   </data>
   <data name="RemoveSelectedHistory" xml:space="preserve">
-    <value>Vymaž vybranou historii</value>
+    <value>Vymazat skladbu</value>
   </data>
   <data name="RemoveSong" xml:space="preserve">
     <value>Vymazat skladbu</value>
@@ -212,9 +212,6 @@
   </data>
   <data name="Genre" xml:space="preserve">
     <value>Žánr</value>
-  </data>
-  <data name="GettingStarted" xml:space="preserve">
-    <value>Začínáme</value>
   </data>
   <data name="AlbumCover" xml:space="preserve">
     <value>Přebal alba</value>
@@ -277,7 +274,7 @@
     <value>Soubor '{0}' neexistuje! Knihovna a playlisty byly aktualizovány</value>
   </data>
   <data name="ShowDetails" xml:space="preserve">
-    <value>Zobraz informace</value>
+    <value>Zobrazit informace</value>
   </data>
   <data name="InfoPlaylistContext" xml:space="preserve">
     <value>V playlistech není povoleno kontextové menu. Pro úpravu složení stačí na playlist dvakrát kliknout. Metadata skladeb lze měnit v knihovně</value>
@@ -290,5 +287,35 @@
   </data>
   <data name="DarkTheme" xml:space="preserve">
     <value>Tmavý režim</value>
+  </data>
+  <data name="WarningNoMusicFoundInFolder" xml:space="preserve">
+    <value>Ve vybrané složce nebyly nalezené žádné hudební soubory!</value>
+  </data>
+  <data name="PreferredLanguage" xml:space="preserve">
+    <value>Zvolte preferovaný jazyk aplikace:</value>
+  </data>
+  <data name="AddFolder" xml:space="preserve">
+    <value>Přidat složku</value>
+  </data>
+  <data name="OpenFolderTitle" xml:space="preserve">
+    <value>Vyberte složku pro přidání</value>
+  </data>
+  <data name="OpenFileTitle" xml:space="preserve">
+    <value>Vyberte soubory pro přidání</value>
+  </data>
+  <data name="ToolTipAddToPlaylist" xml:space="preserve">
+    <value>Přidat do playlistu</value>
+  </data>
+  <data name="ToolTipRemoveFromPlaylist" xml:space="preserve">
+    <value>Odebrat z playlistu</value>
+  </data>
+  <data name="ToolTipEnterPlaylistName" xml:space="preserve">
+    <value>Zadejte název nového playlistu</value>
+  </data>
+  <data name="OpenFileAlbumCoverTitle" xml:space="preserve">
+    <value>Vyberte přebal alba</value>
+  </data>
+  <data name="SaveFileAlbumCoverTitle" xml:space="preserve">
+    <value>Uložte přebal alba</value>
   </data>
 </root>

@@ -46,9 +46,14 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
             {
                 var adresar = Path.GetDirectoryName(NastaveniAudio.CestaKSouboru);
 
+                if(adresar == null)
+                {
+                    return;
+                }
+
                 if (!Directory.Exists(adresar))
                 {
-                    Directory.CreateDirectory(adresar!);
+                    Directory.CreateDirectory(adresar);
                 }
 
                 await SpravaSouboru.UlozDoSouboru(NastaveniAudio.CestaKSouboru, nastaveniAudia);

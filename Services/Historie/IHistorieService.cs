@@ -23,7 +23,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Historie
         /// <summary>
         /// Metoda slouží k odstranění konkrétního záznamu historie
         /// </summary>
-        /// <param name="historie">Záznam historie, kterou chceme smazat</param>
+        /// <param name="historie">Záznam historie, který chceme smazat</param>
         /// <returns>Vrací Task</returns>
         Task Delete(HistoriePrehravani historie);
 

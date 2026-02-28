@@ -54,8 +54,6 @@ namespace Hudebni_Prehravac_OctaBeats.Views
 
                 if (dep is ListBoxItem && DataContext is KnihovnaViewModel vm)
                 {
-                    // Pokud jde o jednoduché kliknutí na položku, označíme událost jako vyřízenou.
-                    // ListBoxItem se neoznačí, ale událost probublá dál pro ContextMenu (u pravého tlačítka)
                     if(vm.VybranyPlaylist != null && e.RightButton == MouseButtonState.Pressed)
                     {
                         string zprava = vm["InfoPlaylistContext"];
@@ -84,6 +82,11 @@ namespace Hudebni_Prehravac_OctaBeats.Views
             }
         }
 
+        /// <summary>
+        /// Metoda slouží k označení skladby, kterou chceme přehrát
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">eventArgs</param>
         private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender is ListBox listBox)
@@ -105,26 +108,6 @@ namespace Hudebni_Prehravac_OctaBeats.Views
                     }
                 }
             }
-        }
-
-        public void PosunFocusNaSkladbu(Song skladba)
-        {
-            // 1. Nastavíme prvek jako vybraný v datech
-            listboxSongs.SelectedItem = skladba;
-
-            // 2. Musíme zajistit, aby WPF vygenerovalo vizuální prvek
-            listboxSongs.ScrollIntoView(skladba);
-
-            // 3. Vynutíme focus na vizuální kontejner
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                var container = (ListBoxItem)listboxSongs.ItemContainerGenerator.ContainerFromItem(skladba);
-                if (container != null)
-                {
-                    container.Focus();
-                    Keyboard.Focus(container); // Fyzický focus klávesnice pro "tečkovaný rámeček"
-                }
-            }), System.Windows.Threading.DispatcherPriority.Render);
         }
     }
 }

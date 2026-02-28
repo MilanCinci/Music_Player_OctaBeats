@@ -35,7 +35,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Výchozí název zdroje přehrávání, pokud není uveden
         /// </summary>
-        private static string VychoziNazevZdroje = "Knihovna";
+        private string VychoziNazevZdroje => _lokalizaceService["Library"];
 
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand AddSongCommand { get; }
@@ -105,7 +105,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             bool jeTmavyRezim = Properties.Settings.Default.IsDarkMode;
             ZmenVzhledAplikace(jeTmavyRezim);
 
-            // Prvotní načtení správně přeložených ComboboxItemů
+            // Prvotní načtení správně přeložených ComboBoxItemů
             KnihovnaVM.RefreshLokalizace();
 
             // Propojení playlistů s knihovnou
@@ -177,7 +177,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 bool upravovanyPlaylistPraveHraje = PrehravacVM.ZdrojPrehravani == playlist.Nazev;
 
-                var vm = new PlaylistEditorDialogViewModel(
+                PlaylistEditorDialogViewModel vm = new PlaylistEditorDialogViewModel(
                     KnihovnaVM.Skladby!,
                     playlist.Skladby,
                     playlist,
@@ -185,7 +185,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     _lokalizaceService
                 );
 
-                var dialog = new PlaylistEditorDialogView
+                PlaylistEditorDialogView dialog = new PlaylistEditorDialogView
                 {
                     DataContext = vm,
                     Owner = Application.Current.MainWindow
@@ -264,8 +264,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             try
             {
-                var vm = new SongMetadataEditorViewModel(song, _lokalizaceService, _dialogService);
-                var dialog = new SongMetadataEditorView
+                SongMetadataEditorViewModel vm = new SongMetadataEditorViewModel(song, _lokalizaceService, _dialogService);
+                SongMetadataEditorView dialog = new SongMetadataEditorView
                 {
                     DataContext = vm,
                     Owner = Application.Current.MainWindow
@@ -328,7 +328,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                                 Song? skladbaVPlaylistu = playlist.Skladby.FirstOrDefault(s => s.CestaKSouboru == song.CestaKSouboru);
                                 if (skladbaVPlaylistu != null)
                                 {
-                                    // Přepsání dat v objektu, který drží playlist
+                                    // Přepsání metadat skladby v playlistech
                                     skladbaVPlaylistu.Nazev = song.Nazev;
                                     skladbaVPlaylistu.Interpret = song.Interpret;
                                     skladbaVPlaylistu.Album = song.Album;
@@ -344,8 +344,10 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                             await _audioService.Play(song.CestaKSouboru);
                             _audioService.Pause();
                             _audioService.Seek(poziceVPrehravaci);
+                            _audioService.Hlasitost = 0f;
                             PrehravacVM.IsPlaying = false;
                             PrehravacVM.RefreshAktualniSkladbu();
+                            _audioService.Hlasitost = PrehravacVM.Hlasitost;
                         }
 
                         // Refresh všech potřebných UI komponent
@@ -381,7 +383,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         {
             try
             {
-                var dialog = new NastaveniJazykView
+                NastaveniJazykView dialog = new NastaveniJazykView
                 {
                     DataContext = NastaveniJazykVM,
                     Owner = Application.Current.MainWindow
@@ -393,6 +395,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     {
                         NastaveniJazykVM.ZmenJazyk(NastaveniJazykVM.VybranyJazyk?.Kod ?? NastaveniJazykVM.DostupneJazyky.
                                                         First(jazyk => jazyk.Nazev.Equals("English", StringComparison.OrdinalIgnoreCase)).Kod);
+                        if (KnihovnaVM.VybranyPlaylist == null && PrehravacVM.AktualniSkladba != null)
+                        {
+                            // Pokud není vybrán playlist, zdrojem je vždy Knihovna/Library
+                            PrehravacVM.ZdrojPrehravani = VychoziNazevZdroje;
+                        }
+
                         PlaylistVM.RefreshLokalizace();
                         PrehravacVM.RefreshLokalizace();
                         HistoryVM.RefreshLokalizace();
@@ -413,18 +421,13 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         }
 
         /// <summary>
-        /// Metoda slouží k globálnímu refresh celé aplikace (načte znovu disk i playlisty)
+        /// Metoda slouží ke globálnímu refresh celé aplikace (načte znovu disk i playlisty)
         /// </summary>
         /// <returns>Vrací Task</returns>
         public async Task RefreshVsechDat()
         {
             try
             {
-                // TODO
-                // Doladit design přepínání mezi světlým a tmavým režimem
-                // Doladit celkově trochu design
-                // Pomocí klávesové zkratky, odfocusovat vybraný záznam z historie
-
                 // Načtení skladeb znovu do knihovny
                 await KnihovnaVM.InicializujAsync();
 
@@ -459,6 +462,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                         }
                     }
 
+                    // Pokud nastala nějaká změna ve skladbách playlistů, uloži se playlisty a refreshne se UI
                     if (bylaZmena)
                     {
                         await _playlistService.Save(PlaylistVM.Playlisty);
@@ -467,7 +471,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     }
                 }
 
-                // Reset přehrávače, pokud hrající skladba zmizela
+                // Reset fronty přehrávače, pokud hrající skladba zmizela
                 if (PrehravacVM.AktualniSkladba != null && !File.Exists(PrehravacVM.AktualniSkladba.CestaKSouboru))
                 {
                     _audioService.Stop();
@@ -556,7 +560,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 Properties.Settings.Default.IsDarkMode = tmavyRezim;
                 Properties.Settings.Default.Save();
 
-                // Refresh lokalizace pro všechny ViewModely, aby se aktualizovaly barvy vázané na indexery
+                // Refresh lokalizace pro všechny ViewModely, aby se aktualizovaly barvy vázané na DynamicResource
                 PlaylistVM.RefreshLokalizace();
                 KnihovnaVM.RefreshLokalizace();
                 PrehravacVM.RefreshLokalizace();

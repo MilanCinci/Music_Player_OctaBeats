@@ -17,6 +17,331 @@
                 <ResourceDictionary Source="Resources/Themes/LightTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+       
+        <!-- Vlastní styl pro Context Menu -->
+        <Style x:Key="ThemedContextMenu"
+                TargetType="ContextMenu">
+
+            <Setter Property="OverridesDefaultStyle"
+            Value="True"/>
+
+            <Setter Property="KeyboardNavigation.DirectionalNavigation" 
+            Value="Cycle"/>
+
+            <Setter Property="KeyboardNavigation.DirectionalNavigation"
+            Value="Contained"/>
+
+            <Setter Property="KeyboardNavigation.ControlTabNavigation"
+            Value="Contained"/>
+
+            <Setter Property="Background"
+            Value="{DynamicResource SecondaryBackgroundBrush}"/>
+
+            <Setter Property="BorderBrush"
+            Value="{DynamicResource BorderBrush}"/>
+
+            <Setter Property="BorderThickness"
+            Value="1"/>
+
+            <!-- Nutný pro vykreslení DropShadowEffect -->
+            <Setter Property="Margin" 
+            Value="16"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="ContextMenu">
+
+                        <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6"
+                            Padding="3"
+                            Opacity="0">
+
+                            <!-- Stín -->
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="10"
+                                    ShadowDepth="4"
+                                    Direction="315"
+                                    Color="#000000"
+                                    Opacity="0.32"
+                                    RenderingBias="Quality"/>
+                            </Border.Effect>
+
+                            <StackPanel IsItemsHost="True"/>
+
+                        </Border>
+
+                        <!-- Animace Fade-In -->
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsOpen" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="Root"
+                                                Storyboard.TargetProperty="Opacity"
+                                                From="0"
+                                                To="1"
+                                                Duration="0:0:0.15"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <!-- Vlastní styl pro Menu Item v ContextMenu -->
+        <Style x:Key="ThemedMenuItem"
+            TargetType="MenuItem">
+
+            <Setter Property="Foreground"
+            Value="{DynamicResource PrimaryTextBrush}"/>
+
+            <Setter Property="Background"
+            Value="Transparent"/>
+
+            <Setter Property="Padding"
+            Value="10,6"/>
+
+            <!-- Mezera mezi jednotlivými Menu Itemy -->
+            <Setter Property="Margin"
+            Value="1"/>
+
+            <Setter Property="Cursor"
+            Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+
+                        <Border x:Name="Root"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="4"
+                        Padding="{TemplateBinding Padding}">
+
+                            <DockPanel>
+
+                                <!-- Ikonka -->
+                                <ContentPresenter
+                            ContentSource="Icon"
+                            Width="16"
+                            Height="16"
+                            Margin="0,0,12,0"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Left"/>
+
+                                <!-- Text -->
+                                <ContentPresenter
+                            x:Name="Text" ContentSource="Header"
+                            VerticalAlignment="Center" Margin="0,0,42,0" HorizontalAlignment="Left"/>
+
+                            </DockPanel>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver"
+                             Value="True">
+                                <Setter TargetName="Root"
+                                Property="Background"
+                                Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <!-- Vlastní styl pro Menu -->
+        <Style x:Key="ThemedMenu" TargetType="Menu">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Padding" Value="2,2,2,2"/>
+        </Style>
+
+        <!-- Vlastní styl pro Popup při hoveru u Menu -->
+        <Style x:Key="ThemedMenuPopup" TargetType="ItemsPresenter">
+            <Setter Property="Margin" Value="4"/>
+        </Style>
+
+        <!-- Vlastní styl pro TopLevelMenuItem v Menu -->
+        <Style x:Key="ThemedMenuItem2" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Grid x:Name="RootGrid" SnapsToDevicePixels="True">
+                            <Border x:Name="BgBorder" 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            CornerRadius="3"/>
+
+                            <Grid>
+                                <ContentPresenter ContentSource="Header" 
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"
+                                          Margin="12,4"/>
+                            </Grid>
+
+                            <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" 
+                                    IsOpen="{TemplateBinding IsSubmenuOpen}" PopupAnimation="Fade" 
+                                    Placement="Bottom" HorizontalOffset="0" VerticalOffset="0">
+                                <Border x:Name="SubmenuBorder" 
+                                        Background="{DynamicResource SecondaryBackgroundBrush}" 
+                                        BorderBrush="{DynamicResource BorderBrush}" 
+                                        BorderThickness="1" CornerRadius="4" Padding="2" Margin="0,0,8,8">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.25"/>
+                                    </Border.Effect>
+                                    <ItemsPresenter Grid.IsSharedSizeScope="True"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BgBorder" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="Role" Value="TopLevelHeader">
+                                <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom"/>
+                            </Trigger>
+
+                            <Trigger Property="IsSubmenuOpen" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource MenuClickedBrush}"/>
+                                <Setter TargetName="BgBorder" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                                <Setter TargetName="BgBorder" Property="CornerRadius" Value="3,3,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <!-- Vlastní styl pro Menu Item pro SubItemy v Menu -->
+        <Style x:Key="ThemedMenuItem3" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Grid x:Name="RootGrid" SnapsToDevicePixels="True">
+                            <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}">
+
+                                <DockPanel>
+                                    <ContentPresenter x:Name="Icon"
+                                              ContentSource="Icon"
+                                              Width="16"
+                                              Height="16"
+                                              Margin="0,0,12,0"
+                                              VerticalAlignment="Center"
+                                              DockPanel.Dock="Left"/>
+
+                                    <Path x:Name="Arrow" 
+                                  DockPanel.Dock="Right"
+                                  VerticalAlignment="Center" 
+                                  Margin="10,0,0,0"
+                                  Data="M0,0 L3,3 L0,6" 
+                                  Stroke="{TemplateBinding Foreground}" 
+                                  StrokeThickness="1.2" 
+                                  Visibility="Collapsed"/>
+
+                                    <ContentPresenter ContentSource="Header"
+                                              VerticalAlignment="Center" 
+                                              HorizontalAlignment="Left"
+                                              Margin="0,0,42,0"/>
+                                </DockPanel>
+                            </Border>
+
+                            <Popup x:Name="PART_Popup" 
+                               AllowsTransparency="True" 
+                               Focusable="False"  IsOpen="{TemplateBinding IsSubmenuOpen}" 
+                               PopupAnimation="Fade" 
+                               Placement="Right" 
+                               HorizontalOffset="2" 
+                               VerticalOffset="-4">     
+                                <Border x:Name="SubmenuBorder" 
+                                    Background="{DynamicResource SecondaryBackgroundBrush}" 
+                                    BorderBrush="{DynamicResource BorderBrush}" 
+                                    BorderThickness="1" 
+                                    CornerRadius="6" 
+                                    Padding="3" 
+                                    Margin="0,0,8,8"
+                                    SnapsToDevicePixels="True">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
+                                    </Border.Effect>
+
+                                    <ItemsPresenter x:Name="ItemsPresenter" 
+                                        Grid.IsSharedSizeScope="True"
+                                        KeyboardNavigation.DirectionalNavigation="Cycle"
+                                        KeyboardNavigation.TabNavigation="Cycle"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="True">
+                                <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}"/>
+                                <Setter TargetName="Icon" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsSubmenuOpen" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl MenuItemIcon -->
+        <Style x:Key="MenuItemIconStyle"
+                TargetType="Image">
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Stretch" Value="Uniform"/>
+        </Style>
 
         <!-- Vlastní styl pro tlačítko s ikonkou -->
         <Style x:Key="ImageButtonStyle" TargetType="Button">
@@ -52,8 +377,8 @@
         
         <!-- Vlastní styl slideru pro skladbu -->
         <Style x:Key="SliderStyleSong" TargetType="Slider">
-            <Setter Property="Background" Value="#404040"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource SliderBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SliderForegroundBrush}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -92,7 +417,7 @@
                                             <ControlTemplate TargetType="Thumb">
                                                 <Ellipse x:Name="ThumbEllipse" 
                                                      Width="12" Height="12" 
-                                                     Fill="White" 
+                                                     Fill="{DynamicResource SliderForegroundBrush}" 
                                                      Visibility="Collapsed"/>
                                                 <ControlTemplate.Triggers>
                                                     <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Slider}}" Value="True">
@@ -107,7 +432,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#FF3C28A9"/>
+                                <Setter Property="Foreground" Value="{DynamicResource SliderHoverBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -118,8 +443,8 @@
         
         <!-- Vlastní styl slideru pro skladbu -->
         <Style x:Key="SliderStyleVolume" TargetType="Slider">
-            <Setter Property="Background" Value="#404040"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource SliderBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SliderForegroundBrush}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -158,7 +483,7 @@
                                             <ControlTemplate TargetType="Thumb">
                                                 <Ellipse x:Name="ThumbEllipse" 
                                                  Width="12" Height="12" 
-                                                 Fill="White" 
+                                                 Fill="{DynamicResource SliderForegroundBrush}" 
                                                  Visibility="Collapsed"/>
                                                 <ControlTemplate.Triggers>
                                                     <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Slider}}" Value="True">
@@ -176,8 +501,8 @@
                                 <Setter Property="Foreground">
                                     <Setter.Value>
                                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                            <GradientStop Color="#FF25BA23"/>
-                                            <GradientStop Color="#FF5BDA3D" Offset="1"/>
+                                            <GradientStop Color="{DynamicResource VolumeGradientStopFirst}"/>
+                                            <GradientStop Color="{DynamicResource VolumeGradientStopSecond}" Offset="1"/>
                                         </LinearGradientBrush>
                                     </Setter.Value>
                                 </Setter>
@@ -189,29 +514,672 @@
         </Style>
 
 
-        <!-- Vlastní styl pro zobrazení chybové hlášky IDataErrorInfo-->
+        <!-- Vlastní styl pro zobrazení chybové hlášky IDataErrorInfo -->
         <ControlTemplate x:Key="ErrorTemplate">
             <StackPanel>
                 <AdornedElementPlaceholder x:Name="textBox"/>
 
                 <TextBlock Text="{Binding [0].ErrorContent}" 
-                           Foreground="Red" 
+                           Foreground="#FFF91D1D" 
                            FontSize="10" 
                            Margin="2,2,0,0"
                            TextWrapping="Wrap"/>
             </StackPanel>
         </ControlTemplate>
 
-        <Style TargetType="TextBox">
-            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}"/>
+        <!-- Vlastní obecný styl pro TextBox -->
+        <Style x:Key="AppTextBox" TargetType="TextBox">
 
-            <Style.Triggers>
-                <Trigger Property="Validation.HasError" Value="true">
-                    <Setter Property="BorderBrush" Value="Red"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                    <Setter Property="Background" Value="#FFFCE0E0"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="Background"
+            Value="Transparent"/>
+
+            <Setter Property="Foreground"
+            Value="{DynamicResource PrimaryTextBrush}"/>
+
+            <Setter Property="CaretBrush"
+            Value="{DynamicResource PrimaryTextBrush}"/>
+
+            <Setter Property="BorderBrush"
+            Value="{DynamicResource BorderBrush}"/>
+
+            <Setter Property="BorderThickness"
+            Value="1"/>
+
+            <Setter Property="Padding"
+            Value="8,4"/>
+
+            <Setter Property="VerticalContentAlignment"
+            Value="Center"/>
+
+            <Setter Property="Validation.ErrorTemplate"
+            Value="{StaticResource ErrorTemplate}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="TextBox">
+
+                        <Border x:Name="Bd"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6">
+
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <!-- FOCUS -->
+                            <Trigger Property="IsKeyboardFocused"
+                             Value="True">
+                                <Setter TargetName="Bd"
+                                Property="BorderBrush"
+                                Value="{DynamicResource AccentBrush}"/>
+                            </Trigger>
+
+                            <!-- ERROR -->
+                            <Trigger Property="Validation.HasError"
+                             Value="True">
+                                <Setter TargetName="Bd"
+                                Property="BorderBrush"
+                                Value="#FFF91D1D"/>
+                                <Setter TargetName="Bd"
+                                Property="Background"
+                                Value="{DynamicResource ErrorBrush}"/>
+                            </Trigger>
+
+                            <!-- DISABLED -->
+                            <Trigger Property="IsEnabled"
+                             Value="False">
+                                <Setter TargetName="Bd"
+                                Property="Opacity"
+                                Value="0.5"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <!-- Vlastní styl pro ScrollBar -->
+        <Style x:Key="ModernScrollBar" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Background" Value="{DynamicResource ScrollBarTrackBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ScrollBarThumbBrush}"/>
+            <Setter Property="Width" Value="6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="Bg" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsEnabled}">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="{x:Type Thumb}">
+                                                <Border Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ScrollBar}}" 
+                                                CornerRadius="4"
+                                                Margin="1,0"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Foreground" Value="{DynamicResource ScrollBarHoverBrush}"/>
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ScrollBarTrackBackgroundHoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}"/>
+
+        <!-- Vlastní styl pro ScrollBar -->
+        <Style TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid x:Name="Grid" Background="Transparent">
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" 
+                                            Margin="{TemplateBinding Padding}" 
+                                            Content="{TemplateBinding Content}" 
+                                            ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                            CanContentScroll="{TemplateBinding CanContentScroll}"/>
+
+                            <ScrollBar x:Name="PART_VerticalScrollBar" 
+                               Style="{StaticResource ModernScrollBar}"
+                               HorizontalAlignment="Right" 
+                               Maximum="{TemplateBinding ScrollableHeight}" 
+                               ViewportSize="{TemplateBinding ViewportHeight}" 
+                               Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro ComboBox ToggleButton -->
+        <Style x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="templateRoot" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="4" 
+                        SnapsToDevicePixels="true">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="32"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Path x:Name="arrow" 
+                              Grid.Column="1" 
+                              Data="M0,0 L4,4 L8,0" 
+                              HorizontalAlignment="Center" 
+                              VerticalAlignment="Center" 
+                              Stroke="{TemplateBinding Foreground}" 
+                              StrokeThickness="2"
+                              RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <RotateTransform x:Name="ArrowRotate" Angle="0"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="templateRoot" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter TargetName="templateRoot" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ArrowRotate"
+                                                     Storyboard.TargetProperty="Angle"
+                                                     To="180" 
+                                                     Duration="0:0:0.23"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ArrowRotate"
+                                                     Storyboard.TargetProperty="Angle"
+                                                     To="0" 
+                                                     Duration="0:0:0.23"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro ComboBoxItem -->
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        BorderThickness="0" 
+                        CornerRadius="4" 
+                        Margin="2,1" 
+                        SnapsToDevicePixels="true">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ComboBoxItemClickedBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro ComboBox -->
+        <Style x:Key="ModernComboBox" TargetType="{x:Type ComboBox}">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
+                            <ToggleButton x:Name="toggleButton" 
+                                  Background="{TemplateBinding Background}" 
+                                  BorderBrush="{TemplateBinding BorderBrush}" 
+                                  BorderThickness="{TemplateBinding BorderThickness}" 
+                                  Style="{StaticResource ComboBoxToggleButton}"
+                                  IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                  Foreground="{TemplateBinding Foreground}"/>
+
+                            <ContentPresenter x:Name="contentPresenter" 
+                              Content="{TemplateBinding SelectionBoxItem}" 
+                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                              ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                              IsHitTestVisible="false" 
+                              Margin="{TemplateBinding Padding}" 
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                            <Popup x:Name="PART_Popup" 
+                               AllowsTransparency="true" 
+                               Grid.ColumnSpan="2" 
+                               IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                               Placement="Bottom" 
+                               PopupAnimation="Fade">
+                                <Border x:Name="dropDownBorder" 
+                                Background="{DynamicResource SecondaryBackgroundBrush}" 
+                                BorderBrush="{DynamicResource BorderBrush}" 
+                                BorderThickness="1" 
+                                CornerRadius="6" 
+                                MinWidth="{Binding ActualWidth, ElementName=templateRoot}" 
+                                MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                Margin="0,4,0,0">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
+                                    </Border.Effect>
+                                    <ScrollViewer x:Name="DropDownScrollViewer">
+                                        <ItemsPresenter x:Name="ItemsPresenter" 
+                                                KeyboardNavigation.DirectionalNavigation="Contained" 
+                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}"/>
+                                <Setter TargetName="toggleButton" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro GroupBox -->
+        <Style TargetType="GroupBox" x:Key="AppGroupBox">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid SnapsToDevicePixels="true">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border x:Name="Header" Grid.Row="0" Padding="0,0,0,8">
+                                <ContentPresenter ContentSource="Header" 
+                                          RecognizesAccessKey="true" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+
+                            <Border Grid.Row="1" 
+                            Background="Transparent"
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="1" 
+                            CornerRadius="6">
+                                <ContentPresenter Margin="{TemplateBinding Padding}" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní obecný styl pro tlačítka v aplikaci -->
+        <Style x:Key="AppButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="6"
+                        SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center"
+                                      Margin="{TemplateBinding Padding}"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MenuClickedBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonClickedBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="Bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.97" ScaleY="0.97"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.5"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro Add tlačítka -->
+        <Style x:Key="AddButtonStyle" TargetType="Button" BasedOn="{StaticResource AppButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="6" 
+                        SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center" 
+                                      Margin="{TemplateBinding Padding}"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FF2ECC71"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#8736C673"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FF1E9452"/>
+                                <Setter TargetName="Bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.5"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro Add tlačítka s šipkou vpravo -->
+        <Style x:Key="AddButtonRightArrowStyle" TargetType="Button" BasedOn="{StaticResource AppButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="6" 
+                        SnapsToDevicePixels="True">
+
+                            <Image x:Name="InnerImage" 
+                           Source="{DynamicResource IconArrow}" 
+                           Width="28" Height="28" 
+                           Margin="{TemplateBinding Padding}"
+                           Stretch="Uniform"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FF2ECC71"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="InnerImage" Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Sipka.png"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#8736C673"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FF1E9452"/>
+                                <Setter TargetName="Bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.5"/>
+                                <Setter TargetName="InnerImage" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro Remove tlačítka s šipkou vlevo -->
+        <Style x:Key="RemoveButtonLeftArrowStyle" TargetType="Button" BasedOn="{StaticResource AppButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="6" 
+                        SnapsToDevicePixels="True">
+
+                            <Image x:Name="InnerImage" 
+                           Source="{DynamicResource IconArrow}" 
+                           Width="28" Height="28" 
+                           Margin="{TemplateBinding Padding}"
+                           Stretch="Uniform"
+                           RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="-1"/>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FFE74C3C"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="InnerImage" Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Sipka.png"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#87C63636"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FFC0392B"/>
+                                <Setter TargetName="Bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.5"/>
+                                <Setter TargetName="InnerImage" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro Remove tlačítka -->
+        <Style x:Key="RemoveButtonStyle" TargetType="Button" BasedOn="{StaticResource AppButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="6" 
+                        SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center" 
+                                      Margin="{TemplateBinding Padding}"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FFE74C3C"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#87E25239"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FFA93226"/>
+                                <Setter TargetName="Bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.5"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro ListBoxItem -->
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Margin" Value="2,2,2,2"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="5" 
+                        SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="{DynamicResource HoveredItemStopFirst}" Offset="0"/>
+                                            <GradientStop Color="{DynamicResource HoveredItemStopSecond}" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="{DynamicResource SelectedItemStopFirst}" Offset="0"/>
+                                            <GradientStop Color="{DynamicResource SelectedItemStopSecond}" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro GridSplitter -->
+        <Style TargetType="{x:Type GridSplitter}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="6"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GridSplitter}">
+                        <Border x:Name="Line" 
+                        Background="{DynamicResource GridSplitterBrush}" 
+                        Width="2" 
+                        HorizontalAlignment="Center"
+                        Margin="0,2,0,2"
+                        Opacity="0.65"
+                        CornerRadius="0.5"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Line" Property="Opacity" Value="0.9"/>
+                                <Setter Property="Cursor" Value="SizeWE"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Application.Resources>
 </Application>
