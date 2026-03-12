@@ -318,4 +318,16 @@
   <data name="SaveFileAlbumCoverTitle" xml:space="preserve">
     <value>Save Album Cover</value>
   </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="SaveAlbumCover" xml:space="preserve">
+    <value>Save Album Cover</value>
+  </data>
+  <data name="ChooseAlbumCover" xml:space="preserve">
+    <value>Choose Album Cover</value>
+  </data>
+  <data name="DeleteAlbumCover" xml:space="preserve">
+    <value>Delete Album Cover</value>
+  </data>
 </root>

@@ -318,4 +318,16 @@
   <data name="SaveFileAlbumCoverTitle" xml:space="preserve">
     <value>Uložte přebal alba</value>
   </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Délka</value>
+  </data>
+  <data name="SaveAlbumCover" xml:space="preserve">
+    <value>Stáhnout přebal alba</value>
+  </data>
+  <data name="ChooseAlbumCover" xml:space="preserve">
+    <value>Vybrat nový přebal</value>
+  </data>
+  <data name="DeleteAlbumCover" xml:space="preserve">
+    <value>Odstranit přebal</value>
+  </data>
 </root>

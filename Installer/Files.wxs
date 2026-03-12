@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+	<?define SourceDir=..\bin\Release\net8.0-windows\publish\win-x64 ?>
+
+	<Fragment>
+
+		<DirectoryRef Id="INSTALLFOLDER">
+
+			<Directory Id="dirCS" Name="cs"/>
+			<Directory Id="dirEN" Name="en"/>
+
+		</DirectoryRef>
+
+	</Fragment>
+
+
+	<Fragment>
+
+		<ComponentGroup Id="AppFiles">
+
+			<Component Id="cmpDeps" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileDeps" KeyPath="yes"
+					  Source="$(var.SourceDir)\Hudebni_Prehravac_OctaBeats.deps.json"/>
+			</Component>
+
+			<Component Id="cmpDll" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileDll"
+					  Source="$(var.SourceDir)\Hudebni_Prehravac_OctaBeats.dll"/>
+			</Component>
+
+			<Component Id="cmpExe" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileExe"
+					  Source="$(var.SourceDir)\Hudebni_Prehravac_OctaBeats.exe"/>
+			</Component>
+
+			<Component Id="cmpRuntime" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileRuntime"
+					  Source="$(var.SourceDir)\Hudebni_Prehravac_OctaBeats.runtimeconfig.json"/>
+			</Component>
+
+			<Component Id="cmpNAudioAsio" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNAudioAsio"
+					  Source="$(var.SourceDir)\NAudio.Asio.dll"/>
+			</Component>
+
+			<Component Id="cmpNAudioCore" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNAudioCore"
+					  Source="$(var.SourceDir)\NAudio.Core.dll"/>
+			</Component>
+
+			<Component Id="cmpNAudio" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNAudio"
+					  Source="$(var.SourceDir)\NAudio.dll"/>
+			</Component>
+
+			<Component Id="cmpNAudioMidi" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNAudioMidi"
+					  Source="$(var.SourceDir)\NAudio.Midi.dll"/>
+			</Component>
+
+			<Component Id="cmpNAudioWasapi" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNAudioWasapi"
+					  Source="$(var.SourceDir)\NAudio.Wasapi.dll"/>
+			</Component>
+
+			<Component Id="cmpNAudioWinForms" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNAudioWinForms"
+					  Source="$(var.SourceDir)\NAudio.WinForms.dll"/>
+			</Component>
+
+			<Component Id="cmpNAudioWinMM" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNAudioWinMM"
+					  Source="$(var.SourceDir)\NAudio.WinMM.dll"/>
+			</Component>
+
+			<Component Id="cmpNewtonsoft" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileNewtonsoft"
+					  Source="$(var.SourceDir)\Newtonsoft.Json.dll"/>
+			</Component>
+
+			<Component Id="cmpTagLib" Directory="INSTALLFOLDER" Guid="*">
+				<File Id="fileTagLib"
+					  Source="$(var.SourceDir)\TagLibSharp.dll"/>
+			</Component>
+
+			<Component Id="cmpCsLang" Directory="dirCS" Guid="*">
+				<File Id="fileCsLang"
+					  Source="$(var.SourceDir)\cs\Hudebni_Prehravac_OctaBeats.resources.dll"/>
+			</Component>
+
+			<Component Id="cmpEnLang" Directory="dirEN" Guid="*">
+				<File Id="fileEnLang"
+					  Source="$(var.SourceDir)\en\Hudebni_Prehravac_OctaBeats.resources.dll"/>
+			</Component>
+
+		</ComponentGroup>
+
+	</Fragment>
+
+</Wix>

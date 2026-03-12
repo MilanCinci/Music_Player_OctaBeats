@@ -361,3 +361,23 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ----------------------------------------------------------------------
+# WiX Toolset (Installer)
+# ----------------------------------------------------------------------
+
+# Ignoruje výstupní složky konkrétního projektu Installer
+[Ii]nstaller/bin/
+[Ii]nstaller/obj/
+
+# Ignoruje samotné instalaèní balíèky, pokud by byly v koøenu
+*.msi
+*.msm
+*.msp
+*.cab
+
+# Ignoruje databázi symbolù WiX (pomocný soubor pro debug)
+*.wixpdb
+
+# Ignoruje logy z kompilace WiX
+*.wixlog

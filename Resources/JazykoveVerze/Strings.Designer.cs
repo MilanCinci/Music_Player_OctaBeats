@@ -142,6 +142,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose Album Cover.
+        /// </summary>
+        public static string ChooseAlbumCover {
+            get {
+                return ResourceManager.GetString("ChooseAlbumCover", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dark Theme.
         /// </summary>
         public static string DarkTheme {
@@ -156,6 +165,24 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Delete {
             get {
                 return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Album Cover.
+        /// </summary>
+        public static string DeleteAlbumCover {
+            get {
+                return ResourceManager.GetString("DeleteAlbumCover", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration.
+        /// </summary>
+        public static string Duration {
+            get {
+                return ResourceManager.GetString("Duration", resourceCulture);
             }
         }
         
@@ -525,6 +552,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string RemoveSong {
             get {
                 return ResourceManager.GetString("RemoveSong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Album Cover.
+        /// </summary>
+        public static string SaveAlbumCover {
+            get {
+                return ResourceManager.GetString("SaveAlbumCover", resourceCulture);
             }
         }
         

@@ -11,7 +11,9 @@ using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia;
 using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using Hudebni_Prehravac_OctaBeats.Views;
+using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
@@ -46,6 +48,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand OpenSettingsLanguageCommand { get; }
         public ICommand ExitAppCommand { get; }
         public ICommand ChangeThemeCommand { get; }
+        public ICommand OpenWebsiteCommand { get; }
 
         /// <summary>
         /// ViewModel přehrávače
@@ -77,6 +80,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public MainViewModel()
         {
+            NacistNastavenizRegistru();
+
             _dialogService = new DialogService();
             _lokalizaceService = new LokalizaceService();
             _playlistService = new PlaylistService();
@@ -165,6 +170,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             OpenSettingsLanguageCommand = new RelayCommand(_ => OtevriNastaveniJazyka());
             ExitAppCommand = new RelayCommand(_ => UkonciAplikaci());
             ChangeThemeCommand = new RelayCommand(vzhled => ZmenVzhledAplikace(vzhled));
+            OpenWebsiteCommand = new RelayCommand(_ => OtevriOAplikaciWeb());
         }
 
         /// <summary>
@@ -393,12 +399,23 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 {
                     if (potvrdit)
                     {
-                        NastaveniJazykVM.ZmenJazyk(NastaveniJazykVM.VybranyJazyk?.Kod ?? NastaveniJazykVM.DostupneJazyky.
-                                                        First(jazyk => jazyk.Nazev.Equals("English", StringComparison.OrdinalIgnoreCase)).Kod);
+                        string vybranyKod = NastaveniJazykVM.VybranyJazyk?.Kod ?? NastaveniJazykVM.DostupneJazyky.First(jazyk =>
+                                   jazyk.Nazev.Equals("English", StringComparison.OrdinalIgnoreCase)).Kod;
+                        NastaveniJazykVM.ZmenJazyk(vybranyKod);
                         if (KnihovnaVM.VybranyPlaylist == null && PrehravacVM.AktualniSkladba != null)
                         {
                             // Pokud není vybrán playlist, zdrojem je vždy Knihovna/Library
                             PrehravacVM.ZdrojPrehravani = VychoziNazevZdroje;
+                        }
+
+                        // Uložení hodnoty do registru
+                        using (var baseKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64))
+                        using (var key = baseKey.CreateSubKey(@"Software\OctaBeats"))
+                        {
+                            if (key != null)
+                            {
+                                key.SetValue("Language", vybranyKod);
+                            }
                         }
 
                         PlaylistVM.RefreshLokalizace();
@@ -550,11 +567,21 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     appResources.Remove(staryMotiv);
                 }
 
-                // Přidáme nový slovník
+                // Přidání nového slovníku
                 appResources.Add(new ResourceDictionary 
                 {
                     Source = new Uri(motivPath, UriKind.Relative) 
                 });
+
+                // Uložení hodnoty do registru
+                using (var baseKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64))
+                using (var key = baseKey.CreateSubKey(@"Software\OctaBeats"))
+                {
+                    if (key != null)
+                    {
+                        key.SetValue("Theme", tmavyRezim ? "true" : "false");
+                    }
+                }
 
                 // Uložení nového volby vzhledu do Application Properties
                 Properties.Settings.Default.IsDarkMode = tmavyRezim;
@@ -570,6 +597,69 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while changing the app theme!", nameof(ZmenVzhledAplikace));
+                _dialogService.ShowError(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k otevření Github repozitáře pro přečtení návodu/README
+        /// </summary>
+        public void OtevriOAplikaciWeb()
+        {
+            string url = "https://github.com/MilanCinci/Music_Player_OctaBeats";
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while opening About link!", nameof(OtevriOAplikaciWeb));
+                _dialogService.ShowError(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k načtení hodnot z Windows registrů
+        /// </summary>
+        private void NacistNastavenizRegistru()
+        {
+            try
+            {
+                // Čtení z registrů aplikace OctaBeats
+                using (var baseKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64))
+                using (var key = baseKey.OpenSubKey(@"Software\OctaBeats"))
+                {
+                    if (key != null)
+                    {
+                        // Získání hodnot z registrů
+                        string? regLanguage = key.GetValue("Language")?.ToString();
+                        string? regTheme = key.GetValue("Theme")?.ToString();
+
+                        if (!String.IsNullOrEmpty(regLanguage))
+                        {
+                            Properties.Settings.Default.Language = regLanguage;
+                        }
+
+                        if (!String.IsNullOrEmpty(regTheme))
+                        {
+                            Properties.Settings.Default.IsDarkMode = regTheme.Equals("true", StringComparison.OrdinalIgnoreCase);
+                        }
+
+                        // Uložení hodnot do Application Settings
+                        Properties.Settings.Default.Save();
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while reading app settings from the registry!", nameof(NacistNastavenizRegistru));
                 _dialogService.ShowError(ex.Message);
             }
         }

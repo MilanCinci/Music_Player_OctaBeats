@@ -381,4 +381,20 @@
     <value>Save File Album Cover Title</value>
     <comment>Nadpis dialogu SongMetadaEditorViewModel</comment>
   </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Duration</value>
+    <comment>Obecné Delka</comment>
+  </data>
+  <data name="SaveAlbumCover" xml:space="preserve">
+    <value>Save Album Cover</value>
+    <comment>MenuItem SongMetadataEditorView</comment>
+  </data>
+  <data name="ChooseAlbumCover" xml:space="preserve">
+    <value>Choose Album Cover</value>
+    <comment>MenuItem SongMetadataEditorView</comment>
+  </data>
+  <data name="DeleteAlbumCover" xml:space="preserve">
+    <value>Delete Album Cover</value>
+    <comment>MenuItem SongMetadataEditorView</comment>
+  </data>
 </root>

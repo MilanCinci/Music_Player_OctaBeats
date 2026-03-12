@@ -4,7 +4,7 @@
         xmlns:views="clr-namespace:Hudebni_Prehravac_OctaBeats.Views"
         Title= "{Binding NastaveniJazykVM[AppTitle]}"
         Width="1200"
-        Height="750" Icon="/Resources/Obrazky/Ikona_OctaBeats.ico">
+        Height="750" Icon="/Resources/Obrazky/Ikona_OctaBeats.ico" WindowState="Maximized" WindowStartupLocation="CenterScreen">
 
     <Grid Background="{DynamicResource PrimaryBackgroundBrush}">
         <Grid.RowDefinitions>
@@ -122,7 +122,7 @@
             <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[Help]}">
 
                 <!-- SubMenuItem O aplikaci -->
-                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[About]}">
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[About]}" Command="{Binding OpenWebsiteCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Resources/Obrazky/Ikona_O_Nas.png" Style="{StaticResource MenuItemIconStyle}"/>
                     </MenuItem.Icon>

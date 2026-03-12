@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?define SourceDir=..\bin\Release\net8.0-windows\publish\win-x64 ?>
+
+	<Product
+		Id="*"
+		Name="OctaBeats"
+		Language="1033"
+		Version="1.0.0"
+		Manufacturer="Milan Cincibus"
+		UpgradeCode="5680886e-8caf-4d46-a699-aa240a1d70a9">
+
+		<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine"/>
+
+		<MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed."/>
+		<MediaTemplate EmbedCab="yes"/>
+
+		<WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+		<WixVariable Id="WixUIBannerBmp" Value="Installer_Top_Banner.bmp" />
+		<WixVariable Id="WixUIDialogBmp" Value="Installer_Welcome_Banner.bmp" />
+
+		<Icon Id="icon.ico" SourceFile="$(var.SourceDir)\Hudebni_Prehravac_OctaBeats.exe" />
+		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
+		<Property Id="ARPHELPLINK" Value="https://github.com/MilanCinci/Music_Player_OctaBeats" />
+		<Property Id="ARPURLINFOABOUT" Value="https://github.com/MilanCinci/Music_Player_OctaBeats" />
+		<Property Id="ARPCONTACT" Value="Milan Cincibus" />
+
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/>
+		<Property Id="APP_THEME" Value="false"/>
+		<Property Id="APP_LANGUAGE" Value="en-US"/>
+
+		<UI>
+			<UIRef Id="WixUI_InstallDir"/>
+			<UIRef Id="WixUI_ErrorProgressText"/>
+
+			<Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="SettingsDialog" Order="5">1</Publish>
+			<Publish Dialog="SettingsDialog" Control="Back" Event="NewDialog" Value="InstallDirDlg" Order="5">1</Publish>
+			<Publish Dialog="SettingsDialog" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="5">1</Publish>
+			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="SettingsDialog" Order="5">1</Publish>
+
+			<ComboBox Property="APP_LANGUAGE">
+				<ListItem Value="en-US" Text="English"/>
+				<ListItem Value="cs-CZ" Text="Cestina"/>
+			</ComboBox>
+		</UI>
+
+		<Feature Id="MainFeature" Title="OctaBeats" Level="1">
+			<ComponentGroupRef Id="AppFiles"/>
+			<ComponentRef Id="DesktopShortcut"/>
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="OctaBeats">
+					<Directory Id="CSFOLDER" Name="cs"/>
+					<Directory Id="ENFOLDER" Name="en"/>
+				</Directory>
+			</Directory>
+			<Directory Id="DesktopFolder"/>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<Component Id="DesktopShortcut" Guid="73829101-ABCD-4E5F-AF61-392817263544" Directory="DesktopFolder">
+			<Shortcut Id="DesktopShortcutID"
+					  Name="OctaBeats"
+					  Target="[INSTALLFOLDER]Hudebni_Prehravac_OctaBeats.exe"
+					  WorkingDirectory="INSTALLFOLDER"/>
+
+			<RegistryValue Root="HKCU" Key="Software\OctaBeats" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+			<RegistryValue Root="HKCU" Key="Software\OctaBeats" Name="Language" Type="string" Value="[APP_LANGUAGE]"/>
+			<RegistryValue Root="HKCU" Key="Software\OctaBeats" Name="Theme" Type="string" Value="[APP_THEME]"/>
+		</Component>
+	</Fragment>
+
+	<Fragment>
+		<UI>
+			<Dialog Id="SettingsDialog" Width="370" Height="270" Title="OctaBeats Setup">
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallDirDlgBannerBitmap)" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Preferences" />
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Please choose your preferred language and theme." />
+
+				<Control Id="LangLabel" Type="Text" X="25" Y="55" Width="200" Height="15" Text="Application Language:" />
+				<Control Id="LangCombo" Type="ComboBox" Property="APP_LANGUAGE" X="35" Y="70" Width="150" Height="16" ComboList="yes" />
+
+				<Control Id="ThemeLabel" Type="Text" X="25" Y="105" Width="200" Height="15" Text="Application Theme:" />
+				<Control Id="ThemeRadioGroup" Type="RadioButtonGroup" Property="APP_THEME" X="35" Y="120" Width="200" Height="45">
+					<RadioButtonGroup Property="APP_THEME">
+						<RadioButton Value="false" X="0" Y="0" Width="150" Height="17" Text="Light Theme" />
+						<RadioButton Value="true" X="0" Y="20" Width="150" Height="17" Text="Dark Theme" />
+					</RadioButtonGroup>
+				</Control>
+
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="Back" />
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next" />
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+					<Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+				</Control>
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>

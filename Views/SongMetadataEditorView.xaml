@@ -121,31 +121,42 @@
                     BorderBrush="{DynamicResource BorderBrush}" 
                     BorderThickness="2"
                     Background="Transparent">
+
+                    <!-- ContextMenu nad přebalem alba -->
                     <Border.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Stáhnout přebal" Command="{Binding StahnoutPrebalCommand}">
+                        <ContextMenu Style="{StaticResource ThemedContextMenu}">
+
+                            <!-- MenuItem Uložit přebal alba -->
+                            <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding [SaveAlbumCover]}" Command="{Binding StahnoutPrebalCommand}">
                                 <MenuItem.Icon>
-                                    <TextBlock Text="🌐" VerticalAlignment="Center"/>
+                                    <Image Source="/Resources/Obrazky/Ikona_Stahnout.png"
+                                            Style="{StaticResource MenuItemIconStyle}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Vybrat nový přebal" Command="{Binding VybratPrebalCommand}">
+
+                            <!-- MenuItem Vybrat nový přebal -->
+                            <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding [ChooseAlbumCover]}" Command="{Binding VybratPrebalCommand}">
                                 <MenuItem.Icon>
-                                    <TextBlock Text="📁" VerticalAlignment="Center"/>
+                                    <Image Source="/Resources/Obrazky/Ikona_Prebal_Obrazek.png"
+                                            Style="{StaticResource MenuItemIconStyle}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Odstranit přebal" Command="{Binding OdstranitPrebalCommand}">
+
+                            <!-- MenuItem Odstranit přebal alba -->
+                            <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding [DeleteAlbumCover]}" Command="{Binding OdstranitPrebalCommand}">
                                 <MenuItem.Icon>
-                                    <TextBlock Text="❌" VerticalAlignment="Center"/>
+                                    <Image Source="/Resources/Obrazky/Ikona_Vymazat_Vsechno.png"
+                                            Style="{StaticResource MenuItemIconStyle}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>
                     </Border.ContextMenu>
 
                     <Image Source="{Binding PrebalAlba, Converter={StaticResource ByteToImageConverter}, TargetNullValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png'}"
-           Margin="5"
-           MaxWidth="300" 
-           MaxHeight="300"
-           Stretch="Uniform"/>
+                            Margin="5"
+                            MaxWidth="300" 
+                            MaxHeight="300"
+                            Stretch="Uniform"/>
                 </Border>
             </Grid>
         </Grid>

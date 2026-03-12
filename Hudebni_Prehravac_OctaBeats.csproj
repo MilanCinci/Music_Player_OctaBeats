@@ -36,6 +36,7 @@
     <None Remove="Resources\Obrazky\Ikona_Playlist_Editor.ico" />
     <None Remove="Resources\Obrazky\Ikona_Pozastavit.png" />
     <None Remove="Resources\Obrazky\Ikona_Pozastavit_Dark.png" />
+    <None Remove="Resources\Obrazky\Ikona_Prebal_Obrazek.png" />
     <None Remove="Resources\Obrazky\Ikona_Predchozi.png" />
     <None Remove="Resources\Obrazky\Ikona_Predchozi_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Prehrat.png" />
@@ -44,6 +45,7 @@
     <None Remove="Resources\Obrazky\Ikona_Pridat_Soubor.png" />
     <None Remove="Resources\Obrazky\Ikona_Sipka.png" />
     <None Remove="Resources\Obrazky\Ikona_Sipka_Dark.png" />
+    <None Remove="Resources\Obrazky\Ikona_Stahnout.png" />
     <None Remove="Resources\Obrazky\Ikona_Svetly_Rezim.png" />
     <None Remove="Resources\Obrazky\Ikona_Sync.png" />
     <None Remove="Resources\Obrazky\Ikona_Tmavy_Rezim.png" />
@@ -86,6 +88,9 @@
     <Resource Include="Resources\Obrazky\Ikona_Pozastavit_Dark.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Prebal_Obrazek.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Predchozi_Dark.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -96,6 +101,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Sipka_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Stahnout.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Svetly_Rezim.png">

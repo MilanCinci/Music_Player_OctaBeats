@@ -59,79 +59,85 @@
             </ComboBox>
         </Grid>
 
-        <!-- Seznam skladeb -->
-        <ListBox x:Name="listboxSongs" Grid.Row="1"
-                 ItemsSource="{Binding VyfiltrovaneSkladby}"
-                 SelectedItem="{Binding VybranaSkladba}"
-                 Background="Transparent"
-                 BorderBrush="{DynamicResource BorderBrush}"
-                 HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown" SelectionChanged="ListBox_SelectionChanged" MouseDoubleClick="ListBox_MouseDoubleClick">
+        <Border Grid.Row="1"
+                BorderBrush="{DynamicResource BorderBrush}" 
+                BorderThickness="1" 
+                CornerRadius="5"
+                ClipToBounds="True">
+            
+            <!-- Seznam skladeb -->
+            <ListBox x:Name="listboxSongs"
+                     ItemsSource="{Binding VyfiltrovaneSkladby}"
+                     SelectedItem="{Binding VybranaSkladba}"
+                     Background="Transparent"
+                     HorizontalContentAlignment="Stretch" av:ItemsSource="{av:SampleData ItemCount=5}" VerticalContentAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_PreviewMouseDown" SelectionChanged="ListBox_SelectionChanged" MouseDoubleClick="ListBox_MouseDoubleClick" BorderBrush="{x:Null}">
 
-            <!-- ContextMenu nad ListboxItem -->
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox}}"/>
-                    <Setter Property="ContextMenu">
-                        <Setter.Value>
-                            <ContextMenu Style="{StaticResource ThemedContextMenu}">
+                <!-- ContextMenu nad ListboxItem -->
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu Style="{StaticResource ThemedContextMenu}">
 
-                                <!-- MenuItem Zobrazit informace -->
-                                <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding PlacementTarget.Tag.DataContext[ShowDetails], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  Command="{Binding PlacementTarget.Tag.DataContext.EditMetadataCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                    <MenuItem.Icon>
-                                        <Image Source="/Resources/Obrazky/Ikona_Informace.png"
-                                               Style="{StaticResource MenuItemIconStyle}"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
+                                    <!-- MenuItem Zobrazit informace -->
+                                    <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding PlacementTarget.Tag.DataContext[ShowDetails], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      Command="{Binding PlacementTarget.Tag.DataContext.EditMetadataCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                        <MenuItem.Icon>
+                                            <Image Source="/Resources/Obrazky/Ikona_Informace.png"
+                                                   Style="{StaticResource MenuItemIconStyle}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
 
-                                <!-- MenuItem Vymazat skladbu -->
-                                <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding PlacementTarget.Tag.DataContext[RemoveSong], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  Command="{Binding PlacementTarget.Tag.DataContext.RemoveSongCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                    <MenuItem.Icon>
-                                        <Image Source="/Resources/Obrazky/Ikona_Vymazat.png"
-                                                Style="{StaticResource MenuItemIconStyle}"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.ItemContainerStyle>
+                                    <!-- MenuItem Vymazat skladbu -->
+                                    <MenuItem Style="{StaticResource ThemedMenuItem}" Header="{Binding PlacementTarget.Tag.DataContext[RemoveSong], RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      Command="{Binding PlacementTarget.Tag.DataContext.RemoveSongCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                        <MenuItem.Icon>
+                                            <Image Source="/Resources/Obrazky/Ikona_Vymazat.png"
+                                                    Style="{StaticResource MenuItemIconStyle}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
 
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="4, 2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="4, 2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <!-- Přebal alba -->
-                        <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,14,0" CornerRadius="4">
-                            <Border.Background>
-                                <ImageBrush ImageSource="{Binding PrebalAlba, Converter={StaticResource ByteToImageConverter}, 
-                                    TargetNullValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png', 
-                                    FallbackValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png'}"
-                                Stretch="UniformToFill"/>
-                            </Border.Background>
-                        </Border>
+                            <!-- Přebal alba -->
+                            <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,14,0" CornerRadius="4">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding PrebalAlba, Converter={StaticResource ByteToImageConverter}, 
+                                        TargetNullValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png', 
+                                        FallbackValue='pack://application:,,,/Resources/Obrazky/Ikona_Error_Image.png'}"
+                                    Stretch="UniformToFill"/>
+                                </Border.Background>
+                            </Border>
 
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            
-                            <!-- Název skladby -->
-                            <TextBlock Text="{Binding Nazev}" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
 
-                            <!-- Interpret -->
-                            <TextBlock Text="{Binding Interpret}" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                <!-- Název skladby -->
+                                <TextBlock Text="{Binding Nazev}" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}"/>
 
-                            <!-- Album -->
-                            <TextBlock Text="{Binding Album}" FontSize="11" FontStyle="Italic" Foreground="{DynamicResource SecondaryTextBrush}"/>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                                <!-- Interpret -->
+                                <TextBlock Text="{Binding Interpret}" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}"/>
+
+                                <!-- Album -->
+                                <TextBlock Text="{Binding Album}" FontSize="11" FontStyle="Italic" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
     </Grid>
 </UserControl>
