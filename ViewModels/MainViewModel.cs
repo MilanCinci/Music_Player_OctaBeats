@@ -49,6 +49,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand ExitAppCommand { get; }
         public ICommand ChangeThemeCommand { get; }
         public ICommand OpenWebsiteCommand { get; }
+        public ICommand AddFolderToPlaylistCommand { get; }
 
         /// <summary>
         /// ViewModel přehrávače
@@ -171,6 +172,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             ExitAppCommand = new RelayCommand(_ => UkonciAplikaci());
             ChangeThemeCommand = new RelayCommand(vzhled => ZmenVzhledAplikace(vzhled));
             OpenWebsiteCommand = new RelayCommand(_ => OtevriOAplikaciWeb());
+            AddFolderToPlaylistCommand = PlaylistVM.AddFolderCommand;
         }
 
         /// <summary>
@@ -271,6 +273,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             try
             {
                 SongMetadataEditorViewModel vm = new SongMetadataEditorViewModel(song, _lokalizaceService, _dialogService);
+
                 SongMetadataEditorView dialog = new SongMetadataEditorView
                 {
                     DataContext = vm,

@@ -330,4 +330,10 @@
   <data name="DeleteAlbumCover" xml:space="preserve">
     <value>Odstranit přebal</value>
   </data>
+  <data name="CompactDisplay" xml:space="preserve">
+    <value>Kompaktní zobrazení</value>
+  </data>
+  <data name="ToolTipAddFolderToPlaylist" xml:space="preserve">
+    <value>Přidat složku do playlistu</value>
+  </data>
 </root>

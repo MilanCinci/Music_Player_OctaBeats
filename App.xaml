@@ -136,6 +136,7 @@
                                 <!-- Ikonka -->
                                 <ContentPresenter
                             ContentSource="Icon"
+                            x:Name="Icon"
                             Width="16"
                             Height="16"
                             Margin="0,0,12,0"
@@ -158,6 +159,11 @@
                                 <Setter TargetName="Root"
                                 Property="Background"
                                 Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}"/>
+                                <Setter TargetName="Icon" Property="Opacity" Value="0.5"/>
                             </Trigger>
 
                         </ControlTemplate.Triggers>
@@ -1061,6 +1067,52 @@
             </Setter>
         </Style>
 
+        <!-- Vlastní styl pro Add folder se složkou -->
+        <Style x:Key="AddFolderButtonStyle" TargetType="Button" BasedOn="{StaticResource AppButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" 
+                Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}" 
+                CornerRadius="6" 
+                SnapsToDevicePixels="True">
+
+                            <Image x:Name="InnerImage" 
+                   Source="{DynamicResource IconFolder}" 
+                   Width="28" Height="28" 
+                   Margin="{TemplateBinding Padding}"
+                   Stretch="Uniform"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FF2ECC71"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="InnerImage" Property="Source" Value="pack://application:,,,/Resources/Obrazky/Ikona_Slozka.png"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#8736C673"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FF1E9452"/>
+                                <Setter TargetName="Bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.5"/>
+                                <Setter TargetName="InnerImage" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Vlastní styl pro Remove tlačítka -->
         <Style x:Key="RemoveButtonStyle" TargetType="Button" BasedOn="{StaticResource AppButtonStyle}">
             <Setter Property="Template">
@@ -1177,6 +1229,71 @@
                                 <Setter Property="Cursor" Value="SizeWE"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro Checkbox -->
+        <Style x:Key="ModernCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                            <!-- BOX -->
+                            <Border x:Name="Box"
+                            Width="19" Height="19"
+                            CornerRadius="4"
+                            Background="{DynamicResource SecondaryBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            VerticalAlignment="Center">
+
+                                <!-- CHECK -->
+                                <Grid>
+                                    <Path x:Name="CheckMark"
+                                  Data="M 3 9 L 7 13 L 15 5"
+                                  Stroke="White"
+                                  StrokeThickness="2"
+                                  StrokeEndLineCap="Round"
+                                  StrokeStartLineCap="Round"
+                                  Visibility="Collapsed"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- TEXT -->
+                            <ContentPresenter Margin="6,0,0,0"
+                                      VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+                        <!-- TRIGGERS -->
+                        <ControlTemplate.Triggers>
+
+                            <!-- Checked -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+
+                            <!-- Hover -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                            </Trigger>
+
+                            <!-- Disabled -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

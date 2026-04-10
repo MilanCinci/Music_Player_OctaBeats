@@ -397,4 +397,12 @@
     <value>Delete Album Cover</value>
     <comment>MenuItem SongMetadataEditorView</comment>
   </data>
+  <data name="CompactDisplay" xml:space="preserve">
+    <value>Compact Display</value>
+    <comment>Obecne kompaktni zobrazeni</comment>
+  </data>
+  <data name="ToolTipAddFolderToPlaylist" xml:space="preserve">
+    <value>Add Folder To Playlist</value>
+    <comment>Tooltip PlayliEditorDialogView</comment>
+  </data>
 </root>

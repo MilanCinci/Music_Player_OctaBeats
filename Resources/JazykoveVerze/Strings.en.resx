@@ -330,4 +330,10 @@
   <data name="DeleteAlbumCover" xml:space="preserve">
     <value>Delete Album Cover</value>
   </data>
+  <data name="CompactDisplay" xml:space="preserve">
+    <value>Compact display</value>
+  </data>
+  <data name="ToolTipAddFolderToPlaylist" xml:space="preserve">
+    <value>Add Folder To Playlist</value>
+  </data>
 </root>

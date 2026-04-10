@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
@@ -41,6 +42,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             {
                 vybranyPlaylist = value;
                 OnPropertyChanged();
+                AddFolderCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -69,6 +71,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand AddPlaylistCommand { get; }
         public ICommand RemovePlaylistCommand { get; }
         public ICommand ResetVyberCommand { get; }
+        public AsyncRelayCommand AddFolderCommand { get; }
 
         // Implementace IDataErrorInfo pro validaci
         public string Error => String.Empty;
@@ -118,6 +121,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             AddPlaylistCommand = new AsyncRelayCommand(AddPlaylist, () => JeValidni());
             RemovePlaylistCommand = new AsyncRelayCommand(RemovePlaylist);
             ResetVyberCommand = new RelayCommand(_ => VybranyPlaylist = null);
+            AddFolderCommand = new AsyncRelayCommand(PridejSlozkuDoPlaylistu, () => VybranyPlaylist != null);
         }
 
         /// <summary>
@@ -305,6 +309,90 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while initializing playlists!", nameof(InicializujAsync));
+                _dialogService.ShowError(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k výběru složky a přidání všech nalezených skladeb do vybraného playlistu
+        /// </summary>
+        /// <returns>Vrací Task</returns>
+        public async Task PridejSlozkuDoPlaylistu()
+        {
+            if (VybranyPlaylist == null)
+            {
+                return;
+            }
+
+            try
+            {
+                using (var folderDialog = new FolderBrowserDialog())
+                {
+                    folderDialog.Description = _lokalizaceService["OpenFolderTitle"];
+                    folderDialog.UseDescriptionForTitle = true;
+
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string vybranaCesta = folderDialog.SelectedPath;
+
+                        string[] podporovanePripony = { ".mp3", ".wav", ".flac" };
+
+                        string[] soubory = Directory.GetFiles(vybranaCesta, "*.*", SearchOption.AllDirectories)
+                            .Where(s => podporovanePripony.Contains(Path.GetExtension(s).ToLower()))
+                            .ToArray();
+
+                        if (soubory.Length == 0)
+                        {
+                            _dialogService.ShowWarning(_lokalizaceService["WarningNoMusicFoundInFolder"]);
+                            return;
+                        }
+
+                        MetadataService metadata = new MetadataService(_lokalizaceService);
+
+                        // // Rozdělení do HashSetu
+                        var existujici = VybranyPlaylist.Skladby
+                            .Select(s => (
+                                Interpret: (s.Interpret ?? "").Trim().ToLower(),
+                                Nazev: (s.Nazev ?? Path.GetFileNameWithoutExtension(s.CestaKSouboru) ?? "").Trim().ToLower()
+                            ))
+                            .ToHashSet();
+
+                        foreach (string cesta in soubory)
+                        {
+                            try
+                            {
+                                // Načtení metadat skladeb ze složky
+                                Song song = await Task.Run(() => metadata.Load(cesta));
+
+                                var klic = (
+                                    Interpret: (song.Interpret ?? "").Trim().ToLower(),
+                                    Nazev: (song.Nazev ?? Path.GetFileNameWithoutExtension(song.CestaKSouboru) ?? "").Trim().ToLower()
+                                );
+
+                                // Pokud ještě v playlistu nejsou skladby ze složky, tak se přidají
+                                if (!existujici.Contains(klic))
+                                {
+                                    VybranyPlaylist.Skladby.Add(song);
+                                    VybranyPlaylist.CestyKSkladbam.Add(cesta);
+                                    existujici.Add(klic);
+                                }
+                            }
+
+                            catch
+                            {
+                                // Poškozený soubor se přeskočí
+                            }
+                        }
+
+                        await _playlistService.Save(Playlisty!);
+                        OnPropertyChanged(nameof(Playlisty));
+                        OnPropertyChanged(nameof(VybranyPlaylist));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while adding folder to the playlist!", nameof(PridejSlozkuDoPlaylistu));
                 _dialogService.ShowError(ex.Message);
             }
         }

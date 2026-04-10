@@ -41,5 +41,6 @@
     <ImageSource x:Key="VolumeFrame4">pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_4_Dark.png</ImageSource>
     <ImageSource x:Key="VolumeFrame5">pack://application:,,,/Resources/Obrazky/Ikona_Hlasitost_Frame_5_Dark.png</ImageSource>
     <ImageSource x:Key="IconArrow">pack://application:,,,/Resources/Obrazky/Ikona_Sipka_Dark.png</ImageSource>
+    <ImageSource x:Key="IconFolder">pack://application:,,,/Resources/Obrazky/Ikona_Slozka_Dark.png</ImageSource>
 
 </ResourceDictionary>

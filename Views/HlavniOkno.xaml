@@ -77,11 +77,22 @@
                         <Image Source="/Resources/Obrazky/Ikona_Vymazat.png" Style="{StaticResource MenuItemIconStyle}"/>
                     </MenuItem.Icon>
 
-                <!-- SubMenuItem Vyčistit historii -->
+                    <!-- SubMenuItem Vyčistit historii -->
                 </MenuItem>
                 <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[RemoveAllHistory]}" Command="{Binding HistoryVM.RemoveAllHistoryCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Resources/Obrazky/Ikona_Vymazat_Vsechno.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+
+            <!-- MenuItem Playlist -->
+            <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[Playlist]}">
+
+                <!-- SubMenuItem Přidat složku -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[AddFolder]}" Command="{Binding AddFolderToPlaylistCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Pridat_Soubor.png" Style="{StaticResource MenuItemIconStyle}"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>

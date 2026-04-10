@@ -54,12 +54,6 @@ namespace Hudebni_Prehravac_OctaBeats.Views
 
                 if (dep is ListBoxItem && DataContext is KnihovnaViewModel vm)
                 {
-                    if(vm.VybranyPlaylist != null && e.RightButton == MouseButtonState.Pressed)
-                    {
-                        string zprava = vm["InfoPlaylistContext"];
-                        vm.DialogService.ShowInfo(zprava);
-                    }
-
                     if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Pressed)
                     {
                         e.Handled = true;

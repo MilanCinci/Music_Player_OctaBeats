@@ -45,6 +45,8 @@
     <None Remove="Resources\Obrazky\Ikona_Pridat_Soubor.png" />
     <None Remove="Resources\Obrazky\Ikona_Sipka.png" />
     <None Remove="Resources\Obrazky\Ikona_Sipka_Dark.png" />
+    <None Remove="Resources\Obrazky\Ikona_Slozka.png" />
+    <None Remove="Resources\Obrazky\Ikona_Slozka_Dark.png" />
     <None Remove="Resources\Obrazky\Ikona_Stahnout.png" />
     <None Remove="Resources\Obrazky\Ikona_Svetly_Rezim.png" />
     <None Remove="Resources\Obrazky\Ikona_Sync.png" />
@@ -101,6 +103,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Sipka_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Slozka.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Slozka_Dark.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Stahnout.png">

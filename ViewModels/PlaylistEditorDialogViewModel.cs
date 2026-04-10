@@ -1,14 +1,18 @@
 ﻿using Hudebni_Prehravac_OctaBeats.Commands;
 using Hudebni_Prehravac_OctaBeats.Models;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
+using Hudebni_Prehravac_OctaBeats.Services.Metadata;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
@@ -57,10 +61,22 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        private bool compactMode;
+        public bool CompactMode
+        {
+            get => compactMode;
+            set
+            {
+                compactMode = value;
+                OnPropertyChanged();
+            }
+        }
+
         /* Příkazy pro obsluhu jednotlivých metod */
         public ICommand PridatCommand { get; }
         public ICommand OdebratCommand { get; }
         public ICommand PotvrditCommand { get; }
+        public AsyncRelayCommand AddFolderCommand { get; }
 
         // Implementace IDataErrorInfo pro validaci
         public string Error => String.Empty;
@@ -112,9 +128,22 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             _vsechnyPlaylisty = vsechnyPlaylisty;
             _puvodniNazev = playlist.Nazev;
 
-            // Do knihovny v editoru se přidají pouze ty skladby, které se nenachází v aktuálně upravovaném playlistu
-            var cestyVPlaylistu = PlaylistSkladby.Select(skladba => skladba.CestaKSouboru).ToHashSet();
-            KnihovnaSkladby = new ObservableCollection<Song>(knihovna.Where(skladba => !cestyVPlaylistu.Contains(skladba.CestaKSouboru)));
+            var skladbyVPlaylistu = PlaylistSkladby
+                .Select(s => (
+                    Interpret: (s.Interpret ?? "").Trim().ToLower(),
+                    Nazev: (s.Nazev ?? Path.GetFileNameWithoutExtension(s.CestaKSouboru) ?? "").Trim().ToLower()
+                ))
+                .ToHashSet();
+
+            // Přidání do knihovny skladeb v editoru jenom ty skladby, které nejsou už v playlistu
+            KnihovnaSkladby = new ObservableCollection<Song>(
+                knihovna.Where(s =>
+                    !skladbyVPlaylistu.Contains((
+                        (s.Interpret ?? "").Trim().ToLower(),
+                        (s.Nazev ?? Path.GetFileNameWithoutExtension(s.CestaKSouboru) ?? "").Trim().ToLower()
+                    ))
+                )
+            );
 
             NazevPlaylistu = playlist.Nazev;
 
@@ -153,6 +182,82 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     ZavritDialog?.Invoke(true);
                 }
             });
+
+            AddFolderCommand = new AsyncRelayCommand(PridejSlozkuDoPlaylistu);
+        }
+
+        /// <summary>
+        /// Metoda slouží k přidání celé složky skladeb do playlistu
+        /// </summary>
+        /// <returns>Vrací Task</returns>
+        public async Task PridejSlozkuDoPlaylistu()
+        {
+            try
+            {
+                using (var folderDialog = new FolderBrowserDialog())
+                {
+                    folderDialog.Description = _lokalizaceService["OpenFolderTitle"];
+                    folderDialog.UseDescriptionForTitle = true;
+
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string vybranaCesta = folderDialog.SelectedPath;
+
+                        string[] podporovanePripony = { ".mp3", ".wav", ".flac" };
+
+                        string[] soubory = Directory.GetFiles(vybranaCesta, "*.*", SearchOption.AllDirectories)
+                            .Where(s => podporovanePripony.Contains(Path.GetExtension(s).ToLower()))
+                            .ToArray();
+
+                        if (soubory.Length == 0)
+                        {
+                            return;
+                        }
+
+                        MetadataService metadata = new MetadataService(_lokalizaceService);
+
+                        // Rozdělení do HashSetu
+                        var existujici = PlaylistSkladby
+                            .Select(s => (
+                                Interpret: (s.Interpret ?? "").Trim().ToLower(),
+                                Nazev: (s.Nazev ?? "").Trim().ToLower()
+                            ))
+                            .ToHashSet();
+
+                        foreach (string cesta in soubory)
+                        {
+                            try
+                            {
+                                // Načtení metadat skladeb ze složky
+                                Song song = await Task.Run(() => metadata.Load(cesta));
+
+                                var klic = (
+                                    Interpret: (song.Interpret ?? "").Trim().ToLower(),
+                                    Nazev: (song.Nazev ?? "").Trim().ToLower()
+                                );
+
+                                // Pokud ještě v playlistu nejsou skladby ze složky, tak se přidají
+                                if (!existujici.Contains(klic))
+                                {
+                                    PlaylistSkladby.Add(song);
+                                    existujici.Add(klic);
+                                }
+                            }
+                            catch
+                            {
+                                // Poškozený soubor se přeskočí
+                            }
+                        }
+
+                        // Odstranění duplicit z knihovny
+                        OdeberDuplicitniZKnihovny();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         /// <summary>
@@ -162,6 +267,31 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private bool JeValidni()
         {
             return String.IsNullOrEmpty(this[nameof(NazevPlaylistu)]);
+        }
+
+        /// <summary>
+        /// Metoda slouží k odebrání duplicitních skladeb, které jsou v knihovně a zároveň v playlistu
+        /// </summary>
+        private void OdeberDuplicitniZKnihovny()
+        {
+            var playlistSet = PlaylistSkladby
+                .Select(s => (
+                    Interpret: (s.Interpret ?? "").Trim().ToLower(),
+                    Nazev: (s.Nazev ?? "").Trim().ToLower()
+                ))
+                .ToHashSet();
+
+            var kOdebrani = KnihovnaSkladby
+                .Where(s => playlistSet.Contains((
+                    (s.Interpret ?? "").Trim().ToLower(),
+                    (s.Nazev ?? "").Trim().ToLower()
+                )))
+                .ToList();
+
+            foreach (Song song in kOdebrani)
+            {
+                KnihovnaSkladby.Remove(song);
+            }
         }
     }
 }

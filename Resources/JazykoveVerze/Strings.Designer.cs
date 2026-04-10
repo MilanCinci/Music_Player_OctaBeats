@@ -151,6 +151,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Compact Display.
+        /// </summary>
+        public static string CompactDisplay {
+            get {
+                return ResourceManager.GetString("CompactDisplay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dark Theme.
         /// </summary>
         public static string DarkTheme {
@@ -642,6 +651,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Stop {
             get {
                 return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Folder To Playlist.
+        /// </summary>
+        public static string ToolTipAddFolderToPlaylist {
+            get {
+                return ResourceManager.GetString("ToolTipAddFolderToPlaylist", resourceCulture);
             }
         }
         
