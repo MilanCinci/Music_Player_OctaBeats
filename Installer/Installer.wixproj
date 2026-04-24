@@ -6,7 +6,7 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>47187d52-2e95-47e1-b52f-6f2cd80931a1</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>OctaBeats-Setup-1.0.0</OutputName>
+    <OutputName>OctaBeats-Setup-1.0.1</OutputName>
     <OutputType>Package</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
