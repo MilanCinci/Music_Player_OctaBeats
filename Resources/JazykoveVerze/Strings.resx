@@ -135,6 +135,7 @@
   </data>
   <data name="Exit" xml:space="preserve">
     <value>Exit</value>
+    <comment>Obecne Zavrit aplikaci</comment>
   </data>
   <data name="File" xml:space="preserve">
     <value>File</value>
@@ -158,9 +159,11 @@
   </data>
   <data name="Pause" xml:space="preserve">
     <value>Pause</value>
+    <comment>Obecne Pozastavit</comment>
   </data>
   <data name="Play" xml:space="preserve">
     <value>Play</value>
+    <comment>Obecne Prehrat</comment>
   </data>
   <data name="Playlists" xml:space="preserve">
     <value>Playlists</value>
@@ -188,7 +191,7 @@
   </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>
-    <comment>Tooltip text</comment>
+    <comment>Tooltip KnihovnaView</comment>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
@@ -204,6 +207,7 @@
   </data>
   <data name="Stop" xml:space="preserve">
     <value>Stop</value>
+    <comment>Obecne Zastavit</comment>
   </data>
   <data name="ShowLibrary" xml:space="preserve">
     <value>Show Library</value>
@@ -404,5 +408,37 @@
   <data name="ToolTipAddFolderToPlaylist" xml:space="preserve">
     <value>Add Folder To Playlist</value>
     <comment>Tooltip PlayliEditorDialogView</comment>
+  </data>
+  <data name="ToolTipSortLibrary" xml:space="preserve">
+    <value>Sort</value>
+    <comment>ToolTip KnihovnaView</comment>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sort</value>
+    <comment>Obecne Seradit</comment>
+  </data>
+  <data name="SortNameAsc" xml:space="preserve">
+    <value>Name Ascending</value>
+    <comment>Typ razeni nazev vzestupne</comment>
+  </data>
+  <data name="SortAlbumAsc" xml:space="preserve">
+    <value>Album Ascending</value>
+    <comment>Typ razeni album vzestupne</comment>
+  </data>
+  <data name="SortArtistAsc" xml:space="preserve">
+    <value>Artist Ascending</value>
+    <comment>Typ razeni interpret vzestupne</comment>
+  </data>
+  <data name="SortNameDesc" xml:space="preserve">
+    <value>Name Descending</value>
+    <comment>Typ razeni nazev sestupně</comment>
+  </data>
+  <data name="SortAlbumDesc" xml:space="preserve">
+    <value>Album Descending</value>
+    <comment>Typ razeni album sestupně</comment>
+  </data>
+  <data name="SortArtistDesc" xml:space="preserve">
+    <value>Artist Descending</value>
+    <comment>Typ razeni interpret sestupně</comment>
   </data>
 </root>

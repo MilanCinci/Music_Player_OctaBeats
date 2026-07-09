@@ -24,6 +24,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <!-- TextBox pro vyhledávání -->
@@ -57,6 +58,87 @@
                       DisplayMemberPath="Value"
                       IsEnabled="{Binding VybranyPlaylist, Converter={StaticResource NullToBoolConverter}}" VerticalContentAlignment="Center">
             </ComboBox>
+
+            <!-- Tlačítko seřadit -->
+            <Button x:Name="BtnSerad"
+                    Grid.Column="2"
+                    MinWidth="50"
+                    Height="28"
+                    Content="{Binding [Sort]}" 
+                    Click="BtnSerad_Click"
+                    ToolTip="{Binding [ToolTipSortLibrary]}"
+                    Style="{StaticResource AppButtonStyle}" Margin="8,0,0,0"/>
+
+            <!-- Popup menu s nabídkou typů seřazení -->
+            <Popup x:Name="SortPopup"
+                   PlacementTarget="{Binding ElementName=BtnSerad}"
+                   Placement="Bottom"
+                   StaysOpen="False"
+                   AllowsTransparency="True">
+
+                <Border Background="{DynamicResource SecondaryBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="3">
+
+                    <!-- Typy seřazení -->
+                    <ItemsControl ItemsSource="{Binding TypySerazeni}">
+
+                        <ItemsControl.ItemTemplate>
+
+                            <DataTemplate>
+
+                                <Button Style="{StaticResource PopupMenuButton}"
+                                        Command="{Binding DataContext.ChangeSortCommand,
+                                                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding Key}">
+
+                                    <DockPanel>
+
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style BasedOn="{StaticResource PopupCheckMark}"
+                                                            TargetType="TextBlock">
+
+                                                    <Style.Triggers>
+
+                                                        <DataTrigger Value="True">
+
+                                                            <DataTrigger.Binding>
+                                                                <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                                    <Binding Path="Key"/>
+                                                                    <Binding Path="DataContext.VybranyTypSerazeni"
+                                         RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                                                                </MultiBinding>
+                                                            </DataTrigger.Binding>
+
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+
+                                                        </DataTrigger>
+
+                                                    </Style.Triggers>
+
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <TextBlock Text="{Binding Value}"/>
+
+                                    </DockPanel>
+
+                                </Button>
+
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+
+                    </ItemsControl>
+
+                </Border>
+
+            </Popup>
         </Grid>
 
         <Border Grid.Row="1"

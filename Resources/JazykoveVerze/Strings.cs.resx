@@ -336,4 +336,28 @@
   <data name="ToolTipAddFolderToPlaylist" xml:space="preserve">
     <value>Přidat složku do playlistu</value>
   </data>
+  <data name="ToolTipSortLibrary" xml:space="preserve">
+    <value>Seřazení</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Seřadit</value>
+  </data>
+  <data name="SortNameAsc" xml:space="preserve">
+    <value>Název vzestupně</value>
+  </data>
+  <data name="SortAlbumAsc" xml:space="preserve">
+    <value>Album vzestupně</value>
+  </data>
+  <data name="SortArtistAsc" xml:space="preserve">
+    <value>Interpret vzestupně</value>
+  </data>
+  <data name="SortNameDesc" xml:space="preserve">
+    <value>Název sestupně</value>
+  </data>
+  <data name="SortAlbumDesc" xml:space="preserve">
+    <value>Album sestupně</value>
+  </data>
+  <data name="SortArtistDesc" xml:space="preserve">
+    <value>Interpret sestupně</value>
+  </data>
 </root>

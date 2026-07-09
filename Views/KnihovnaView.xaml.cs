@@ -103,5 +103,15 @@ namespace Hudebni_Prehravac_OctaBeats.Views
                 }
             }
         }
+
+        /// <summary>
+        /// Metoda slouží k zobrazení Popup menu pro řazení skladeb v knihovně
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">eventArgs</param>
+        private void BtnSerad_Click(object sender, RoutedEventArgs e)
+        {
+            SortPopup.IsOpen = true;
+        }
     }
 }

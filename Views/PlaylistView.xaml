@@ -110,7 +110,7 @@
 
                     <!-- Tlačítko Zobrazit knihovnu -->
                     <StackPanel Grid.Row="3">
-                        <Button Content="{Binding [ShowLibrary]}" 
+                        <Button Content="{Binding [ShowLibrary]}"
                             Style="{StaticResource AppButtonStyle}"
                             Command="{Binding ResetVyberCommand}"
                             Margin="5" 

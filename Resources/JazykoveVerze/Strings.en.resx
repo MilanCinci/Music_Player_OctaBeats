@@ -336,4 +336,28 @@
   <data name="ToolTipAddFolderToPlaylist" xml:space="preserve">
     <value>Add Folder To Playlist</value>
   </data>
+  <data name="ToolTipSortLibrary" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="SortNameAsc" xml:space="preserve">
+    <value>Name Ascending</value>
+  </data>
+  <data name="SortAlbumAsc" xml:space="preserve">
+    <value>Album Ascending</value>
+  </data>
+  <data name="SortArtistAsc" xml:space="preserve">
+    <value>Artist Ascending</value>
+  </data>
+  <data name="SortNameDesc" xml:space="preserve">
+    <value>Name Descending</value>
+  </data>
+  <data name="SortAlbumDesc" xml:space="preserve">
+    <value>Album Descending</value>
+  </data>
+  <data name="SortArtistDesc" xml:space="preserve">
+    <value>Artist Descending</value>
+  </data>
 </root>

@@ -12,6 +12,9 @@ using Hudebni_Prehravac_OctaBeats.Persistence;
 using System.Windows;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using System.IO;
+using System.ComponentModel;
+using System.Windows.Data;
+using System.Windows.Markup.Localizer;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
@@ -72,6 +75,18 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        private TypSerazeni vybranyTypSerazeni;
+        public TypSerazeni VybranyTypSerazeni
+        {
+            get => vybranyTypSerazeni;
+            set
+            {
+                vybranyTypSerazeni = value;
+                Serad();
+                OnPropertyChanged();
+            }
+        }
+
         private PlayList? vybranyPlaylist;
         public PlayList? VybranyPlaylist
         {
@@ -98,6 +113,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// Událost pro editaci metadat skladby
         /// </summary>
         public event Action<Song>? SkladbaEditacePozadovana;
+
 
         private Song? vybranaSkladba;
         public Song? VybranaSkladba
@@ -138,6 +154,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        private ObservableCollection<KeyValuePair<TypSerazeni, string>> typySerazeni;
+        public ObservableCollection<KeyValuePair<TypSerazeni, string>> TypySerazeni
+        {
+            get => typySerazeni;
+            set
+            {
+                typySerazeni = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Delegování indexeru na službu, která je už implementována v ILokalizaceService
         public string this[string key] => LokalizaceService[key];
 
@@ -145,7 +172,8 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand AddSongCommand { get; }
         public ICommand RemoveSongCommand { get; }
         public ICommand EditMetadataCommand { get; }
-        public ICommand AddFolderCommand {  get; }
+        public ICommand AddFolderCommand { get; }
+        public ICommand ChangeSortCommand { get; }
 
         /// <summary>
         /// Parametrický konstruktor pro inicializaci
@@ -158,14 +186,14 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             LokalizaceService = lokalizaceService;
             _knihovnaService = knihovnaService;
             DialogService = dialogService;
-           
+
             AddSongCommand = new AsyncRelayCommand(PridejSkladbuDoKnihovny);
             RemoveSongCommand = new RelayCommand(
                  param => OdeberVybranouSkladbuZKnihovny(param),
                  param => VybranyPlaylist == null && (param is Song || VybranaSkladba != null)
             );
 
-            EditMetadataCommand = new RelayCommand(param => 
+            EditMetadataCommand = new RelayCommand(param =>
             {
                 if (param is Song song)
                 {
@@ -175,8 +203,17 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
             AddFolderCommand = new AsyncRelayCommand(PridejSlozkuDoKnihovny);
 
-            // Výchozí typ vyhledávání
+            ChangeSortCommand = new RelayCommand(param =>
+            {
+                if (param is TypSerazeni typSerazeni)
+                {
+                    VybranyTypSerazeni = typSerazeni;
+                }
+            });
+
+            // Výchozí typ vyhledávání a seřazení
             VybranyTypVyhledavani = TypVyhledavani.Nazev;
+            VybranyTypSerazeni = TypSerazeni.NazevAsc;
 
             // Asynchronní inicializace knihovny
             _ = InicializujAsync();
@@ -224,13 +261,15 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                     foreach (Song skladba in VybranyPlaylist.Skladby)
                     {
                         VyfiltrovaneSkladby.Add(skladba);
-                    }
+                    }                   
                 }
 
                 else if (Skladby != null)
                 {
                     Vyfiltruj();
                 }
+
+                Serad();
             }
 
             catch (Exception ex)
@@ -301,6 +340,64 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "Error occurred while filtering songs!", nameof(Vyfiltruj));
+                DialogService.ShowError(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k seřazení skladeb v knihovně podle zvoleného kritéria
+        /// </summary>
+        private void Serad()
+        {
+            if(Skladby == null || VyfiltrovaneSkladby == null || Skladby.Count <= 1 || VyfiltrovaneSkladby.Count <= 1)
+            {
+                return;
+            }
+
+            try
+            {
+                ICollectionView view = CollectionViewSource.GetDefaultView(VyfiltrovaneSkladby);
+                view.SortDescriptions.Clear();
+
+                switch (VybranyTypSerazeni)
+                {
+                    case TypSerazeni.NazevAsc:
+                        view.SortDescriptions.Add(new SortDescription(nameof(Song.Nazev), ListSortDirection.Ascending));
+                        VyfiltrovaneSkladby = new ObservableCollection<Song>(VyfiltrovaneSkladby.OrderBy(key => key.Nazev));
+                        break;
+
+                    case TypSerazeni.NazevDesc:
+                        view.SortDescriptions.Add(new SortDescription(nameof(Song.Nazev), ListSortDirection.Descending));
+                        VyfiltrovaneSkladby = new ObservableCollection<Song>(VyfiltrovaneSkladby.OrderByDescending(key => key.Nazev));
+                        break;
+
+                    case TypSerazeni.InterpretAsc:
+                        view.SortDescriptions.Add(new SortDescription(nameof(Song.Interpret), ListSortDirection.Ascending));
+                        VyfiltrovaneSkladby = new ObservableCollection<Song>(VyfiltrovaneSkladby.OrderBy(key => key.Interpret));
+                        break;
+
+                    case TypSerazeni.InterpretDesc:
+                        view.SortDescriptions.Add(new SortDescription(nameof(Song.Interpret), ListSortDirection.Descending));
+                        VyfiltrovaneSkladby = new ObservableCollection<Song>(VyfiltrovaneSkladby.OrderByDescending(key => key.Interpret));
+                        break;
+
+                    case TypSerazeni.AlbumAsc:
+                        view.SortDescriptions.Add(new SortDescription(nameof(Song.Album), ListSortDirection.Ascending));
+                        VyfiltrovaneSkladby = new ObservableCollection<Song>(VyfiltrovaneSkladby.OrderBy(key => key.Album));
+                        break;
+
+                    case TypSerazeni.AlbumDesc:
+                        view.SortDescriptions.Add(new SortDescription(nameof(Song.Album), ListSortDirection.Descending));
+                        VyfiltrovaneSkladby = new ObservableCollection<Song>(VyfiltrovaneSkladby.OrderByDescending(key => key.Album));
+                        break;
+                }
+
+                view.Refresh();
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while sorting songs!", nameof(Serad));
                 DialogService.ShowError(ex.Message);
             }
         }
@@ -480,16 +577,29 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public void RefreshLokalizace()
         {
             // Uložení aktuálně vybraného typu
-            TypVyhledavani puvodniTyp = VybranyTypVyhledavani;
+            TypVyhledavani puvodniTypVyhledavani = VybranyTypVyhledavani;
+            TypSerazeni puvodniTypSerazeni = VybranyTypSerazeni;
 
-            // Vygenerování nové kolekci s korektními překlady
+            // Vygenerování nových kolekcí s korektními překlady
             TypyVyhledavani = new ObservableCollection<KeyValuePair<TypVyhledavani, string>>
             {
                 new KeyValuePair<TypVyhledavani, string>(TypVyhledavani.Nazev, LokalizaceService["Name"]),
-                new KeyValuePair<TypVyhledavani, string>(TypVyhledavani.Interpret, LokalizaceService["Artist"])
+                new KeyValuePair<TypVyhledavani, string>(TypVyhledavani.Interpret, LokalizaceService["Artist"]),
+                new KeyValuePair<TypVyhledavani, string>(TypVyhledavani.Zanr, LokalizaceService["Genre"])
             };
 
-            VybranyTypVyhledavani = puvodniTyp;
+            TypySerazeni = new ObservableCollection<KeyValuePair<TypSerazeni, string>>
+            {
+                new KeyValuePair<TypSerazeni, string>(TypSerazeni.NazevAsc, LokalizaceService["SortNameAsc"]),
+                new KeyValuePair<TypSerazeni, string>(TypSerazeni.NazevDesc, LokalizaceService["SortNameDesc"]),
+                new KeyValuePair<TypSerazeni, string>(TypSerazeni.InterpretAsc, LokalizaceService["SortArtistAsc"]),
+                new KeyValuePair<TypSerazeni, string>(TypSerazeni.InterpretDesc, LokalizaceService["SortArtistDesc"]),
+                new KeyValuePair<TypSerazeni, string>(TypSerazeni.AlbumAsc, LokalizaceService["SortAlbumAsc"]),
+                new KeyValuePair<TypSerazeni, string>(TypSerazeni.AlbumDesc, LokalizaceService["SortAlbumDesc"])
+            };
+            
+            VybranyTypVyhledavani = puvodniTypVyhledavani;
+            VybranyTypSerazeni = puvodniTypSerazeni;
 
             if (VybranyPlaylist != null)
             {

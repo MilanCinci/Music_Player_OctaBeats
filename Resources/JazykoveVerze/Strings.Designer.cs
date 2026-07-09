@@ -637,6 +637,69 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sort.
+        /// </summary>
+        public static string Sort {
+            get {
+                return ResourceManager.GetString("Sort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Album Ascending.
+        /// </summary>
+        public static string SortAlbumAsc {
+            get {
+                return ResourceManager.GetString("SortAlbumAsc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Album Descending.
+        /// </summary>
+        public static string SortAlbumDesc {
+            get {
+                return ResourceManager.GetString("SortAlbumDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Artist Ascending.
+        /// </summary>
+        public static string SortArtistAsc {
+            get {
+                return ResourceManager.GetString("SortArtistAsc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Artist Descending.
+        /// </summary>
+        public static string SortArtistDesc {
+            get {
+                return ResourceManager.GetString("SortArtistDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name Ascending.
+        /// </summary>
+        public static string SortNameAsc {
+            get {
+                return ResourceManager.GetString("SortNameAsc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name Descending.
+        /// </summary>
+        public static string SortNameDesc {
+            get {
+                return ResourceManager.GetString("SortNameDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Source.
         /// </summary>
         public static string Source {
@@ -687,6 +750,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string ToolTipRemoveFromPlaylist {
             get {
                 return ResourceManager.GetString("ToolTipRemoveFromPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort.
+        /// </summary>
+        public static string ToolTipSortLibrary {
+            get {
+                return ResourceManager.GetString("ToolTipSortLibrary", resourceCulture);
             }
         }
         

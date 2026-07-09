@@ -11,6 +11,8 @@
         
         <lokCon:LokalizaceConverter x:Key="LokalizaceConv" LokalizaceService="{StaticResource LokalizaceService}"/>
 
+        <lokCon:EqualityConverter x:Key="EqualityConverter"/>
+
         <!-- Vlastní vzhled aplikace Světlý/Tmavý režim -->
         <ResourceDictionary x:Key="AppTheme">
             <ResourceDictionary.MergedDictionaries>
@@ -782,6 +784,7 @@
             <Setter Property="Padding" Value="10,5"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBox}">
@@ -1245,7 +1248,7 @@
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
-                            <!-- BOX -->
+                            <!-- Box -->
                             <Border x:Name="Box"
                             Width="19" Height="19"
                             CornerRadius="4"
@@ -1254,7 +1257,7 @@
                             BorderThickness="1"
                             VerticalAlignment="Center">
 
-                                <!-- CHECK -->
+                                <!-- Check-->
                                 <Grid>
                                     <Path x:Name="CheckMark"
                                   Data="M 3 9 L 7 13 L 15 5"
@@ -1266,13 +1269,13 @@
                                 </Grid>
                             </Border>
 
-                            <!-- TEXT -->
+                            <!-- Text -->
                             <ContentPresenter Margin="6,0,0,0"
                                       VerticalAlignment="Center"/>
 
                         </StackPanel>
 
-                        <!-- TRIGGERS -->
+                        <!-- Triggery -->
                         <ControlTemplate.Triggers>
 
                             <!-- Checked -->
@@ -1297,6 +1300,101 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!-- Vlastní styl pro PopupMenuButton -->
+        <Style x:Key="PopupMenuButton"
+       TargetType="Button">
+
+            <Setter Property="Padding"
+            Value="10,8"/>
+
+            <Setter Property="Margin"
+            Value="2,1"/>
+
+            <Setter Property="Background"
+            Value="Transparent"/>
+
+            <Setter Property="Foreground"
+            Value="{DynamicResource PrimaryTextBrush}"/>
+
+            <Setter Property="HorizontalContentAlignment"
+            Value="Left"/>
+
+            <Setter Property="VerticalContentAlignment"
+            Value="Center"/>
+
+            <Setter Property="BorderThickness"
+            Value="0"/>
+
+            <Setter Property="Cursor"
+            Value="Hand"/>
+
+            <Setter Property="Template">
+
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="Button">
+
+                        <Border x:Name="Bd"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="4"
+                        SnapsToDevicePixels="True">
+
+                            <ContentPresenter
+                        Margin="{TemplateBinding Padding}"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver"
+                             Value="True">
+                                <Setter TargetName="Bd"
+                                Property="Background"
+                                Value="{DynamicResource HoverBrush}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed"
+                             Value="True">
+                                <Setter TargetName="Bd"
+                                Property="Background"
+                                Value="{DynamicResource ComboBoxItemClickedBrush}"/>
+                                <Setter Property="Foreground"
+                                Value="White"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled"
+                             Value="False">
+                                <Setter Property="Foreground"
+                                Value="{DynamicResource DisabledTextBrush}"/>
+                                <Setter TargetName="Bd"
+                                Property="Opacity"
+                                Value="0.5"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+
+            </Setter>
+
+        </Style>
+
+        <!-- Vlastní styl pro CheckMark -->
+        <Style x:Key="PopupCheckMark"
+           TargetType="TextBlock">
+
+            <Setter Property="Text" Value="✔"/>
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+
         </Style>
     </Application.Resources>
 </Application>
