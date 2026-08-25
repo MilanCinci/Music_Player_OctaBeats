@@ -36,6 +36,7 @@ Hlavní okno aplikace v tmavém a světlém režimu.
 - 🖼️ Práce s přebalem alba
 - 🌍 Lokalizace aplikace
 - 🌙 Světlý a tmavý režim
+- 🎚️ Ekvalizér
 
 ---
 
@@ -79,6 +80,7 @@ The main application window in both dark and light modes.
 - 🖼️ Album cover support
 - 🌍 Localization (multi-language support)
 - 🌙 Light / Dark mode
+- 🎚️ Equalizer
 
 ---
 
