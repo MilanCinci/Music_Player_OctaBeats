@@ -26,6 +26,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public ObservableCollection<Language> DostupneJazyky { get;}
 
+        /// <summary>
+        /// Aktuálně vybraný jazyková verze
+        /// </summary>
         private Language? vybranyJazyk;
         public Language? VybranyJazyk
         {

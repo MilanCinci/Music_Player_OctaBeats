@@ -34,6 +34,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public ObservableCollection<PlayList>? Playlisty { get; set; }
 
+        /// <summary>
+        /// Aktuálně vybraný uživatelský playlist
+        /// </summary>
         private PlayList? vybranyPlaylist;
         public PlayList? VybranyPlaylist
         {
@@ -46,6 +49,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Nový název vybraného playlistu
+        /// </summary>
         private string? novyNazevPlaylistu;
         public string? NovyNazevPlaylistu
         {
@@ -349,7 +355,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
 
                         MetadataService metadata = new MetadataService(_lokalizaceService);
 
-                        // // Rozdělení do HashSetu
+                        // Rozdělení do HashSetu
                         var existujici = VybranyPlaylist.Skladby
                             .Select(s => (
                                 Interpret: (s.Interpret ?? "").Trim().ToLower(),

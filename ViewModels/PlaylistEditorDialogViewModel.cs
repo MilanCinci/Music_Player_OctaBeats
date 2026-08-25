@@ -50,6 +50,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public Song? VybranaPlaylistSkladba { get; set; }
 
+        /// <summary>
+        /// Název vybraného playlistu
+        /// </summary>
         private string? nazevPlaylistu;
         public string? NazevPlaylistu
         {
@@ -61,6 +64,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Určuje, zda je povolené kompaktní zobrazení skladeb
+        /// </summary>
         private bool compactMode;
         public bool CompactMode
         {

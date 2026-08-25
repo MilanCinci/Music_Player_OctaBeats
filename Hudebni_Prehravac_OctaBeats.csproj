@@ -13,6 +13,8 @@
     <None Remove="Resources\Obrazky\Ikona_App_Theme.png" />
     <None Remove="Resources\Obrazky\Ikona_Dalsi.png" />
     <None Remove="Resources\Obrazky\Ikona_Dalsi_Dark.png" />
+    <None Remove="Resources\Obrazky\Ikona_Ekvalizer.ico" />
+    <None Remove="Resources\Obrazky\Ikona_Ekvalizer.png" />
     <None Remove="Resources\Obrazky\Ikona_Error_Image.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost._Frame_1.png" />
     <None Remove="Resources\Obrazky\Ikona_Hlasitost._Frame_2.png" />
@@ -61,6 +63,12 @@
 
   <ItemGroup>
     <Resource Include="Resources\Obrazky\Ikona_Dalsi_Dark.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Ekvalizer.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Obrazky\Ikona_Ekvalizer.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Obrazky\Ikona_Hlasitost_Frame_1_Dark.png">

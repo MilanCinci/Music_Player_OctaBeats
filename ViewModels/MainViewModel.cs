@@ -4,6 +4,7 @@ using Hudebni_Prehravac_OctaBeats.Persistence;
 using Hudebni_Prehravac_OctaBeats.Services;
 using Hudebni_Prehravac_OctaBeats.Services.Audio;
 using Hudebni_Prehravac_OctaBeats.Services.Dialog;
+using Hudebni_Prehravac_OctaBeats.Services.Ekvalizer;
 using Hudebni_Prehravac_OctaBeats.Services.Historie;
 using Hudebni_Prehravac_OctaBeats.Services.KnihovnaSkladeb;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
@@ -13,6 +14,7 @@ using Hudebni_Prehravac_OctaBeats.Services.Playlist;
 using Hudebni_Prehravac_OctaBeats.Views;
 using Microsoft.Win32;
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
@@ -33,6 +35,12 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         private readonly IKnihovnaService _knihovnaService;
         private readonly ILokalizaceService _lokalizaceService;
         private readonly IDialogService _dialogService;
+        private readonly INastaveniEkvalizeruService _nastaveniEkvalizeruService;
+
+        /// <summary>
+        /// Nastavení ekvalizéru
+        /// </summary>
+        private NastaveniEkvalizer nastaveniEkvalizer;
 
         /// <summary>
         /// Výchozí název zdroje přehrávání, pokud není uveden
@@ -50,6 +58,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public ICommand ChangeThemeCommand { get; }
         public ICommand OpenWebsiteCommand { get; }
         public ICommand AddFolderToPlaylistCommand { get; }
+        public ICommand OpenEqualizerCommand { get; }
 
         /// <summary>
         /// ViewModel přehrávače
@@ -77,6 +86,11 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         public NastaveniJazykViewModel NastaveniJazykVM { get; }
 
         /// <summary>
+        /// ViewModel ekvalizéru
+        /// </summary>
+        public EkvalizerViewModel EkvalizerVM { get; }
+
+        /// <summary>
         /// Bezparametrický konstruktor pro inicializaci
         /// </summary>
         public MainViewModel()
@@ -90,6 +104,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             _audioService = new AudioService(_lokalizaceService);
             _nastaveniAudiaService = new NastaveniAudiaService();
             _knihovnaService = new KnihovnaService(_lokalizaceService, _dialogService);
+            _nastaveniEkvalizeruService = new NastaveniEkvalizeruService();
 
             PrehravacVM = new PrehravacViewModel(
                 _audioService,
@@ -102,6 +117,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             KnihovnaVM = new KnihovnaViewModel(_knihovnaService, _lokalizaceService, _dialogService);
             HistoryVM = new HistoryViewModel(_historieService, _lokalizaceService, _dialogService);
             NastaveniJazykVM = new NastaveniJazykViewModel(_lokalizaceService, _dialogService);
+            EkvalizerVM = new EkvalizerViewModel(_lokalizaceService, _dialogService, _audioService, _nastaveniEkvalizeruService);
 
             // Načtení a nastavení jazyka z Application Properties
             string ulozenyJazyk = Properties.Settings.Default.Language;
@@ -110,9 +126,6 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             // Načtení a nastavení vzhledu aplikace z Application Properties
             bool jeTmavyRezim = Properties.Settings.Default.IsDarkMode;
             ZmenVzhledAplikace(jeTmavyRezim);
-
-            // Prvotní načtení správně přeložených ComboBoxItemů
-            KnihovnaVM.RefreshLokalizace();
 
             // Propojení playlistů s knihovnou
             PlaylistVM.PropertyChanged += (s, e) =>
@@ -173,6 +186,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             ChangeThemeCommand = new RelayCommand(vzhled => ZmenVzhledAplikace(vzhled));
             OpenWebsiteCommand = new RelayCommand(_ => OtevriOAplikaciWeb());
             AddFolderToPlaylistCommand = PlaylistVM.AddFolderCommand;
+            OpenEqualizerCommand = new RelayCommand(_ => OtevriEkvalizer());
         }
 
         /// <summary>
@@ -388,7 +402,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// <summary>
         /// Metoda slouží k otevření dialogu pro úpravu jazyka aplikace
         /// </summary>
-        private void OtevriNastaveniJazyka()
+        public void OtevriNastaveniJazyka()
         {
             try
             {
@@ -425,6 +439,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                         PrehravacVM.RefreshLokalizace();
                         HistoryVM.RefreshLokalizace();
                         KnihovnaVM.RefreshLokalizace();
+                        EkvalizerVM.RefreshLokalizace();
                     }
 
                     dialog.Close();
@@ -436,6 +451,53 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "", nameof(OtevriNastaveniJazyka));
+                _dialogService.ShowError(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Metoda slouží k otevření dialogu ekvalizéru
+        /// </summary>
+        public void OtevriEkvalizer()
+        {
+            try
+            {
+                EkvalizerView dialog = new EkvalizerView
+                {
+                    DataContext = EkvalizerVM,
+                    Owner = Application.Current.MainWindow
+                };
+
+                EkvalizerVM.ZavritDialog += async potvrdit =>
+                {
+                    if (potvrdit)
+                    {
+                       if(EkvalizerVM.PasmaEkvalizeru == null || EkvalizerVM.PasmaEkvalizeru.Count == 0)
+                       {
+                            throw new NullReferenceException();
+                       }
+
+                        nastaveniEkvalizer = new NastaveniEkvalizer(EkvalizerVM.JeEkvalizerZapnuty, EkvalizerVM.PasmaEkvalizeru.ToList(), 
+                                                                    EkvalizerVM.VybranyTypPrednastaveni);
+
+                        await _nastaveniEkvalizeruService.Save(nastaveniEkvalizer);
+                        EkvalizerVM.AktualizujEkvalizer();
+                    }
+
+                    else
+                    {
+                        await EkvalizerVM.InicializujAsync();
+                    }
+
+                        dialog.Close();
+                };
+
+                dialog.Show();
+            }
+
+            catch (Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "", nameof(OtevriEkvalizer));
                 _dialogService.ShowError(ex.Message);
             }
         }
@@ -595,6 +657,7 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
                 KnihovnaVM.RefreshLokalizace();
                 PrehravacVM.RefreshLokalizace();
                 HistoryVM.RefreshLokalizace();
+                EkvalizerVM.RefreshLokalizace();
             }
 
             catch (Exception ex)

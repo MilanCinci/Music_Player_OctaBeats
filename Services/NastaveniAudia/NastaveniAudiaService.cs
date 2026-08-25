@@ -62,6 +62,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.NastaveniAudia
             catch (Exception ex)
             {
                 SpravaSouboru.LogError(ex, "", nameof(Save));
+                throw;
             }
         }
     }

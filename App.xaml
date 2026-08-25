@@ -521,6 +521,87 @@
             </Setter>
         </Style>
 
+        <!-- Vlastní styl slideru ekvalizéru -->
+        <Style x:Key="SliderStyleEqualizer" TargetType="Slider">
+            <Setter Property="Background" Value="{DynamicResource SliderBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SliderForegroundBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Orientation" Value="Vertical"/>
+            <Setter Property="IsMoveToPointEnabled" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid HorizontalAlignment="Center" Width="20" Background="Transparent">
+                            <Border x:Name="TrackBackground" 
+                            Width="6" 
+                            CornerRadius="2" 
+                            Background="{TemplateBinding Background}"/>
+
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Width="6" CornerRadius="2" 
+                                                Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Slider}}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Width="6" Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Grid Width="12" Height="18">
+                                                    <Border CornerRadius="3"
+                                                    Background="{DynamicResource SliderEqualizerThumbColor}"
+                                                            x:Name="ThumbBorder"/>
+
+                                                    <Rectangle Height="2"
+                                                       Margin="3,0"
+                                                       VerticalAlignment="Center"
+                                                       Fill="{DynamicResource SecondaryBackgroundBrush}"/>
+                                                </Grid>
+
+                                                <ControlTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Slider}}" Value="True">
+                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource SliderForegroundBrush}"/>
+                                                    </DataTrigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground">
+                                    <Setter.Value>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="{DynamicResource EqualizerGradientStopFirst}"/>
+                                            <GradientStop Color="{DynamicResource EqualizerGradientStopSecond}" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <!-- Vlastní styl pro zobrazení chybové hlášky IDataErrorInfo -->
         <ControlTemplate x:Key="ErrorTemplate">

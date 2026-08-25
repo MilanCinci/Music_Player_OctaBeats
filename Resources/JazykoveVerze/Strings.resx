@@ -441,4 +441,68 @@
     <value>Artist Descending</value>
     <comment>Typ razeni interpret sestupně</comment>
   </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+    <comment>Obecne Povolen</comment>
+  </data>
+  <data name="PresetCustom" xml:space="preserve">
+    <value>Custom</value>
+    <comment>Typ prednastaveni Custom</comment>
+  </data>
+  <data name="PresetRock" xml:space="preserve">
+    <value>Rock</value>
+    <comment>Typ prednastaveni Rock</comment>
+  </data>
+  <data name="PresetPop" xml:space="preserve">
+    <value>Pop</value>
+    <comment>Typ prednastaveni Pop</comment>
+  </data>
+  <data name="PresetReggae" xml:space="preserve">
+    <value>Reggae</value>
+    <comment>Typ prednastaveni Reggae</comment>
+  </data>
+  <data name="PresetTechno" xml:space="preserve">
+    <value>Techno</value>
+    <comment>Typ prednastaveni Techno</comment>
+  </data>
+  <data name="PresetSka" xml:space="preserve">
+    <value>Ska</value>
+    <comment>Typ prednastaveni Ska</comment>
+  </data>
+  <data name="PresetClassical" xml:space="preserve">
+    <value>Classical</value>
+    <comment>Typ prednastaveni Classical</comment>
+  </data>
+  <data name="PresetClub" xml:space="preserve">
+    <value>Club</value>
+    <comment>Typ prednastaveni Club</comment>
+  </data>
+  <data name="PresetDance" xml:space="preserve">
+    <value>Dance</value>
+    <comment>Typ prednastaveni Dance</comment>
+  </data>
+  <data name="PresetHeadphones" xml:space="preserve">
+    <value>Headphones</value>
+    <comment>Typ prednastaveni Headphones</comment>
+  </data>
+  <data name="PresetVocal" xml:space="preserve">
+    <value>Vocal</value>
+    <comment>Typ prednastaveni Vocal</comment>
+  </data>
+  <data name="Preset" xml:space="preserve">
+    <value>Preset: </value>
+    <comment>Obecne Prednastaveni</comment>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+    <comment>Obecne Uložit</comment>
+  </data>
+  <data name="Equalizer" xml:space="preserve">
+    <value>Equalizer</value>
+    <comment>Obecne Ekavlizer</comment>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>MenuItem Nastroje</value>
+    <comment>Obecne Nastroje</comment>
+  </data>
 </root>

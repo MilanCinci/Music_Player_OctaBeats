@@ -1,0 +1,42 @@
+﻿using Hudebni_Prehravac_OctaBeats.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace Hudebni_Prehravac_OctaBeats.Views
+{
+    /// <summary>
+    /// View, které je vázané na EkvalizerViewModel
+    /// </summary>
+    public partial class EkvalizerView : Window
+    {
+        public EkvalizerView()
+        {
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// Metoda slouží k aktualizaci pásem ekvalizéru při pohybu slideru
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">eventArgs</param>
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(DataContext is EkvalizerViewModel vm)
+            {
+                vm.AktualizujEkvalizer();
+                vm.NastavVlastniPrednastaveni();
+            }
+        }
+    }
+}

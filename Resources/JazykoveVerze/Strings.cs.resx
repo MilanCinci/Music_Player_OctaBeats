@@ -360,4 +360,52 @@
   <data name="SortArtistDesc" xml:space="preserve">
     <value>Interpret sestupně</value>
   </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Povolen</value>
+  </data>
+  <data name="PresetCustom" xml:space="preserve">
+    <value>Vlastní</value>
+  </data>
+  <data name="PresetRock" xml:space="preserve">
+    <value>Rock</value>
+  </data>
+  <data name="PresetPop" xml:space="preserve">
+    <value>Pop</value>
+  </data>
+  <data name="PresetReggae" xml:space="preserve">
+    <value>Reggae</value>
+  </data>
+  <data name="PresetTechno" xml:space="preserve">
+    <value>Techno</value>
+  </data>
+  <data name="PresetSka" xml:space="preserve">
+    <value>Ska</value>
+  </data>
+  <data name="PresetClassical" xml:space="preserve">
+    <value>Klasika</value>
+  </data>
+  <data name="PresetClub" xml:space="preserve">
+    <value>Klub</value>
+  </data>
+  <data name="PresetDance" xml:space="preserve">
+    <value>Tanec</value>
+  </data>
+  <data name="PresetHeadphones" xml:space="preserve">
+    <value>Sluchátka</value>
+  </data>
+  <data name="PresetVocal" xml:space="preserve">
+    <value>Vokály</value>
+  </data>
+  <data name="Preset" xml:space="preserve">
+    <value>Přednastavení: </value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Uložit</value>
+  </data>
+  <data name="Equalizer" xml:space="preserve">
+    <value>Ekvalizér</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Nástroje</value>
+  </data>
 </root>

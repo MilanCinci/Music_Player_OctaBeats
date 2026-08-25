@@ -12,6 +12,9 @@ using System.Windows.Input;
 
 namespace Hudebni_Prehravac_OctaBeats.ViewModels
 {
+    /// <summary>
+    /// ViewModel pro obsluhu metod historie
+    /// </summary>
     public class HistoryViewModel : BaseViewModel
     {
         private readonly IHistorieService _historieService;
@@ -23,6 +26,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public ObservableCollection<HistoriePrehravani> Historie => ((HistoryService)_historieService).MojeHistorie;
 
+        /// <summary>
+        /// Aktuálně vybraný záznam historie
+        /// </summary>
         private HistoriePrehravani? vybranyZaznam;
         public HistoriePrehravani? VybranyZaznam
         {

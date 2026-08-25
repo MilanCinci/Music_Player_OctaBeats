@@ -63,6 +63,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private int aktualniIndex = -1;
 
+        /// <summary>
+        /// Určuje, zda se přehrává aktuálně vybraná skladba
+        /// </summary>
         private bool isPlaying;
         public bool IsPlaying
         {
@@ -74,6 +77,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Aktuální hlasitost
+        /// </summary>
         private float hlasitost;
         public float Hlasitost
         {
@@ -95,6 +101,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Název zdroje přehrávání
+        /// </summary>
         private string? zdrojPrehravani;
         public string? ZdrojPrehravani
         {
@@ -106,6 +115,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Aktuálně přehrávaná skladba
+        /// </summary>
         private Song? aktualniSkladba;
         public Song? AktualniSkladba
         {
@@ -117,6 +129,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Aktuální čas přehrávané skladby
+        /// </summary>
         private double aktualniCas;
         public double AktualniCas
         {
@@ -138,6 +153,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Celková délka přehrávané skladby
+        /// </summary>
         private double celkovaDelka;
         public double CelkovaDelka
         {

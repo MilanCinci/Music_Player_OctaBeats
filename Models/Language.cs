@@ -28,7 +28,7 @@ namespace Hudebni_Prehravac_OctaBeats.Models
         public Language() { }
 
         /// <summary>
-        /// Parametrický konstruktor pro inicializace
+        /// Parametrický konstruktor pro inicializaci
         /// </summary>
         /// <param name="nazev">Název jazyka</param>
         /// <param name="kod">Kód daného jazyka</param>

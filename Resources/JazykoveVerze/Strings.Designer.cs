@@ -196,6 +196,24 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enabled.
+        /// </summary>
+        public static string Enabled {
+            get {
+                return ResourceManager.GetString("Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Equalizer.
+        /// </summary>
+        public static string Equalizer {
+            get {
+                return ResourceManager.GetString("Equalizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Cannot Delete File.
         /// </summary>
         public static string ErrorCannotDeleteFile {
@@ -493,6 +511,114 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Preset: .
+        /// </summary>
+        public static string Preset {
+            get {
+                return ResourceManager.GetString("Preset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Classical.
+        /// </summary>
+        public static string PresetClassical {
+            get {
+                return ResourceManager.GetString("PresetClassical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Club.
+        /// </summary>
+        public static string PresetClub {
+            get {
+                return ResourceManager.GetString("PresetClub", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string PresetCustom {
+            get {
+                return ResourceManager.GetString("PresetCustom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dance.
+        /// </summary>
+        public static string PresetDance {
+            get {
+                return ResourceManager.GetString("PresetDance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Headphones.
+        /// </summary>
+        public static string PresetHeadphones {
+            get {
+                return ResourceManager.GetString("PresetHeadphones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pop.
+        /// </summary>
+        public static string PresetPop {
+            get {
+                return ResourceManager.GetString("PresetPop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reggae.
+        /// </summary>
+        public static string PresetReggae {
+            get {
+                return ResourceManager.GetString("PresetReggae", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rock.
+        /// </summary>
+        public static string PresetRock {
+            get {
+                return ResourceManager.GetString("PresetRock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ska.
+        /// </summary>
+        public static string PresetSka {
+            get {
+                return ResourceManager.GetString("PresetSka", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Techno.
+        /// </summary>
+        public static string PresetTechno {
+            get {
+                return ResourceManager.GetString("PresetTechno", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vocal.
+        /// </summary>
+        public static string PresetVocal {
+            get {
+                return ResourceManager.GetString("PresetVocal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete History.
         /// </summary>
         public static string QuestionDeleteHistory {
@@ -561,6 +687,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string RemoveSong {
             get {
                 return ResourceManager.GetString("RemoveSong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
             }
         }
         
@@ -714,6 +849,15 @@ namespace Hudebni_Prehravac_OctaBeats.Resources.JazykoveVerze {
         public static string Stop {
             get {
                 return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MenuItem Nastroje.
+        /// </summary>
+        public static string Tools {
+            get {
+                return ResourceManager.GetString("Tools", resourceCulture);
             }
         }
         

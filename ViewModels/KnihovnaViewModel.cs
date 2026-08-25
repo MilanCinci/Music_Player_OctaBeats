@@ -37,20 +37,37 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         private DateTime posledniVyber = DateTime.MinValue;
 
+        /// <summary>
+        /// Skladby v knihovně
+        /// </summary>
         private ObservableCollection<Song>? skladby;
         public ObservableCollection<Song>? Skladby
         {
             get => skladby;
-            set { skladby = value; OnPropertyChanged(); }
+            set 
+            { 
+                skladby = value; 
+                OnPropertyChanged(); 
+            }
         }
 
+        /// <summary>
+        /// Vyfiltrované skladby podle určitého kritéria
+        /// </summary>
         private ObservableCollection<Song>? vyfiltrovaneSkladby;        
         public ObservableCollection<Song>? VyfiltrovaneSkladby
         {
             get => vyfiltrovaneSkladby;
-            set { vyfiltrovaneSkladby = value; OnPropertyChanged(); }
+            set 
+            { 
+                vyfiltrovaneSkladby = value; 
+                OnPropertyChanged(); 
+            }
         }      
 
+        /// <summary>
+        /// Text pro filtrování
+        /// </summary>
         private string? vyhledavanyText;
         public string? VyhledavanyText
         {
@@ -63,6 +80,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Aktuálně vybraný typ vyhledávání
+        /// </summary>
         private TypVyhledavani vybranyTypVyhledavani;
         public TypVyhledavani VybranyTypVyhledavani
         {
@@ -75,6 +95,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Aktuálně vybraný typ seřazení
+        /// </summary>
         private TypSerazeni vybranyTypSerazeni;
         public TypSerazeni VybranyTypSerazeni
         {
@@ -87,6 +110,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Aktuálně vybraný uživatelský playlist
+        /// </summary>
         private PlayList? vybranyPlaylist;
         public PlayList? VybranyPlaylist
         {
@@ -114,7 +140,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
         /// </summary>
         public event Action<Song>? SkladbaEditacePozadovana;
 
-
+        /// <summary>
+        /// Aktuálně vybraná skladba v knihovně
+        /// </summary>
         private Song? vybranaSkladba;
         public Song? VybranaSkladba
         {
@@ -143,6 +171,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Jednotlivé typy vyhledávání
+        /// </summary>
         private ObservableCollection<KeyValuePair<TypVyhledavani, string>> typyVyhledavani;
         public ObservableCollection<KeyValuePair<TypVyhledavani, string>> TypyVyhledavani
         {
@@ -154,6 +185,9 @@ namespace Hudebni_Prehravac_OctaBeats.ViewModels
             }
         }
 
+        /// <summary>
+        /// Jednotlivé typy seřazení
+        /// </summary>
         private ObservableCollection<KeyValuePair<TypSerazeni, string>> typySerazeni;
         public ObservableCollection<KeyValuePair<TypSerazeni, string>> TypySerazeni
         {

@@ -26,7 +26,7 @@
             
             <!-- MenuItem Soubor -->
             <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[File]}">
-                
+
                 <!-- SubMenuItem Ukončit -->
                 <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[Exit]}" Command="{Binding ExitAppCommand}">
                     <MenuItem.Icon>
@@ -126,6 +126,17 @@
                             <Image Source="/Resources/Obrazky/Ikona_Tmavy_Rezim.png" Style="{StaticResource MenuItemIconStyle}"/>
                         </MenuItem.Icon>
                     </MenuItem>
+                </MenuItem>
+            </MenuItem>
+
+            <!-- MenuItem Nástroje -->
+            <MenuItem Style="{StaticResource ThemedMenuItem2}" Header="{Binding NastaveniJazykVM[Tools]}">
+
+                <!-- SubMenuItem Ekvalizér -->
+                <MenuItem Style="{StaticResource ThemedMenuItem3}" Header="{Binding NastaveniJazykVM[Equalizer]}" Command="{Binding OpenEqualizerCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/Obrazky/Ikona_Ekvalizer.png" Style="{StaticResource MenuItemIconStyle}"/>
+                    </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
 

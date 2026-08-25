@@ -1,8 +1,11 @@
-﻿using Hudebni_Prehravac_OctaBeats.Persistence;
+﻿using Hudebni_Prehravac_OctaBeats.Models;
+using Hudebni_Prehravac_OctaBeats.Persistence;
+using Hudebni_Prehravac_OctaBeats.Services.Ekvalizer;
 using Hudebni_Prehravac_OctaBeats.Services.Lokalizace;
 using Hudebni_Prehravac_OctaBeats.ViewModels;
 using NAudio.Wave;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
@@ -27,12 +30,17 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         private AudioFileReader? reader;
 
         /// <summary>
+        /// Vzorkování pro dynamickou změnu jednotlivých pásem ekvalizéru
+        /// </summary>
+        private EqualizerSampleProvider? ekvalizer;
+
+        /// <summary>
         /// Určuje, zda je přehrávání aktuálně pozastaveno
         /// </summary>
         private bool isPaused;
 
         /// <summary>
-        /// Příznak indikující, že zastavení přehrávání bylo vyvoláno manuálně uživatelem
+        /// Určuje, zda bylo pozastavení přehrávání vyvoláno manuálně uživatelem
         /// </summary>
         private bool manualStop;
 
@@ -62,6 +70,29 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         }
 
         /// <summary>
+        /// Určuje, zda je ekvalizér zapnutý
+        /// </summary>
+        private bool jeEkvalizerZapnuty = true;
+        public bool JeEkvalizerZapnuty
+        {
+            get => jeEkvalizerZapnuty;
+            set
+            {
+                jeEkvalizerZapnuty = value;
+
+                // Pokud je ekvalizér povolený, tak se předají aktuálně nastavená pásma ekvalizéru
+                if(ekvalizer != null)
+                {
+                    ekvalizer.IsEnabled = JeEkvalizerZapnuty;
+                    if(JeEkvalizerZapnuty && AktualniPasma != null && AktualniPasma.Count > 0)
+                    {
+                        UpdateEqualizer(AktualniPasma);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Aktuální čas přehrávání skladby
         /// </summary>
         public TimeSpan AktualniCas => reader?.CurrentTime ?? TimeSpan.Zero;
@@ -70,6 +101,11 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         /// Celkový čas trvání celé skladby
         /// </summary>
         public TimeSpan CelkovyCas => reader?.TotalTime ?? TimeSpan.Zero;
+
+        /// <summary>
+        /// Aktuálně nastavená pásma ekvalizéru
+        /// </summary>
+        public ObservableCollection<PasmoEkvalizeru>? AktualniPasma { get; set; }
 
         /// <summary>
         /// Událost ukončení skladby
@@ -113,7 +149,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                     throw new FileNotFoundException(zprava, filePath);
                 }
 
-                // Veškerá inicializace provádí asynchronně na pozadí aplikace
+                // Veškerá inicializace se provádí asynchronně na pozadí aplikace
                 await Task.Run(() =>
                 {
                     lock (_audioLock)
@@ -125,14 +161,30 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
                             manualStop = false;
                             currentFilePath = filePath;
 
-                            // Vytvoření readeru a výstupního zařízení
+                            // Pokud jsou načtena uživatelská pásma, použijí se, jinak se použije výchozí pole Pasma.PasmaEkvalizeru                          
+                            IList<PasmoEkvalizeru> pasma;
+
+                            if(AktualniPasma != null && AktualniPasma.Count > 0)
+                            {
+                                pasma = AktualniPasma;
+                            }
+
+                            else
+                            {
+                                pasma = Pasma.PasmaEkvalizeru;
+                            }
+
+                            // Vytvoření readeru, ekvalizéru a výstupního zařízení
                             var novyReader = new AudioFileReader(filePath);
+                            var novyEkvalizer = new EqualizerSampleProvider(novyReader.ToSampleProvider(), pasma);
+                            novyEkvalizer.IsEnabled = JeEkvalizerZapnuty;
                             var novyOutput = new WaveOutEvent();
 
-                            novyOutput.Init(novyReader);
+                            novyOutput.Init(novyEkvalizer);
 
                             reader = novyReader;
                             output = novyOutput;
+                            ekvalizer = novyEkvalizer;
 
                             output.PlaybackStopped += (s, e) =>
                             {
@@ -258,6 +310,30 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
         }
 
         /// <summary>
+        /// Metoda slouží k aktualizaci pásem ekvalizéru
+        /// </summary>
+        /// <param name="pasma">Jednotlivá pásma ekvalizéru</param>
+        public void UpdateEqualizer(ObservableCollection<PasmoEkvalizeru> pasma)
+        {
+            if (pasma == null || pasma.Count == 0 || ekvalizer == null)
+            {
+                return;
+            }
+
+            try
+            {
+                AktualniPasma = pasma;
+                ekvalizer.UpdateEqualizer(pasma);
+            }
+
+            catch(Exception ex)
+            {
+                SpravaSouboru.LogError(ex, "Error occurred while updating the equalizer!", nameof(AudioService));
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Pomocná metoda pro zastavení písničky a vypuštění používaných zdrojů
         /// </summary>
         private void ReleaseResources()
@@ -268,6 +344,7 @@ namespace Hudebni_Prehravac_OctaBeats.Services.Audio
             reader?.Dispose();
             output = null;
             reader = null;
+            ekvalizer = null;
         }
     }
 }

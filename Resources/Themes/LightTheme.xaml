@@ -25,10 +25,13 @@
     <SolidColorBrush x:Key="AccentBrush" Color="#B74F88FA"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="#FFFCE0E0"/>
     <SolidColorBrush x:Key="ButtonClickedBrush" Color="#C6624CD4"/>
+    <SolidColorBrush x:Key="SliderEqualizerThumbColor" Color="#FF9A9A9A"/>
     <Color x:Key="SelectedItemStopFirst">#34A34DD6</Color>
     <Color x:Key="SelectedItemStopSecond">#635840D4</Color>
     <Color x:Key="HoveredItemStopFirst">#2D445EBD</Color>
     <Color x:Key="HoveredItemStopSecond">#35445DBD</Color>
+    <Color x:Key="EqualizerGradientStopFirst">#FF3F79D6</Color>
+    <Color x:Key="EqualizerGradientStopSecond">#FF77ADE3</Color>
 
     <!-- Obrázky/Ikony -->
     <ImageSource x:Key="IconPrev">pack://application:,,,/Resources/Obrazky/Ikona_Predchozi_Dark.png</ImageSource>
