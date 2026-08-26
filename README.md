@@ -2,6 +2,7 @@
 
 🌍 Language: [🇨🇿 Čeština](#cz) | [en English](#en)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M11FXP0J)
 ---
 
 <a id="cz"></a>
